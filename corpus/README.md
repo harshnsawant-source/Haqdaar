@@ -46,41 +46,63 @@ this reason — the addendum says a ceiling exists but names no figure.
 
 ---
 
-## Day 1 state
+## Day 2 state
 
-Two PROVISIONAL schemes exist purely to make the evaluator and the first golden tests
-runnable. Neither is demo-usable.
+Two PROVISIONAL schemes and two personas exist purely to make the mechanism runnable.
+Neither scheme is demo-usable. No scheme was added on day 2 — the real entrepreneur
+rules are still unsourced, and inventing them to "encode remaining schemes" is exactly
+the failure this project exists to avoid.
 
-| Scheme | Verdict for `entrepreneur-01` | What it exercises |
+| Scheme | `entrepreneur-01` | `entrepreneur-02` (no caste certificate) |
 |---|---|---|
-| `stand-up-india` | ELIGIBLE | ANY-group, enumerated category, numeric bound, full proof chain with evidence |
-| `nsfdc-term-loan` | UNVERIFIABLE | the discretionary refusal — no document can ever settle it |
+| `stand-up-india` | ELIGIBLE | BLOCKED_ON_DOCUMENT → caste_certificate |
+| `nsfdc-term-loan` | ELIGIBLE + approval UNVERIFIABLE | BLOCKED_ON_DOCUMENT + approval UNVERIFIABLE |
+
+`best_unlock` on `entrepreneur-02` returns **caste_certificate, unlocking 2 schemes** —
+computed off the verdict set, and true because that document is the sole blocker on
+both. A persona is demo fiction and fine to author; scheme rules are not.
 
 `income_threshold`, `exclusion` and `external_dataset` rule types are covered by
-synthetic fixtures in `engine/tests/unit/test_evaluator_logic.py` rather than by
-inventing corpus clauses to exercise them.
+synthetic fixtures in `engine/tests/unit/` rather than by inventing corpus clauses to
+exercise them.
 
 ---
 
-## Open decision: approval is not eligibility
+## RESOLVED (day 2): approval is not eligibility
 
-Recorded 2026-08-21, to be resolved before the real entrepreneur corpus is written.
+Every clause group now carries `kind: ELIGIBILITY | APPROVAL`. It defaults to
+`ELIGIBILITY`, so existing groups need no edit — but **any group holding a
+discretionary clause must declare `kind: APPROVAL`, and the loader rejects the file
+otherwise.**
 
-On day 1, `nsfdc-term-loan` resolves UNVERIFIABLE because its discretionary sanction
-clause sits inside the eligibility ALL group. That is correct for the mechanism test
-and **wrong for the real corpus**.
+```yaml
+  - group_id: sanction
+    kind: APPROVAL          # <- required when the group holds a discretionary clause
+    satisfy: ALL
+    clauses:
+      - clause_id: NSF-C2
+        rule_type: discretionary
+        decided_by: "the lending institution's credit appraisal"
+```
 
-If discretionary clauses are buried inside eligibility groups, a genuinely eligible
-entrepreneur renders UNVERIFIABLE and the eligibility we could have proven is hidden
-behind a caveat about the bank. That is the opposite of the product: we would be
-refusing the part we can prove.
+Why it is enforced rather than merely advised: a discretionary clause inside an
+eligibility group drags a provably eligible applicant to UNVERIFIABLE and hides the
+entitlement we could have proven — the opposite of the product. The schema now makes
+that shape unrepresentable.
 
-**Rule for the real corpus:** keep eligibility determinable. A discretionary step
-(bank appraisal, credit assessment, officer's discretion) is surfaced as a separate
-caveat or refusal *alongside* a resolved eligibility verdict, never as a poison pill
-inside it. The likely implementation is a group-level kind (`ELIGIBILITY` vs
-`APPROVAL`) evaluated separately, but that design decision is open. See the module
-docstring in `engine/haqdaar/eligibility/evaluate.py`.
+What it produces:
+
+| | eligibility | approval |
+|---|---|---|
+| `Verdict.status` | rolled up from ELIGIBILITY groups only | never affected |
+| `Verdict.approval` | — | `UNVERIFIABLE`, naming `decided_by` |
+
+So `entrepreneur-01` reads **ELIGIBLE, with her full proof chain**, plus a separate
+refusal on approval. She keeps the proof; the bank keeps its discretion.
+
+**Rule when writing the real corpus:** keep eligibility determinable. A discretionary
+step (bank appraisal, credit assessment, officer's discretion) goes in an APPROVAL
+group. Never inside eligibility.
 
 ---
 

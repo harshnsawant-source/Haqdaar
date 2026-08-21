@@ -15,7 +15,8 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "haqdaar"
 
 DETERMINISTIC_LANE = [
     PACKAGE_ROOT / "corpus",
-    PACKAGE_ROOT / "eligibility",
+    PACKAGE_ROOT / "eligibility",  # includes evaluate.py, verdict.py, aggregate.py
+    PACKAGE_ROOT / "guard",
     PACKAGE_ROOT / "profile" / "schema.py",
 ]
 
@@ -62,7 +63,8 @@ def _imported_roots(path: Path) -> set[str]:
 
 def test_deterministic_lane_has_files_to_check():
     # Guards against the test silently passing because the glob found nothing.
-    assert len(_python_files()) >= 4
+    names = {p.name for p in _python_files()}
+    assert {"evaluate.py", "verdict.py", "aggregate.py", "triggers.py"} <= names
 
 
 @pytest.mark.parametrize("path", _python_files(), ids=lambda p: p.name)

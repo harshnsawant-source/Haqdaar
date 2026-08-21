@@ -18,7 +18,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from haqdaar.corpus.schema import Satisfy, VerificationStatus
+from haqdaar.corpus.schema import GroupKind, Satisfy, VerificationStatus
 
 
 class Evaluation(str, Enum):
@@ -30,6 +30,15 @@ class Evaluation(str, Enum):
 class Status(str, Enum):
     ELIGIBLE = "ELIGIBLE"
     NOT_ELIGIBLE = "NOT_ELIGIBLE"
+    UNVERIFIABLE = "UNVERIFIABLE"
+    BLOCKED_ON_DOCUMENT = "BLOCKED_ON_DOCUMENT"
+
+
+class ApprovalStatus(str, Enum):
+    """The downstream discretionary question, answered separately from eligibility."""
+
+    SETTLED = "SETTLED"
+    NOT_MET = "NOT_MET"
     UNVERIFIABLE = "UNVERIFIABLE"
     BLOCKED_ON_DOCUMENT = "BLOCKED_ON_DOCUMENT"
 
@@ -83,10 +92,28 @@ class GroupResult(_Frozen):
     group_id: str
     satisfy: Satisfy
     evaluation: Evaluation
+    kind: GroupKind = GroupKind.ELIGIBILITY
+
+
+class ApprovalNote(_Frozen):
+    """A discretionary step, reported beside eligibility and never inside it.
+
+    "You are entitled to apply, and here is the proof. Whether the bank sanctions it
+    is the bank's decision and I will not pretend otherwise."
+    """
+
+    status: ApprovalStatus
+    #: Who actually decides, from the clause's decided_by. Renders as a slot.
+    deciders: list[str] = Field(default_factory=list)
+    group_ids: list[str] = Field(default_factory=list)
+    clause_ids: list[str] = Field(default_factory=list)
+    #: Documents that would settle an approval clause, if any ever could.
+    unlocking_docs: list[str] = Field(default_factory=list)
 
 
 class Verdict(_Frozen):
     scheme_id: str
+    #: Eligibility only. Approval never changes this value.
     status: Status
     verification_status: VerificationStatus
     predicates: list[Predicate]
@@ -94,6 +121,19 @@ class Verdict(_Frozen):
     #: Documents that would flip an UNKNOWN predicate, deduplicated, order preserved.
     unlocking_docs: list[str] = Field(default_factory=list)
     staleness_flag: bool = False
+    #: None when the scheme has no APPROVAL group.
+    approval: ApprovalNote | None = None
+    #: False when another eligible scheme subsumes this one (resolve_interactions).
+    claimable: bool = True
+    subsumed_by_scheme: str | None = None
+    #: Shared key for schemes that stack, so benefits are not counted twice.
+    stack_group_id: str | None = None
+
+    def eligibility_groups(self) -> list[GroupResult]:
+        return [g for g in self.group_results if g.kind is GroupKind.ELIGIBILITY]
+
+    def predicates_in(self, group_ids: set[str]) -> list[Predicate]:
+        return [p for p in self.predicates if p.group_id in group_ids]
 
 
 def kleene(satisfy: Satisfy, values: list[Evaluation]) -> Evaluation:
@@ -149,6 +189,55 @@ def derive_status(
     if blocking:
         return Status.BLOCKED_ON_DOCUMENT
     return Status.ELIGIBLE
+
+
+def derive_approval(
+    group_results: list[GroupResult], predicates: list[Predicate]
+) -> ApprovalNote | None:
+    """Roll APPROVAL groups up separately from eligibility.
+
+    Returns None when the scheme has no approval conditions. Otherwise it answers the
+    approval question on its own terms, leaving `Verdict.status` free to report the
+    eligibility we *can* prove.
+    """
+    approval_groups = [g for g in group_results if g.kind is GroupKind.APPROVAL]
+    if not approval_groups:
+        return None
+
+    group_ids = {g.group_id for g in approval_groups}
+    members = [p for p in predicates if p.group_id in group_ids]
+
+    if any(g.evaluation is Evaluation.FALSE for g in approval_groups):
+        status = ApprovalStatus.NOT_MET
+    elif all(g.evaluation is Evaluation.TRUE for g in approval_groups):
+        status = ApprovalStatus.SETTLED
+    else:
+        unresolved = {
+            g.group_id for g in approval_groups if g.evaluation is Evaluation.UNKNOWN
+        }
+        blocking = [
+            p
+            for p in members
+            if p.evaluation is Evaluation.UNKNOWN and p.group_id in unresolved
+        ]
+        status = (
+            ApprovalStatus.UNVERIFIABLE
+            if any(not p.is_settleable for p in blocking)
+            else ApprovalStatus.BLOCKED_ON_DOCUMENT
+        )
+
+    deciders: list[str] = []
+    for predicate in members:
+        if predicate.decided_by and predicate.decided_by not in deciders:
+            deciders.append(predicate.decided_by)
+
+    return ApprovalNote(
+        status=status,
+        deciders=deciders,
+        group_ids=sorted(group_ids),
+        clause_ids=[p.clause_id for p in members],
+        unlocking_docs=collect_unlocking_docs(approval_groups, members),
+    )
 
 
 def collect_unlocking_docs(

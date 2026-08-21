@@ -1,0 +1,24 @@
+{
+  "profile_id": "entrepreneur-02",
+  "description": "PROVISIONAL demo persona for the 'one document away' beat. A first-time entrepreneur with a project report and Aadhaar but NO caste certificate. That single missing document is the sole blocker on both provisional schemes, which is what makes the unlock aggregator's headline true rather than merely plausible. A persona is demo fiction and is fine to author; scheme rules are not, and none are invented here.",
+  "fields": {
+    "applicant.gender": {
+      "value": "MALE",
+      "document_id": "aadhaar",
+      "source_field": "gender",
+      "confidence": 1.0
+    },
+    "enterprise.venture_type": {
+      "value": "GREENFIELD",
+      "document_id": "project_report",
+      "source_field": "venture_type",
+      "confidence": 1.0
+    },
+    "enterprise.loan_amount_sought": {
+      "value": 2000000,
+      "document_id": "project_report",
+      "source_field": "loan_amount_sought",
+      "confidence": 1.0
+    }
+  }
+}

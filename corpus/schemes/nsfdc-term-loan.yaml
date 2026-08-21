@@ -40,13 +40,18 @@ clause_groups:
         verification_status: PROVISIONAL
         verify_note: "Confirm verbatim wording and the accepted caste proof document."
 
-      # The refusal (addendum s5). Structurally identical to PM-JAY's SECC-2011 clause:
-      # verifiable_from is empty, so no document the applicant fetches can ever settle
-      # it, so it is permanently UNKNOWN and the scheme resolves UNVERIFIABLE.
-      #
-      # On day 1 this sits inside the eligibility ALL group, which is correct for the
-      # mechanism test and wrong for the real corpus — see the note at the top of
-      # eligibility/evaluate.py. Approval is not eligibility.
+  # The refusal (addendum s5), in its own APPROVAL group. Structurally identical to
+  # PM-JAY's SECC-2011 clause — verifiable_from is empty, so nothing the applicant
+  # fetches can ever settle it — but it answers a different question. Approval is not
+  # eligibility: she stays ELIGIBLE with her proof, and the engine refuses separately
+  # to predict what the bank will do.
+  #
+  # The schema now rejects a discretionary clause in an ELIGIBILITY group, so this
+  # cannot regress into hiding her entitlement behind the bank's discretion.
+  - group_id: sanction
+    kind: APPROVAL
+    satisfy: ALL
+    clauses:
       - clause_id: NSF-C2
         clause_text: >-
           [VERIFY AT SOURCE] Sanction of the loan is subject to appraisal of the

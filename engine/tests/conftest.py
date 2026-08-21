@@ -21,3 +21,11 @@ def entrepreneur_profile():
     from haqdaar.profile.schema import load_profile
 
     return load_profile(CORPUS_DIR / "personas" / "entrepreneur-01.json")
+
+
+@pytest.fixture(scope="session")
+def entrepreneur_02_profile():
+    """No caste certificate — the "one document away" persona."""
+    from haqdaar.profile.schema import load_profile
+
+    return load_profile(CORPUS_DIR / "personas" / "entrepreneur-02.json")

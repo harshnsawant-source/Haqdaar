@@ -4,20 +4,19 @@ This module is the only writer of `Predicate.evaluation` (design doc s1, s4). It
 typed bounds from the corpus and typed facts from the profile and compares them. It
 imports nothing from haqdaar.llm and nothing that touches a network; a test asserts it.
 
-DECISION TO MAKE, recorded before it can be forgotten
------------------------------------------------------
-Discretionary APPROVAL is a separate question from ELIGIBILITY.
+DECISION MADE (day 2): approval is not eligibility
+--------------------------------------------------
+Discretionary APPROVAL is a separate question from ELIGIBILITY, and the split is now
+structural rather than a note.
 
-On day 1, NSFDC collapses to UNVERIFIABLE because its discretionary sanction clause sits
-inside an ALL group. That is correct for the mechanism test and only for the mechanism
-test. The REAL corpus must not bury discretionary clauses inside eligibility ALL groups:
-if it does, genuinely eligible entrepreneurs render UNVERIFIABLE and the eligibility we
-could have proven is hidden behind a caveat about the bank.
+`ClauseGroup.kind` is ELIGIBILITY or APPROVAL. `Verdict.status` rolls up ELIGIBILITY
+groups only; APPROVAL groups roll up into `Verdict.approval` beside it. So a genuinely
+eligible entrepreneur reads ELIGIBLE with her full proof chain, plus a separate refusal
+on approval naming the bank as the decider — instead of collapsing to UNVERIFIABLE with
+the entitlement we could have proven hidden behind a caveat.
 
-Eligibility must stay determinable. Surface discretionary approval as a separate
-caveat/refusal alongside a resolved eligibility verdict, not as a poison pill inside it.
-The likely shape is a group-level kind (ELIGIBILITY vs APPROVAL) evaluated separately,
-but that is a real design decision and it is not being made on day 1. See corpus/README.
+The corpus schema enforces it: a discretionary clause inside an ELIGIBILITY group is
+rejected at load time. The trap is unrepresentable, not merely documented.
 """
 
 from __future__ import annotations
@@ -27,6 +26,7 @@ from haqdaar.corpus.schema import (
     CategoryBound,
     Clause,
     ClauseGroup,
+    GroupKind,
     IncomeBound,
     NumericBound,
     RuleType,
@@ -37,8 +37,10 @@ from haqdaar.eligibility.verdict import (
     Evidence,
     GroupResult,
     Predicate,
+    Status,
     Verdict,
     collect_unlocking_docs,
+    derive_approval,
     derive_status,
     kleene,
 )
@@ -160,23 +162,111 @@ def evaluate_scheme(scheme: Scheme, profile: CitizenProfile) -> Verdict:
             GroupResult(
                 group_id=group.group_id,
                 satisfy=group.satisfy,
+                kind=group.kind,
                 evaluation=kleene(
                     group.satisfy, [p.evaluation for p in group_predicates]
                 ),
             )
         )
 
+    # Eligibility is decided by ELIGIBILITY groups alone. An approval condition never
+    # suppresses an entitlement we can prove.
+    eligibility_groups = [g for g in group_results if g.kind is GroupKind.ELIGIBILITY]
+    eligibility_ids = {g.group_id for g in eligibility_groups}
+    eligibility_predicates = [p for p in predicates if p.group_id in eligibility_ids]
+
     return Verdict(
         scheme_id=scheme.scheme_id,
-        status=derive_status(group_results, predicates),
+        status=derive_status(eligibility_groups, eligibility_predicates),
         verification_status=scheme.verification_status,
         predicates=predicates,
         group_results=group_results,
-        unlocking_docs=collect_unlocking_docs(group_results, predicates),
+        unlocking_docs=collect_unlocking_docs(
+            eligibility_groups, eligibility_predicates
+        ),
         staleness_flag=False,  # T5 lands on day 3
+        approval=derive_approval(group_results, predicates),
     )
 
 
 def evaluate_corpus(schemes: list[Scheme], profile: CitizenProfile) -> list[Verdict]:
-    """Evaluate a whole corpus. Scheme interactions resolve on day 2 (design doc s8)."""
-    return [evaluate_scheme(scheme, profile) for scheme in schemes]
+    """Evaluate a whole corpus, then resolve how the schemes interact."""
+    return resolve_interactions(
+        [evaluate_scheme(scheme, profile) for scheme in schemes], schemes
+    )
+
+
+def resolve_interactions(
+    verdicts: list[Verdict], schemes: list[Scheme]
+) -> list[Verdict]:
+    """Apply subsumed_by and stacks_with across a whole verdict set.
+
+    Two separate jobs (design doc s5 guarantee 6):
+
+    * `subsumed_by` — a scheme absorbed by another the citizen already qualifies for is
+      marked not separately claimable. Instance in the welfare reveal vertical: IGNWPS
+      is reached *through* SGNAY, so listing both as independent Rs 1,500 benefits
+      would be wrong, and a judge who knows Maharashtra would catch it.
+    * `stacks_with` — schemes that pay together share a `stack_group_id` so a later
+      renderer can group them instead of adding their benefits twice.
+
+    Benefit *amounts* are not summed here, because `Scheme.benefit` is prose today and
+    no numeric amount has been sourced. Grouping is what the corpus can honestly
+    support; totalling would mean inventing figures.
+    """
+    by_id = {s.scheme_id: s for s in schemes}
+    eligible = {
+        v.scheme_id
+        for v in verdicts
+        if v.status is Status.ELIGIBLE and v.scheme_id in by_id
+    }
+
+    stack_group = _stack_groups(schemes)
+    resolved: list[Verdict] = []
+    for verdict in verdicts:
+        scheme = by_id.get(verdict.scheme_id)
+        absorber = None
+        if scheme is not None:
+            absorber = next((s for s in scheme.subsumed_by if s in eligible), None)
+        resolved.append(
+            verdict.model_copy(
+                update={
+                    "claimable": absorber is None,
+                    "subsumed_by_scheme": absorber,
+                    "stack_group_id": stack_group.get(verdict.scheme_id),
+                }
+            )
+        )
+    return resolved
+
+
+def _stack_groups(schemes: list[Scheme]) -> dict[str, str]:
+    """Connected components over stacks_with, keyed by the lowest scheme_id.
+
+    The relation is treated as symmetric: if A stacks with B then B stacks with A,
+    whether or not the corpus author wrote it on both sides.
+    """
+    known = {s.scheme_id for s in schemes}
+    adjacency: dict[str, set[str]] = {s.scheme_id: set() for s in schemes}
+    for scheme in schemes:
+        for other in scheme.stacks_with:
+            if other in known:
+                adjacency[scheme.scheme_id].add(other)
+                adjacency[other].add(scheme.scheme_id)
+
+    groups: dict[str, str] = {}
+    for scheme_id in sorted(adjacency):
+        if scheme_id in groups or not adjacency[scheme_id]:
+            continue
+        component: set[str] = set()
+        pending = [scheme_id]
+        while pending:
+            current = pending.pop()
+            if current in component:
+                continue
+            component.add(current)
+            pending.extend(adjacency[current] - component)
+        key = min(component)
+        for member in component:
+            groups[member] = key
+    return groups

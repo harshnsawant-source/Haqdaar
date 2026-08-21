@@ -48,6 +48,18 @@ class Satisfy(str, Enum):
     ANY = "ANY"
 
 
+class GroupKind(str, Enum):
+    """What question a clause group answers.
+
+    ELIGIBILITY decides whether the citizen is entitled to apply. APPROVAL covers a
+    downstream discretionary step — a bank's credit appraisal, an officer's sanction —
+    which is a different question and must never suppress a provable eligibility.
+    """
+
+    ELIGIBILITY = "ELIGIBILITY"
+    APPROVAL = "APPROVAL"
+
+
 class _Frozen(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -148,6 +160,28 @@ class ClauseGroup(_Frozen):
     group_id: str
     satisfy: Satisfy
     clauses: list[Clause] = Field(min_length=1)
+    kind: GroupKind = GroupKind.ELIGIBILITY
+
+    @model_validator(mode="after")
+    def _discretionary_clauses_belong_in_approval_groups(self) -> ClauseGroup:
+        """Make the trap unrepresentable rather than merely documented.
+
+        A discretionary clause inside an ELIGIBILITY group drags a provably eligible
+        applicant to UNVERIFIABLE and hides the entitlement we could have proven. That
+        is the opposite of the product, so the corpus cannot express it.
+        """
+        if self.kind is GroupKind.APPROVAL:
+            return self
+        discretionary = [
+            c.clause_id for c in self.clauses if c.rule_type is RuleType.DISCRETIONARY
+        ]
+        if discretionary:
+            raise ValueError(
+                f"{self.group_id}: discretionary clause(s) {discretionary} cannot sit "
+                "in an ELIGIBILITY group — approval is a separate question. Move them "
+                "to a group with kind: APPROVAL."
+            )
+        return self
 
 
 class Scheme(_Frozen):
@@ -189,3 +223,6 @@ class Scheme(_Frozen):
 
     def clauses(self) -> list[Clause]:
         return [c for g in self.clause_groups for c in g.clauses]
+
+    def groups_of(self, kind: GroupKind) -> list[ClauseGroup]:
+        return [g for g in self.clause_groups if g.kind is kind]
