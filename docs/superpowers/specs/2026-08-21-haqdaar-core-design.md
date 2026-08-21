@@ -15,6 +15,8 @@
 
 The matching consistency edits to `02-GUARD-DESIGN.md` (§2, §3-T4, §6, §7) are applied.
 
+**Corpus re-aim (2026-08-21, see `PROJECT-BRIEF-ADDENDUM.md`).** We now target official PS **SIH26092 — "AI-Driven Scheme Matching for Marginalized Entrepreneurs."** The **primary corpus is marginalized-entrepreneur schemes** (Stand-Up India, NSFDC, etc.); the **welfare / Sunita corpus is the "same engine, new corpus" reveal vertical.** The architecture below is unchanged — only the example schemes, the persona, the primary refusal instance, and the build-order scheme names differ. Where this doc still names welfare schemes (PM-JAY, IGNWPS, SGNAY, PM-KISAN), read them as the reveal vertical. Primary demo persona: `entrepreneur-01.json`; reveal persona: `sunita.json`.
+
 ---
 
 ## 1. The governing decision
@@ -171,9 +173,9 @@ Structural guarantees:
 3. Any exception or model timeout produces an UNVERIFIABLE verdict, never a hang. A network failure on stage then looks like the product working as designed.
 4. The renderer enforces a phrase blocklist ("you may qualify", "it is possible that", "generally speaking"). Those phrasings are the disease being cured.
 5. **Output is produced only by deterministic slot-fill over the fixed template set. No generative model runs after the verdict.** T4 is therefore a build-time assertion (no template string carries a factual claim that is not a bound slot) plus a runtime assertion (every slot in the chosen template resolves from the verdict), not a natural-language parse.
-6. **Scheme interactions resolve in `evaluate.py`.** A scheme named in another's `subsumed_by` is not shown as separately claimable; `stacks_with` schemes are grouped so benefit totals are never double-counted. (Instance: IGNWPS + SGNAY.)
+6. **Scheme interactions resolve in `evaluate.py`.** A scheme named in another's `subsumed_by` is not shown as separately claimable; `stacks_with` schemes are grouped so benefit totals are never double-counted. (Instance, in the welfare reveal vertical: IGNWPS + SGNAY. The entrepreneur primary set may have no stacking pair; the mechanism still runs harmlessly.)
 7. **The unlock aggregator is computed, not narrated.** `aggregate.py` groups `BLOCKED_ON_DOCUMENT` verdicts by the missing document and ranks by how many schemes each one unlocks — that is exactly what produces "one caste certificate away from 4 more." It reads off the verdict set; it is not a phrasing the model chose.
-8. **The retrieval floor is biased to refuse.** A query that lands between clearly-in-corpus and clearly-out resolves to UNVERIFIABLE (T3), never to a confident answer. A false refusal is on-brand; a false confident answer is disqualifying. Judges are never handed an open text box — redirect to the six rehearsed schemes (`02-GUARD-DESIGN.md` §5, "the trap to avoid").
+8. **The retrieval floor is biased to refuse.** A query that lands between clearly-in-corpus and clearly-out resolves to UNVERIFIABLE (T3), never to a confident answer. A false refusal is on-brand; a false confident answer is disqualifying. Judges are never handed an open text box — redirect to the rehearsed schemes (`02-GUARD-DESIGN.md` §5, "the trap to avoid").
 
 ---
 
@@ -181,9 +183,9 @@ Structural guarantees:
 
 All five are pure functions over the verdict object, each with its own unit test file.
 
-- **T1 Unsupported predicate** — UNKNOWN with `verifiable_from: []` → UNVERIFIABLE. Instance: PM-JAY D3 / SECC 2011. This is the demo refusal.
-- **T2 Missing but obtainable** — UNKNOWN with a named obtainable document → BLOCKED_ON_DOCUMENT, document appended to `unlocking_docs`. Instance: IGNWPS BPL status. The aggregator (§5 guarantee 7) turns a set of these into the "one document away from K more" headline.
-- **T3 No retrieval support** — router returned nothing above the floor → UNVERIFIABLE, reason "outside corpus." The floor is biased to refuse: anything not clearly matching a corpus scheme resolves UNVERIFIABLE rather than guessing. Instance: the tax-liability backup query.
+- **T1 Unsupported predicate** — UNKNOWN with `verifiable_from: []` → UNVERIFIABLE. **Primary demo instance:** NSFDC final sanction is the lending bank's discretionary credit appraisal (`rule_type: discretionary`, `verifiable_from: []`) — permanently UNKNOWN, so the engine refuses to promise approval. **Welfare-reveal instance:** PM-JAY D3 / SECC 2011. Same mechanism; `decided_by` selects the right refusal sentence.
+- **T2 Missing but obtainable** — UNKNOWN with a named obtainable document → BLOCKED_ON_DOCUMENT, document appended to `unlocking_docs`. **Primary instance:** a caste certificate unlocking category-reserved entrepreneur schemes. **Welfare-reveal instance:** IGNWPS BPL status. The aggregator (§5 guarantee 7) turns a set of these into the "one document away from K more" headline.
+- **T3 No retrieval support** — router returned nothing above the floor → UNVERIFIABLE, reason "outside corpus." The floor is biased to refuse: anything not clearly matching a corpus scheme resolves UNVERIFIABLE rather than guessing. Instance: an out-of-corpus query such as a tax-liability question.
 - **T4 Citation integrity** — output is deterministic slot-fill over a fixed template set, so there is no free-text model claim to police. The guarantee is two assertions: **(build time)** no template string contains a factual claim that is not a bound slot; **(runtime)** every slot in the chosen template resolves to a value carried by a predicate in the verdict, and that value's `clause_text` is present verbatim. An unbound or orphan slot voids the whole response. Structural, not an NLI check — which is why it is cheap and provable rather than "the fiddliest."
 - **T5 Stale or amended rule** — `last_amended` newer than `retrieved_on`, or `retrieved_on` outside a configured window → answer shown with a visible staleness banner.
 
@@ -191,10 +193,10 @@ All five are pure functions over the verdict object, each with its own unit test
 
 ## 7. Testing
 
-- **Golden verdict tests.** Sunita against the five locked schemes (plus PMAY-G only if it is verified per §9) and the two refusal queries, asserting exact `status` and the exact predicate set. Red test means no deploy. Run as the last action before walking on stage.
+- **Golden verdict tests.** The entrepreneur persona (`entrepreneur-01.json`) against the primary entrepreneur schemes plus the discretionary-refusal query, and — for the reveal vertical — Sunita against the welfare schemes plus the SECC-2011 refusal. Each asserts exact `status` and the exact predicate set. Red test means no deploy. Run as the last action before walking on stage.
 - **Trigger unit tests.** One file per trigger, plus one for the aggregator and one for scheme-interaction resolution. Written before 30 Aug.
 - **Rendering is deterministic, so assert it directly.** Because no model runs at render time, golden tests assert the exact rendered `en` and `mr` strings for each card state — no snapshot fuzz, no temperature.
-- **Live OCR, fixture as gated fallback.** On demo day the upload runs the real OCR + extraction path and genuinely populates the profile. Any field whose `confidence` is below threshold falls back to the checked-in `sunita.json` value, and the profile is flagged as partially fixture-backed. The upload is never pure animation: if a judge asks "did it actually read the document," the honest answer is yes, with a named fallback for low-confidence fields. OCR variance is the likeliest thing to break the demo, which is why the fallback exists — but the demo is not built on pretending OCR ran.
+- **Live OCR, fixture as gated fallback.** On demo day the upload runs the real OCR + extraction path and genuinely populates the profile. Any field whose `confidence` is below threshold falls back to the checked-in persona fixture (`entrepreneur-01.json` for the primary demo, `sunita.json` for the reveal), and the profile is flagged as partially fixture-backed. The upload is never pure animation: if a judge asks "did it actually read the document," the honest answer is yes, with a named fallback for low-confidence fields. OCR variance is the likeliest thing to break the demo, which is why the fallback exists — but the demo is not built on pretending OCR ran.
 - **Pinned extraction prompt, temperature 0**, with the extraction output snapshotted.
 - **Rehearse the failure.** A test asserts the timeout path emits UNVERIFIABLE.
 
@@ -204,22 +206,22 @@ All five are pure functions over the verdict object, each with its own unit test
 
 | Day | Build | Done means |
 |---|---|---|
-| 1 | Corpus schema + SGNAY & IGNWPS encoded + `Verdict`/`Predicate` + evaluator | First two golden tests pass, no model involved |
-| 2 | PM-KISAN, PM-JAY, AVVC encoded + T1/T2 + `unlocking_docs` + aggregator + `subsumed_by`/`stacks_with` resolution | The stage refusal fires from real corpus data; "one doc unlocks N" computes |
+| 1 ✅ | Corpus schema (+ `verification_status`, ANY/ALL groups, `discretionary`) + Stand-Up India & NSFDC (provisional entrepreneur) + `Verdict`/`Predicate` + evaluator | **DONE.** Two golden tests pass (ELIGIBLE-with-proof + discretionary refusal), no model, no network, no API key |
+| 2 | Remaining primary entrepreneur schemes encoded + T1/T2 + `unlocking_docs` + aggregator + `subsumed_by`/`stacks_with` resolution | The discretionary refusal fires from corpus data; "one doc unlocks N" computes |
 | 3 | T4 slot-binding check (structural, cheap) + English templates + T3/T5 | Guard complete; project de-risked |
 | 4 | FastAPI endpoints + web shell, four card states | Clickable demo on the fixture profile |
-| 5 | A+ on PM-KISAN only: form map, PDF fill, tracking reference (labelled SIMULATED) | The action beat exists |
+| 5 | A+ on one entrepreneur scheme (e.g. Stand-Up India): form map, PDF fill, tracking reference (labelled SIMULATED) | The action beat exists |
 | 6 | Extraction path: OCR + model → profile, live populate with confidence-gated fixture fallback | Upload genuinely reads the doc and cannot break the demo |
-| 7 | Marathi templates, human-translated, plus polish | Demo language complete |
+| 7 | **Welfare reveal vertical** (Sunita corpus + templates, incl. PM-JAY/SECC-2011 refusal) + second-language templates, human-translated, plus polish | The "same engine, new corpus" reveal works; demo language complete |
 | 8–9 | Harden, rehearse, local-model check on constrained hardware | Build freeze 30 Aug |
 
-Rationale: the Guard and evaluator are the product. UI and extraction are replaceable. By end of day 3 the thing that wins the room exists; everything after is presentation.
+Rationale: the Guard and evaluator are the product. UI and extraction are replaceable. By end of day 3 the thing that wins the room exists; everything after is presentation. The welfare reveal is built last (day 7) because it is a corpus swap on a finished engine — which is exactly the point it proves.
 
 ---
 
 ## 9. Out of scope for CORE
 
-Legal vertical, disaster response, real portal submission, schemes beyond the six, voice, WhatsApp, accounts, admin dashboards. PMAY-G is included only if a teammate reads `SOP_AwaasPlus2024.pdf` end to end — unverified rules are worse than no rules.
+Legal vertical, disaster response, real portal submission, schemes beyond the curated demo set, voice, WhatsApp, accounts, admin dashboards. Any scheme — entrepreneur primary or welfare reveal — is included only if a teammate has read its official rule end to end and set `verification_status: VERIFIED`; unverified rules are worse than no rules.
 
 ---
 
@@ -227,8 +229,9 @@ Legal vertical, disaster response, real portal submission, schemes beyond the si
 
 These block content, not architecture. Tracked here so they do not get lost.
 
-- Document lists for SGNAY and IGNWPS are marked `[VERIFY AT SOURCE]` in the corpus doc. The engine can encode `verifiable_from` provisionally, but the demo cannot claim a document list that nobody opened.
-- PM-KISAN blank form PDF must be obtained before day 5.
-- Marathi translation of the template set — human, not model, and not live on stage.
-- **Marathi-language documents** (income certificate, 7/12 extract) are harder to OCR than English. The confidence-gated fixture fallback (§7) covers this, but do not claim clean Marathi OCR unless it is tested on the real document images.
-- Treatment of a 70+ person already covered under standard PM-JAY is unverified. Do not guess on stage.
+- **Read the full SIH26092 description behind SIH Login** and confirm the expected deliverable before the corpus is finalized (`PROJECT-BRIEF-ADDENDUM.md` §6). Everything else depends on it.
+- **Primary entrepreneur scheme rules** (NSFDC income ceiling, Stand-Up India exclusion list, loan bounds) are provisional — clauses are `[VERIFY AT SOURCE]` and absent where no figure is sourced. The content lane must source real rules and flip `verification_status` to VERIFIED; `load_corpus(strict=True)` returns `[]` until then, and a test asserts it.
+- The chosen entrepreneur scheme's **blank application form PDF** must be obtained before day 5.
+- **Discretionary vs eligibility (recorded in `evaluate.py`):** the real corpus must not bury a discretionary approval clause inside an eligibility ALL-group, or a genuinely-eligible entrepreneur renders UNVERIFIABLE and her eligibility is hidden. Keep eligibility determinable; surface discretionary approval as its own refusal.
+- **Welfare reveal-vertical corpus** (Sunita's schemes, incl. PM-JAY/SECC-2011) must be sourced and verified before day 7. The 70+/standard-PM-JAY edge case is unverified — do not guess on stage.
+- **Second-language templates** — human-translated, not model, and not live on stage. Regional-language documents are harder to OCR; the confidence-gated fixture fallback (§7) covers this, but do not claim clean OCR unless tested on real document images.

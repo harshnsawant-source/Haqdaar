@@ -8,8 +8,8 @@ that sits between the eligibility reasoning and the citizen, and it is testable.
 
 ## 1. The core principle
 
-> The model does not decide whether to refuse. The Guard decides, and the model only
-> phrases the decision.
+> The model does not decide whether to refuse. The Guard decides, and a deterministic
+> template renders the decision — no model phrases a verdict.
 
 If refusal is a prompt instruction ("say you don't know if unsure"), it will fail on stage,
 and it will fail in the worst possible way: confidently. The Guard must be code, not prose.
@@ -98,8 +98,12 @@ Both are in the corpus doc.
 ## 4. What it says to the citizen
 
 Refusal must never read as failure. It reads as **honesty plus a next step**. Three distinct
-voices for three distinct states. Get these translated into Marathi properly, not by the
+voices for three distinct states. Get these translated properly by a human, not by the
 model live on stage.
+
+*(The examples below use welfare-reveal phrasings. The primary entrepreneur equivalents swap
+the nouns — discretionary bank appraisal instead of SECC 2011, caste certificate instead of
+BPL card — but keep the same three moves. `decided_by` supplies the right noun as a slot.)*
 
 **UNVERIFIABLE (T1 / T3):**
 > "I cannot confirm this one, and I will not guess.
@@ -129,7 +133,35 @@ you have to.
 Do not improvise this. Pick one query, rehearse it fifty times, and make it a fixture in
 your test suite so a Sept 1 refactor cannot break it.
 
-### The primary refusal (use this one)
+### The primary refusal — entrepreneur (use this one)
+
+**Setup:** the marginalized-entrepreneur persona has uploaded her documents. Haqdaar has
+already returned her positive scheme matches with proof. The room is warm.
+
+**Presenter says:** "Now watch what happens when we ask it something no document can settle.
+Ask it whether the loan will be *approved*."
+
+**Query:** "Will my Stand-Up India loan be approved?" (or the NSFDC sanction question).
+
+**What fires:** T1 on a `rule_type: discretionary` clause. The eligibility predicates resolve
+TRUE with proof, but final sanction is `decided_by` the lending bank's credit appraisal —
+`verifiable_from: []`, permanently UNKNOWN. Status `UNVERIFIABLE` *on the approval question*,
+while the eligibility she *does* have stays shown with proof.
+
+**What the screen shows:**
+- The eligibility she qualifies for, each clause cited (the proof she keeps).
+- A calm refusal on *approval*: "Final sanction is the bank's appraisal. No document
+  determines it, so I will not promise it — here is where to apply and what to carry."
+
+**Presenter line:** "Every other system would have said 'you may get the loan, please apply.'
+Ours proved what she's entitled to and refused to fake what only the bank decides. An AI that
+guesses on someone's livelihood is not helpful. It is dangerous."
+
+**Why this query is right:** the discretionary line is *structurally* unprovable (the bank
+really does decide), so a challenging judge loses on the facts; and it refuses on a scheme
+that is **in** the corpus, which is far stronger than refusing an out-of-corpus question.
+
+### The reveal-vertical refusal — welfare (the SECC-2011 beat)
 
 **Setup:** Sunita has uploaded her income certificate and her 7/12 land record. Haqdaar has
 already returned her positive matches with proof. The room is warm.
