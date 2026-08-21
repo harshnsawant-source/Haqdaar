@@ -1,0 +1,30 @@
+{
+  "profile_id": "entrepreneur-01",
+  "description": "PROVISIONAL demo persona for SIH26092. A first-time SC woman entrepreneur seeking a term loan for a new enterprise. The content lane owns her name and story; the engine only reads the fields below. Confidence is 1.0 throughout because these are typed fixture values, not OCR output — day 6 replaces them with extracted values carrying real confidence scores.",
+  "fields": {
+    "applicant.social_category": {
+      "value": "SC",
+      "document_id": "caste_certificate",
+      "source_field": "category",
+      "confidence": 1.0
+    },
+    "applicant.gender": {
+      "value": "FEMALE",
+      "document_id": "aadhaar",
+      "source_field": "gender",
+      "confidence": 1.0
+    },
+    "enterprise.venture_type": {
+      "value": "GREENFIELD",
+      "document_id": "project_report",
+      "source_field": "venture_type",
+      "confidence": 1.0
+    },
+    "enterprise.loan_amount_sought": {
+      "value": 1500000,
+      "document_id": "project_report",
+      "source_field": "loan_amount_sought",
+      "confidence": 1.0
+    }
+  }
+}

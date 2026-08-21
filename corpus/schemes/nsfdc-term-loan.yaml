@@ -1,0 +1,59 @@
+# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+#
+# Paraphrased from PROJECT-BRIEF-ADDENDUM.md s3 ("NSFDC / NSKFDC term loans (income
+# ceiling + caste certificate)"), which is our own team document, not an official
+# source. Present on day 1 to exercise the discretionary refusal mechanism.
+#
+# NOTE THE ABSENT INCOME CEILING. The addendum says an income ceiling exists but names
+# no figure, and nobody has read the official rule. Encoding a guessed number would be
+# exactly the failure mode this project exists to avoid, so the clause is omitted
+# rather than invented. Add it when it is sourced — see verify_note.
+
+scheme_id: nsfdc-term-loan
+name: NSFDC Term Loan
+authority: >-
+  [VERIFY AT SOURCE] National Scheduled Castes Finance and Development Corporation,
+  Ministry of Social Justice and Empowerment
+benefit: "[VERIFY AT SOURCE] Concessional term loan for income-generating activity"
+source_url: "https://nsfdc.nic.in/"
+retrieved_on: 2026-08-21
+verification_status: PROVISIONAL
+verify_note: >-
+  Nobody has opened the official NSFDC scheme page. Confirm: (a) verbatim eligibility
+  wording, (b) THE INCOME CEILING FIGURE AND PERIOD — deliberately not encoded here,
+  do not guess it, (c) whether NSFDC lends directly or only through State Channelising
+  Agencies, since that changes who the discretionary decision-maker actually is, and
+  (d) the exact document that evidences caste.
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: NSF-C1
+        clause_text: >-
+          [VERIFY AT SOURCE] The applicant belongs to a Scheduled Caste.
+        rule_type: enumerated_category
+        profile_field: applicant.social_category
+        bound:
+          values: [SC]
+        verifiable_from: [caste_certificate]
+        verification_status: PROVISIONAL
+        verify_note: "Confirm verbatim wording and the accepted caste proof document."
+
+      # The refusal (addendum s5). Structurally identical to PM-JAY's SECC-2011 clause:
+      # verifiable_from is empty, so no document the applicant fetches can ever settle
+      # it, so it is permanently UNKNOWN and the scheme resolves UNVERIFIABLE.
+      #
+      # On day 1 this sits inside the eligibility ALL group, which is correct for the
+      # mechanism test and wrong for the real corpus — see the note at the top of
+      # eligibility/evaluate.py. Approval is not eligibility.
+      - clause_id: NSF-C2
+        clause_text: >-
+          [VERIFY AT SOURCE] Sanction of the loan is subject to appraisal of the
+          proposal by the lending institution.
+        rule_type: discretionary
+        decided_by: "the lending institution's credit appraisal"
+        verification_status: PROVISIONAL
+        verify_note: >-
+          Confirm the verbatim wording of the appraisal condition and who performs it
+          (NSFDC, the State Channelising Agency, or the bank).
