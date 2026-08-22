@@ -1,0 +1,97 @@
+# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+#
+# Transcribed from 01-DEMO-CORPUS.md s4, which quotes nha.gov.in but is our own team
+# document. Nobody has opened the official page from this machine, so every clause is
+# PROVISIONAL until a human does. The wording below is close to the published criteria
+# and is marked accordingly; do not treat the quotes as verified.
+#
+# This scheme exists for the REVEAL VERTICAL: it is the "same engine, new corpus" beat
+# and the cleanest structural refusal we have. Its whole point is that the deprivation
+# criteria are keyed to SECC 2011, a fourteen-year-old dataset no citizen can look up.
+# That makes every clause here permanently UNKNOWN — not a bug, the demo.
+#
+# NOTE D6 IS ABSENT. The published list runs D1..D5 then D7. That gap is in the source,
+# not a transcription slip; do not "fix" it by inventing a D6.
+#
+# The urban occupational categories and the automatic-inclusion list are NOT encoded.
+# They are real, but Sunita is rural and encoding rules nobody has verified to pad the
+# corpus is the failure mode this project exists to avoid.
+
+scheme_id: pmjay
+name: Ayushman Bharat PM-JAY
+authority: "[VERIFY AT SOURCE] National Health Authority"
+benefit: >-
+  [VERIFY AT SOURCE] Health cover of Rs 5 lakh per family per year for secondary and
+  tertiary care hospitalisation
+source_url: "https://nha.gov.in/PM-JAY"
+retrieved_on: 2026-08-21
+verification_status: PROVISIONAL
+verify_note: >-
+  Open https://nha.gov.in/PM-JAY and transcribe the rural deprivation criteria
+  verbatim. Confirm: (a) the exact D1-D7 wording, (b) that D6 is genuinely absent from
+  the published list, (c) how a 70+ person already covered under standard PM-JAY is
+  treated (unresolved in 01-DEMO-CORPUS.md s5), and (d) whether any criterion can be
+  evidenced by a document the citizen holds — we believe none can.
+
+clause_groups:
+  # ANY: a family qualifies on at least one deprivation criterion. Every member is
+  # keyed to SECC 2011, so verifiable_from is empty throughout and the group can only
+  # ever resolve UNKNOWN. T1 fires; status is UNVERIFIABLE. This is the reveal refusal.
+  - group_id: rural-deprivation
+    satisfy: ANY
+    clauses:
+      - clause_id: PMJAY-D1
+        clause_text: >-
+          [VERIFY AT SOURCE] "Only one room with kucha walls and kucha roof"
+        rule_type: external_dataset
+        verification_status: PROVISIONAL
+        verify_note: "SECC 2011 deprivation criterion D1. Transcribe verbatim."
+        note: "Keyed to the SECC 2011 household survey; no citizen document proves it."
+
+      - clause_id: PMJAY-D2
+        clause_text: >-
+          [VERIFY AT SOURCE] "No adult member between ages 16 to 59"
+        rule_type: external_dataset
+        verification_status: PROVISIONAL
+        verify_note: "SECC 2011 deprivation criterion D2. Transcribe verbatim."
+
+      - clause_id: PMJAY-D3
+        clause_text: >-
+          [VERIFY AT SOURCE] "Households with no adult male member between ages 16 to
+          59"
+        rule_type: external_dataset
+        verification_status: PROVISIONAL
+        verify_note: >-
+          SECC 2011 deprivation criterion D3. Transcribe verbatim. THIS IS THE
+          ON-STAGE REVEAL REFUSAL — Sunita plausibly meets it, and that is exactly
+          why the engine must refuse rather than infer.
+        note: >-
+          Sunita is a widow living alone, so she plausibly satisfies this. Plausibly
+          is not provably: the criterion is settled by her SECC 2011 record, which she
+          cannot obtain. The engine must not turn a likely yes into a stated yes.
+
+      - clause_id: PMJAY-D4
+        clause_text: >-
+          [VERIFY AT SOURCE] "Disabled member and no able-bodied adult member"
+        rule_type: external_dataset
+        verification_status: PROVISIONAL
+        verify_note: "SECC 2011 deprivation criterion D4. Transcribe verbatim."
+
+      - clause_id: PMJAY-D5
+        clause_text: '[VERIFY AT SOURCE] "SC/ST households"'
+        rule_type: external_dataset
+        verification_status: PROVISIONAL
+        verify_note: >-
+          SECC 2011 deprivation criterion D5. Transcribe verbatim. Note this is the
+          SECC household classification, NOT the caste certificate the citizen holds —
+          do not be tempted to wire a caste certificate to it.
+
+      - clause_id: PMJAY-D7
+        clause_text: >-
+          [VERIFY AT SOURCE] "Landless households deriving a major part of their
+          income from manual casual labour"
+        rule_type: external_dataset
+        verification_status: PROVISIONAL
+        verify_note: >-
+          SECC 2011 deprivation criterion D7. Transcribe verbatim. D6 is absent from
+          the published list; that gap is in the source.

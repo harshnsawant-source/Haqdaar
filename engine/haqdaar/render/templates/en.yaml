@@ -1,0 +1,75 @@
+# English output templates. Deterministic slot-fill — no model runs at render time.
+#
+# RULES FOR ANYONE EDITING OR TRANSLATING THIS FILE (enforced by tests, not manners):
+#
+# 1. NO DIGITS in template text. Every number a citizen reads — an age, a rupee amount,
+#    a year, a count of schemes — must arrive through a {slot} that traces back to a
+#    predicate in the verdict. A literal number here is an unbound factual claim, which
+#    is precisely the hallucination this design exists to make impossible.
+# 2. NO SCHEME NAMES, DOCUMENT NAMES, OFFICES OR DATES in template text. Same reason:
+#    those are facts, and facts come from slots.
+# 3. NO HEDGING. "you may qualify", "it is possible that", "generally speaking" are
+#    rejected by the renderer. If we cannot prove it we refuse; we never soften it.
+# 4. Every {slot} must be one the renderer knows how to bind. An unknown slot voids the
+#    whole response rather than rendering blank.
+#
+# Translators: translate the prose, keep every {slot} exactly as written.
+
+# --- ELIGIBLE ---------------------------------------------------------------
+eligible.headline: "You are eligible for {scheme_name}."
+eligible.proof_intro: "Here is the rule that entitles you:"
+eligible.proof_line: "{clause_text}"
+eligible.proof_source: "Source: {source_url}"
+eligible.evidence_line: "Proven from your {document}."
+eligible.next_step: "Apply at {filing_office}."
+
+# --- NOT_ELIGIBLE -----------------------------------------------------------
+not_eligible.headline: "Not this one, and here is exactly why."
+not_eligible.reason: "The rule says {bound_text}. Your {field_label} is {value}."
+not_eligible.becomes_eligible: "You become eligible in {year}."
+
+# --- BLOCKED_ON_DOCUMENT ----------------------------------------------------
+blocked.headline: "You are one document away."
+blocked.single: "Bring your {document} and this unlocks {scheme_name}."
+blocked.multiple: "Bring your {document} and this unlocks {count} more schemes."
+blocked.where: "You can get it from {office}."
+blocked.rule: "The rule this settles: {clause_text}"
+
+# --- UNVERIFIABLE (T1 / T3) -------------------------------------------------
+unverifiable.headline: "I cannot confirm this one, and I will not guess."
+# T1, external dataset: the welfare-reveal shape (SECC 2011).
+unverifiable.reason_dataset: >-
+  This scheme's rule depends on records I cannot check, and nothing you have shown me
+  can prove it.
+# T1, discretionary: the primary entrepreneur shape (bank appraisal).
+unverifiable.reason_discretionary: "That is decided by {decider}, not by any document."
+unverifiable.rule: "The rule I cannot settle: {clause_text}"
+# Shown when several clauses are all settled by the same unavailable records, so the
+# card quotes one rule without implying it is the only one.
+unverifiable.also_unsettleable: >-
+  The same records settle {count} further criteria in this scheme, and I cannot check
+  any of them.
+unverifiable.next_step: "Ask at {office} and quote that rule."
+unverifiable.promise: "If they confirm it, come back and I will complete your application."
+# T3, outside corpus.
+unverifiable.outside_corpus: >-
+  That is outside what I have rules for. I only answer where I can show you the
+  official clause.
+
+# --- APPROVAL (reported beside eligibility, never instead of it) ------------
+approval.headline: "Whether it is approved is not mine to promise."
+# Phrased so the sentence never opens with a slot — a lower-case decider would
+# otherwise start the line.
+approval.refusal: "That is decided by {decider}, and no document you hold determines it."
+approval.rule: "The condition: {clause_text}"
+
+# --- STALENESS (T5) — flags the answer, never suppresses it ----------------
+staleness.banner: >-
+  This rule was last checked on {retrieved_on}. Confirm it is current before you rely
+  on it.
+staleness.amended: "The source records a change on {last_amended}, after I read it."
+
+# --- PROVISIONAL corpus warning --------------------------------------------
+provisional.banner: >-
+  This rule has not yet been verified against the official source. It is not safe to
+  act on.

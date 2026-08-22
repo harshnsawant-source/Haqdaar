@@ -5,10 +5,12 @@ scheme YAML plus a template set. Swapping the entrepreneur corpus for the welfar
 corpus — the "same engine, new rules" reveal — must require **zero engine change**.
 
 ```
-schemes/    one YAML per scheme, validated by engine/haqdaar/corpus/schema.py
-personas/   checked-in fixture profiles (typed facts + provenance)
-forms/      blank application PDFs + field maps (day 5)
+<vertical>/schemes/    one YAML per scheme, validated by engine/haqdaar/corpus/schema.py
+<vertical>/personas/   checked-in fixture profiles (typed facts + provenance)
+<vertical>/forms/      blank application PDFs + field maps (day 5)
 ```
+
+Verticals: `entrepreneur/` is the primary demo (SIH26092), `welfare/` is the reveal.
 
 ---
 
@@ -46,31 +48,36 @@ this reason — the addendum says a ceiling exists but names no figure.
 
 ---
 
-## Day 2 state
+## Day 3 state
 
-Two PROVISIONAL schemes and two personas exist purely to make the mechanism runnable.
-Neither scheme is demo-usable. No scheme was added on day 2 — the real entrepreneur
-rules are still unsourced, and inventing them to "encode remaining schemes" is exactly
-the failure this project exists to avoid.
+The corpus is now split by **vertical** — that is what makes "same engine, new corpus"
+a folder swap rather than a claim:
 
-| Scheme | `entrepreneur-01` | `entrepreneur-02` (no caste certificate) |
-|---|---|---|
-| `stand-up-india` | ELIGIBLE | BLOCKED_ON_DOCUMENT → caste_certificate |
-| `nsfdc-term-loan` | ELIGIBLE + approval UNVERIFIABLE | BLOCKED_ON_DOCUMENT + approval UNVERIFIABLE |
+```
+corpus/
+  entrepreneur/   PRIMARY (SIH26092)   schemes/ personas/ forms/
+  welfare/        REVEAL vertical      schemes/ personas/
+```
 
-`best_unlock` on `entrepreneur-02` returns **caste_certificate, unlocking 2 schemes** —
-computed off the verdict set, and true because that document is the sole blocker on
-both. A persona is demo fiction and fine to author; scheme rules are not.
+Nothing is demo-usable: every scheme in both verticals is PROVISIONAL.
 
-`income_threshold`, `exclusion` and `external_dataset` rule types are covered by
-synthetic fixtures in `engine/tests/unit/` rather than by inventing corpus clauses to
-exercise them.
+| Vertical | Scheme | Persona | Verdict |
+|---|---|---|---|
+| entrepreneur | `stand-up-india` | entrepreneur-01 | ELIGIBLE with proof |
+| entrepreneur | `nsfdc-term-loan` | entrepreneur-01 | ELIGIBLE + approval UNVERIFIABLE |
+| entrepreneur | both | entrepreneur-02 | BLOCKED → one caste certificate unlocks 2 |
+| welfare | `pmjay` | sunita | UNVERIFIABLE (SECC 2011, all six criteria) |
+| welfare | `avvc` | sunita | NOT_ELIGIBLE — rule is 70+, she is 60, eligible 2036 |
+
+Those five cover all four citizen-facing voices. `income_threshold`, `exclusion` and
+staleness are covered by synthetic fixtures in `engine/tests/unit/` rather than by
+inventing corpus clauses to exercise them.
 
 ---
 
-## RESOLVED (day 2): approval is not eligibility
+## Approval is not eligibility (resolved day 2)
 
-Every clause group now carries `kind: ELIGIBILITY | APPROVAL`. It defaults to
+Every clause group carries `kind: ELIGIBILITY | APPROVAL`. It defaults to
 `ELIGIBILITY`, so existing groups need no edit — but **any group holding a
 discretionary clause must declare `kind: APPROVAL`, and the loader rejects the file
 otherwise.**
@@ -87,10 +94,8 @@ otherwise.**
 
 Why it is enforced rather than merely advised: a discretionary clause inside an
 eligibility group drags a provably eligible applicant to UNVERIFIABLE and hides the
-entitlement we could have proven — the opposite of the product. The schema now makes
-that shape unrepresentable.
-
-What it produces:
+entitlement we could have proven — the opposite of the product. The schema makes that
+shape unrepresentable.
 
 | | eligibility | approval |
 |---|---|---|

@@ -1,9 +1,19 @@
+from datetime import date
 from pathlib import Path
 
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CORPUS_DIR = REPO_ROOT / "corpus"
+
+#: Fixed "today" for every test. The clock is never read in the deterministic lane, so
+#: a golden test cannot start failing because the calendar moved.
+TODAY = date(2026, 8, 22)
+
+
+@pytest.fixture(scope="session")
+def today() -> date:
+    return TODAY
 
 
 @pytest.fixture(scope="session")
@@ -13,19 +23,34 @@ def corpus_dir() -> Path:
 
 @pytest.fixture(scope="session")
 def schemes_dir(corpus_dir: Path) -> Path:
-    return corpus_dir / "schemes"
+    """The primary (entrepreneur) vertical."""
+    return corpus_dir / "entrepreneur" / "schemes"
+
+
+@pytest.fixture(scope="session")
+def welfare_schemes_dir(corpus_dir: Path) -> Path:
+    """The reveal vertical."""
+    return corpus_dir / "welfare" / "schemes"
+
+
+def _profile(vertical: str, name: str):
+    from haqdaar.profile.schema import load_profile
+
+    return load_profile(CORPUS_DIR / vertical / "personas" / f"{name}.json")
 
 
 @pytest.fixture(scope="session")
 def entrepreneur_profile():
-    from haqdaar.profile.schema import load_profile
-
-    return load_profile(CORPUS_DIR / "personas" / "entrepreneur-01.json")
+    return _profile("entrepreneur", "entrepreneur-01")
 
 
 @pytest.fixture(scope="session")
 def entrepreneur_02_profile():
     """No caste certificate — the "one document away" persona."""
-    from haqdaar.profile.schema import load_profile
+    return _profile("entrepreneur", "entrepreneur-02")
 
-    return load_profile(CORPUS_DIR / "personas" / "entrepreneur-02.json")
+
+@pytest.fixture(scope="session")
+def sunita_profile():
+    """Reveal vertical: 60, widow, small farmer, rural Maharashtra."""
+    return _profile("welfare", "sunita")

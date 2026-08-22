@@ -15,11 +15,12 @@ land on day 3 and get their own modules.
 
 from __future__ import annotations
 
+from datetime import date
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from haqdaar.corpus.schema import GroupKind
+from haqdaar.corpus.schema import GroupKind, Scheme
 from haqdaar.eligibility.verdict import (
     ApprovalStatus,
     Evaluation,
@@ -27,11 +28,17 @@ from haqdaar.eligibility.verdict import (
     Status,
     Verdict,
 )
+from haqdaar.retrieval.route import RouteResult
+
+#: How old a transcription may get before the answer carries a staleness banner.
+STALENESS_WINDOW_DAYS = 180
 
 
 class TriggerId(str, Enum):
     T1_UNSUPPORTED_PREDICATE = "T1"
     T2_MISSING_BUT_OBTAINABLE = "T2"
+    T3_NO_RETRIEVAL_SUPPORT = "T3"
+    T5_STALE_RULE = "T5"
 
 
 class Scope(str, Enum):
@@ -59,6 +66,9 @@ class Finding(BaseModel):
     documents: list[str] = Field(default_factory=list)
     #: T1 only: who decides, when the clause is discretionary rather than a dataset.
     deciders: list[str] = Field(default_factory=list)
+    #: T5 only: the dates that made the rule stale, as ISO strings for the banner slot.
+    retrieved_on: str | None = None
+    last_amended: str | None = None
 
 
 def _unresolved(verdict: Verdict, kind: GroupKind) -> list[Predicate]:
@@ -145,8 +155,61 @@ def t2_missing_but_obtainable(verdict: Verdict) -> list[Finding]:
     return findings
 
 
+def t3_no_retrieval_support(result: RouteResult) -> Finding | None:
+    """Nothing in the corpus answers this question.
+
+    Reads the router's result and nothing else, so "outside corpus" is a retrieval
+    fact rather than a judgement. The floor is biased to refuse, so a query that is
+    merely *near* the corpus lands here too.
+
+    This is the backup refusal: "How much tax do I owe this year?"
+    """
+    if not result.outside_corpus:
+        return None
+    return Finding(
+        trigger=TriggerId.T3_NO_RETRIEVAL_SUPPORT,
+        scope=Scope.ELIGIBILITY,
+        scheme_id="",
+        clause_ids=[],
+    )
+
+
+def t5_stale_rule(
+    scheme: Scheme, *, today: date, window_days: int = STALENESS_WINDOW_DAYS
+) -> Finding | None:
+    """The rule may have moved since we transcribed it.
+
+    Flagged, never blocked: the answer still shows, with a visible banner. Two ways to
+    trip it — the source says it was amended after we read it, or we simply read it too
+    long ago. Both are true statements about our corpus, not about the citizen.
+
+    `today` is injected rather than read from the clock so golden tests cannot start
+    failing on an unrelated calendar day.
+    """
+    amended_after_read = (
+        scheme.last_amended is not None and scheme.last_amended > scheme.retrieved_on
+    )
+    read_too_long_ago = (today - scheme.retrieved_on).days > window_days
+    if not (amended_after_read or read_too_long_ago):
+        return None
+    return Finding(
+        trigger=TriggerId.T5_STALE_RULE,
+        scope=Scope.ELIGIBILITY,
+        scheme_id=scheme.scheme_id,
+        clause_ids=[],
+        retrieved_on=scheme.retrieved_on.isoformat(),
+        last_amended=(
+            scheme.last_amended.isoformat() if scheme.last_amended else None
+        ),
+    )
+
+
 def check(verdict: Verdict) -> list[Finding]:
-    """Every day-2 trigger, in trigger order."""
+    """Every verdict-scoped trigger, in trigger order.
+
+    T3 is not here: it fires on a query before any verdict exists, so it takes a
+    RouteResult instead. T5 takes the scheme and a date. `guard.gate` runs all of them.
+    """
     return t1_unsupported_predicate(verdict) + t2_missing_but_obtainable(verdict)
 
 

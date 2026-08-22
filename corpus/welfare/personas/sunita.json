@@ -1,0 +1,36 @@
+{
+  "profile_id": "sunita",
+  "description": "Reveal-vertical persona from PROJECT-BRIEF.md s6: 60, widow, small farmer, rural Maharashtra, land in her own name. Every field below is evidenced by a document she actually carries. Note what is ABSENT: nothing here can settle a SECC 2011 deprivation criterion, because no such document exists for a citizen to hold. That absence is what produces the reveal refusal.",
+  "fields": {
+    "applicant.age": {
+      "value": 60,
+      "document_id": "aadhaar",
+      "source_field": "date_of_birth",
+      "confidence": 1.0
+    },
+    "applicant.gender": {
+      "value": "FEMALE",
+      "document_id": "aadhaar",
+      "source_field": "gender",
+      "confidence": 1.0
+    },
+    "applicant.marital_status": {
+      "value": "WIDOW",
+      "document_id": "husband_death_certificate",
+      "source_field": "relationship",
+      "confidence": 1.0
+    },
+    "applicant.state": {
+      "value": "MAHARASHTRA",
+      "document_id": "domicile_certificate",
+      "source_field": "state",
+      "confidence": 1.0
+    },
+    "household.landholding_hectares": {
+      "value": 0.8,
+      "document_id": "land_record_7_12",
+      "source_field": "area",
+      "confidence": 1.0
+    }
+  }
+}

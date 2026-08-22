@@ -1,0 +1,49 @@
+# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+#
+# Transcribed from 01-DEMO-CORPUS.md s5, which cites a PIB release. Our own team
+# document, not the official page, so PROVISIONAL until a human opens the source.
+#
+# REVEAL VERTICAL. This scheme earns its place by being a hard age boundary and a
+# recent rule change: Sunita is 60 and the rule is 70+, so the engine states the exact
+# clause, the exact bound, and the year she becomes eligible. Proving the engine reads
+# rules rather than pattern-matching "senior citizen" and "widow" is nearly as strong
+# on stage as a positive match.
+#
+# The 2024 launch also drives T5: last_amended is after retrieved_on would flag it, and
+# a rule this recent is exactly the kind a static corpus gets wrong.
+
+scheme_id: avvc
+name: Ayushman Vay Vandana Card
+authority: "[VERIFY AT SOURCE] National Health Authority, under AB PM-JAY"
+benefit: >-
+  [VERIFY AT SOURCE] Health cover of Rs 5 lakh per family per year for secondary and
+  tertiary care hospitalisation
+source_url: "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2222493&reg=3&lang=2"
+retrieved_on: 2026-08-21
+last_amended: 2024-10-01
+portal_url: "https://beneficiary.nha.gov.in/"
+verification_status: PROVISIONAL
+verify_note: >-
+  Open the PIB release and transcribe the eligibility line verbatim. Confirm: (a) the
+  exact age wording and that there is genuinely no income or SECC test, (b) the precise
+  launch/amendment date now recorded as last_amended, and (c) how a 70+ person already
+  covered under standard PM-JAY is treated — unresolved in 01-DEMO-CORPUS.md s5, and
+  the engine must not guess it on stage.
+
+clause_groups:
+  - group_id: age
+    satisfy: ALL
+    clauses:
+      - clause_id: AVVC-C1
+        clause_text: >-
+          [VERIFY AT SOURCE] All senior citizens aged 70 years and above, irrespective
+          of their socio-economic status.
+        rule_type: numeric_bound
+        profile_field: applicant.age
+        bound:
+          min: 70
+        verifiable_from: [aadhaar, age_proof]
+        verification_status: PROVISIONAL
+        verify_note: >-
+          Confirm the verbatim wording and that no income or SECC condition attaches.
+          The absence of a means test is the whole point of this scheme.
