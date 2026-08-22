@@ -34,8 +34,13 @@ College round: 2 Sept 2026. Build freeze: 30 Aug.
 
 ## Stack
 Claude Code (build), Antigravity CLI, Google AI Studio (model prototyping),
-Google Stitch (UI), Google Slides (pitch). Mobile-first web UI. Local/edge models
-where possible (the offline story).
+Google Stitch (UI), Google Slides (pitch). Local/edge models where possible (the offline story).
+
+UI is ONE codebase = website AND installable app: React + Vite, mobile-first, shipped as a
+PWA (web app manifest + service worker from day one). It is a full website on desktop and
+installs to a phone home screen (icon, full-screen, works offline). No native app build for
+the round - defer that to nationals (publish the same PWA as a Play Store TWA). The offline
+PWA is part of the rural-access / local-first pitch, not just packaging.
 
 ## Full spec
 - Scope: PROJECT-BRIEF.md §4.

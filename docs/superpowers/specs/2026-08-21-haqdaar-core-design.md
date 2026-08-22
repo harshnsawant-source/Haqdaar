@@ -39,7 +39,8 @@ One generative call, at the input boundary only, means every fact the citizen se
 | Decision | Choice | Why |
 |---|---|---|
 | Engine stack | Python 3.11 + FastAPI + pytest | OCR tooling, deterministic evaluator, golden tests |
-| UI stack | React + Vite, mobile-first | Stitch designs implement cleanly; kept separate from the engine |
+| UI stack | React + Vite, mobile-first, shipped as a **PWA** (web app manifest + service worker from day one) | Stitch designs implement cleanly; kept separate from the engine |
+| Delivery | **One codebase = website AND installable app.** The PWA is a full website on desktop and installs to a phone home screen (app icon, full-screen, offline) — no native build, no second codebase | Matches how real gov services deliver (UMANG / DigiLocker / myScheme = web + app). Installs without a Play Store account, tiny footprint, works offline — the *stronger* access story for rural / low-end-device users, and it reinforces the local-first/offline claim. Native app deferred to nationals (publish the same PWA as a Play Store TWA then) |
 | Model provider | Cloud now, `llm/adapter.py` with a local Ollama implementation | Speed now; the offline claim gets proven on real hardware before 2 Sept or is downgraded to a vision slide honestly (judge Q6) |
 | Output rendering | Deterministic slot-fill over a fixed, human-translated template set. **No generative model at render time.** | Makes T4 (no hallucination) a structural guarantee; makes every citizen-facing sentence snapshot-testable; removes the "model phrases the verdict" risk entirely |
 | A+ output | Filled PDF of the real PM-KISAN form | Strongest stage moment; submission clearly labelled as simulated (judge Q4) |
@@ -209,7 +210,7 @@ All five are pure functions over the verdict object, each with its own unit test
 | 1 ✅ | Corpus schema (+ `verification_status`, ANY/ALL groups, `discretionary`) + Stand-Up India & NSFDC (provisional entrepreneur) + `Verdict`/`Predicate` + evaluator | **DONE.** Two golden tests pass (ELIGIBLE-with-proof + discretionary refusal), no model, no network, no API key |
 | 2 | Remaining primary entrepreneur schemes encoded + T1/T2 + `unlocking_docs` + aggregator + `subsumed_by`/`stacks_with` resolution | The discretionary refusal fires from corpus data; "one doc unlocks N" computes |
 | 3 | T4 slot-binding check (structural, cheap) + English templates + T3/T5 | Guard complete; project de-risked |
-| 4 | FastAPI endpoints + web shell, four card states | Clickable demo on the fixture profile |
+| 4 | FastAPI endpoints + web shell as a **PWA** (manifest + service worker from the start), four card states | Clickable demo on the fixture profile; installs to a phone home screen and loads offline |
 | 5 | A+ on one entrepreneur scheme (e.g. Stand-Up India): form map, PDF fill, tracking reference (labelled SIMULATED) | The action beat exists |
 | 6 | Extraction path: OCR + model → profile, live populate with confidence-gated fixture fallback | Upload genuinely reads the doc and cannot break the demo |
 | 7 | **Welfare reveal vertical** (Sunita corpus + templates, incl. PM-JAY/SECC-2011 refusal) + second-language templates, human-translated, plus polish | The "same engine, new corpus" reveal works; demo language complete |
