@@ -38,7 +38,9 @@ const en = {
   loading: 'Checking the rules…',
   simulatedAction: 'Apply with this profile',
   simulatedBadge: 'SIMULATED',
-  simulatedNote: 'The filing step arrives on day 5. Nothing is submitted anywhere.',
+  simulatedNote: 'Nothing is submitted anywhere. The reference is generated on this device.',
+  acting: 'Filling the form…',
+  actionUnavailable: 'No application form is loaded for this scheme yet.',
   statusLabels: {
     ELIGIBLE: 'Eligible',
     NOT_ELIGIBLE: 'Not eligible',

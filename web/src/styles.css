@@ -249,3 +249,44 @@ a { color: inherit; }
 .action-slot .why { font-size: 0.8rem; color: var(--ink-soft); margin: 0; }
 
 .empty { color: var(--ink-soft); text-align: center; padding: 32px 0; }
+
+/* --- A+ filled application ------------------------------------------------
+   The SIMULATED banner is visually loud on purpose. It is the only thing between
+   a convincing demo and someone believing an application was actually filed. */
+.application { display: grid; gap: 8px; }
+.sim-banner {
+  border: 2px solid var(--blocked);
+  background: var(--blocked-bg);
+  color: var(--blocked);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.application p { margin: 0; font-size: 0.9rem; }
+.application .app-headline { font-weight: 600; font-size: 1rem; }
+table.filled { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+table.filled th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink-soft);
+  padding: 6px 8px 6px 0;
+  vertical-align: top;
+  width: 55%;
+}
+table.filled td { padding: 6px 0; vertical-align: top; font-weight: 600; }
+table.filled tr + tr th, table.filled tr + tr td { border-top: 1px solid var(--line); }
+table.filled .from {
+  display: block;
+  font-weight: 400;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+.gaps {
+  border-top: 1px dashed var(--line);
+  padding-top: 8px;
+  display: grid;
+  gap: 4px;
+}
+.gaps p:first-child { font-weight: 600; }

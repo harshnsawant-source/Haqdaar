@@ -1,3 +1,6 @@
+import { useState } from 'react';
+
+import { act } from './api.js';
 import { t } from './strings.js';
 
 /*
@@ -10,7 +13,11 @@ import { t } from './strings.js';
 
 const s = t('en');
 
-export function Card({ card }) {
+export function Card({ card, personaId }) {
+  const [action, setAction] = useState(null);
+  const [acting, setActing] = useState(false);
+  const [actionError, setActionError] = useState(null);
+
   const tone = card.status.toLowerCase();
   const proven = card.citations.filter((c) => c.evaluation === 'TRUE');
   const unsettled = card.citations.filter((c) => c.evaluation === 'UNKNOWN');
@@ -68,19 +75,83 @@ export function Card({ card }) {
         </div>
       )}
 
-      {/* Day 5 lands the real filing flow here. Marked SIMULATED so nobody — judge or
-          teammate — can mistake the placeholder for a working submission. */}
+      {/* A+ — it acts. Every step of this is SIMULATED and says so; the banners come
+          from the engine's template set, not from this component. */}
       {card.status === 'ELIGIBLE' && (
         <div className="action-slot">
-          <div className="row">
-            <button type="button" disabled>
-              {s.simulatedAction}
-            </button>
-            <span className="badge-sim">{s.simulatedBadge}</span>
-          </div>
-          <p className="why">{s.simulatedNote}</p>
+          {!action && (
+            <>
+              <div className="row">
+                <button
+                  type="button"
+                  disabled={acting}
+                  onClick={() => {
+                    setActing(true);
+                    setActionError(null);
+                    act(personaId, card.scheme_id)
+                      .then(({ data, refused, detail }) => {
+                        if (data) setAction(data);
+                        else setActionError(refused ? detail : s.actionUnavailable);
+                      })
+                      .catch((e) => setActionError(e.message))
+                      .finally(() => setActing(false));
+                  }}
+                >
+                  {acting ? s.acting : s.simulatedAction}
+                </button>
+                <span className="badge-sim">{s.simulatedBadge}</span>
+              </div>
+              {actionError && <p className="why">{actionError}</p>}
+            </>
+          )}
+
+          {action && <FilledApplication action={action} />}
         </div>
       )}
     </article>
+  );
+}
+
+/*
+ * The filled application. Banners first, always — a citizen reads SIMULATED before
+ * they read a filled field. Every sentence here came from the engine.
+ */
+function FilledApplication({ action }) {
+  return (
+    <div className="application">
+      {action.banners.map((b, i) => (
+        <div className="sim-banner" key={i}>
+          {b}
+        </div>
+      ))}
+
+      {action.lines.map((line, i) => (
+        <p key={i} className={i === 0 ? 'app-headline' : undefined}>
+          {line}
+        </p>
+      ))}
+
+      <table className="filled">
+        <tbody>
+          {action.filled.map((f) => (
+            <tr key={f.field_id}>
+              <th scope="row">{f.label}</th>
+              <td>
+                {String(f.value)}
+                <span className="from">{f.source_document.replace(/_/g, ' ')}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {action.gap_lines.length > 0 && (
+        <div className="gaps">
+          {action.gap_lines.map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

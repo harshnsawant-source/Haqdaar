@@ -17,6 +17,7 @@ DETERMINISTIC_LANE = [
     PACKAGE_ROOT / "corpus",
     PACKAGE_ROOT / "eligibility",  # includes evaluate.py, verdict.py, aggregate.py
     PACKAGE_ROOT / "guard",
+    PACKAGE_ROOT / "action",  # form fill is slot-mapping; no model writes a filed value
     PACKAGE_ROOT / "render",  # rendering is slot-fill; no model runs after the verdict
     PACKAGE_ROOT / "retrieval",  # routing is lexical; no embedding service
     PACKAGE_ROOT / "profile" / "schema.py",
@@ -74,6 +75,8 @@ def test_deterministic_lane_has_files_to_check():
         "gate.py",
         "render.py",
         "route.py",
+        "fill.py",
+        "track.py",
     } <= names
 
 

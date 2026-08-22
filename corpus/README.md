@@ -111,6 +111,33 @@ group. Never inside eligibility.
 
 ---
 
+## Forms (A+ action layer)
+
+`<vertical>/forms/<scheme_id>.form.yaml` maps application fields to profile paths.
+Filling is deterministic slot-mapping: a field is filled from a document the citizen
+supplied, or it goes in the GAP LIST. There is no default and no assumed value.
+
+### The real Stand-Up India form PDF is still a content-lane dependency
+
+`stand-up-india.form.yaml` is a **stand-in layout we built**, not the official document,
+and `engine/haqdaar/corpus/forms.py` enforces what that means:
+
+- every label must carry `[VERIFY AT SOURCE]`
+- every field's `requirement` must be `UNVERIFIED` — nobody has read the official form,
+  so claiming a field is mandatory would be inventing a government requirement, which
+  is the same failure as inventing an eligibility rule
+
+To promote it: obtain the blank PDF from https://www.standupmitra.in/, transcribe each
+label verbatim, set the true `requirement`, then set `is_stand_in: false` and
+`verification_status: VERIFIED`. The golden action test will fail because labels
+changed — read every diff before updating it.
+
+**Aadhaar numbers are deliberately never auto-filled.** The field is unmapped, so it
+lands in the gap list for the citizen to write themselves. Haqdaar does not hold or
+transmit Aadhaar numbers.
+
+---
+
 ## Repo location
 
 This repo currently lives inside OneDrive. `.gitignore` keeps `.venv/`,

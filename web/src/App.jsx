@@ -151,7 +151,7 @@ export default function App() {
           )}
 
           {result?.cards?.map((card, i) => (
-            <Card card={card} key={card.scheme_id || `card-${i}`} />
+            <Card card={card} personaId={selected} key={card.scheme_id || `card-${i}`} />
           ))}
 
           {status === 'done' && result && result.cards.length === 0 && (

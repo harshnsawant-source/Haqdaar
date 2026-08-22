@@ -8,13 +8,16 @@ guarantee would end at the network boundary — so it cannot be.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
+from haqdaar.action.fill import FilledForm, Receipt
 from haqdaar.corpus.schema import Scheme, VerificationStatus
 from haqdaar.eligibility.aggregate import UnlockOption
 from haqdaar.eligibility.verdict import Evaluation, Status
 from haqdaar.guard.gate import GateResult
-from haqdaar.render.render import RenderedCard
+from haqdaar.render.render import RenderedAction, RenderedCard
 
 
 class Citation(BaseModel):
@@ -71,6 +74,84 @@ class EvaluateResponse(BaseModel):
     outside_corpus: bool = False
     cards: list[CardPayload] = Field(default_factory=list)
     unlock: UnlockPayload | None = None
+
+
+class FilledFieldPayload(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    field_id: str
+    label: str
+    value: bool | int | float | str
+    source_document: str
+
+
+class GapFieldPayload(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    field_id: str
+    label: str
+    obtainable_from: list[str] = Field(default_factory=list)
+    note: str | None = None
+
+
+class ActionResponse(BaseModel):
+    """A simulated filing. Every flag here exists to stop it reading as a real one."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    scheme_id: str
+    scheme_name: str
+    form_id: str
+    #: Literal True on the wire as well as in the engine.
+    simulated: Literal[True] = True
+    is_stand_in: bool = True
+    reference: str
+    submitted_on: str
+    lines: list[str] = Field(default_factory=list)
+    gap_lines: list[str] = Field(default_factory=list)
+    banners: list[str] = Field(default_factory=list)
+    filled: list[FilledFieldPayload] = Field(default_factory=list)
+    gaps: list[GapFieldPayload] = Field(default_factory=list)
+    missing_documents: list[str] = Field(default_factory=list)
+
+
+def to_action(
+    filled_form: FilledForm,
+    receipt: Receipt,
+    rendered: RenderedAction,
+    scheme: Scheme,
+    missing: list[str],
+) -> ActionResponse:
+    return ActionResponse(
+        scheme_id=filled_form.scheme_id,
+        scheme_name=scheme.name,
+        form_id=filled_form.form_id,
+        is_stand_in=filled_form.is_stand_in,
+        reference=receipt.reference,
+        submitted_on=receipt.submitted_on.isoformat(),
+        lines=list(rendered.lines),
+        gap_lines=list(rendered.gap_lines),
+        banners=list(rendered.banners),
+        filled=[
+            FilledFieldPayload(
+                field_id=f.field_id,
+                label=f.label,
+                value=f.value,
+                source_document=f.source_document,
+            )
+            for f in filled_form.filled
+        ],
+        gaps=[
+            GapFieldPayload(
+                field_id=g.field_id,
+                label=g.label,
+                obtainable_from=list(g.obtainable_from),
+                note=g.note,
+            )
+            for g in filled_form.gaps
+        ],
+        missing_documents=list(missing),
+    )
 
 
 class PersonaSummary(BaseModel):

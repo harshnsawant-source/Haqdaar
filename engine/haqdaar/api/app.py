@@ -19,20 +19,30 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from haqdaar.action.fill import ActionRefused, fill_form, missing_documents
+from haqdaar.action.track import submit
+from haqdaar.corpus.forms import load_form_for
 from haqdaar.corpus.loader import load_corpus
 from haqdaar.corpus.schema import Scheme
 from haqdaar.eligibility.aggregate import best_unlock
-from haqdaar.eligibility.evaluate import evaluate_corpus
-from haqdaar.guard.gate import gate_all
+from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
+from haqdaar.guard.gate import gate, gate_all
 from haqdaar.profile.schema import CitizenProfile, load_profile
 from haqdaar.guard.triggers import t3_no_retrieval_support
-from haqdaar.render.render import audit_templates, render_card, render_outside_corpus
+from haqdaar.render.render import (
+    audit_templates,
+    render_action,
+    render_card,
+    render_outside_corpus,
+)
 from haqdaar.retrieval.route import route
 
 from haqdaar.api.schemas import (
+    ActionResponse,
     CardPayload,
     EvaluateResponse,
     PersonaSummary,
+    to_action,
     to_payload,
     to_unlock,
 )
@@ -122,6 +132,43 @@ def personas() -> list[PersonaSummary]:
             )
         )
     return summaries
+
+
+@app.post("/api/act", response_model=ActionResponse)
+def act(persona_id: str, scheme_id: str) -> ActionResponse:
+    """Fill the application for one eligible scheme. SIMULATED, end to end.
+
+    Refuses with 409 when the engine did not clear eligibility: you do not file an
+    application for someone the Guard could not clear. Nothing here touches a network,
+    a portal, or a login, and it will not start to.
+    """
+    vertical, profile = _load_persona(persona_id)
+    schemes = _load_vertical(vertical)
+    today = _today()
+
+    scheme = next((s for s in schemes if s.scheme_id == scheme_id), None)
+    if scheme is None:
+        raise HTTPException(status_code=404, detail=f"unknown scheme {scheme_id}")
+
+    form = load_form_for(CORPUS_ROOT / vertical / "forms", scheme_id)
+    if form is None:
+        raise HTTPException(
+            status_code=404, detail=f"no application form for {scheme_id}"
+        )
+
+    verdict = evaluate_scheme(scheme, profile)
+    gate(verdict, scheme, today=today)  # never act on an unvalidated verdict
+
+    try:
+        filled_form = fill_form(form, verdict, profile)
+    except ActionRefused as refusal:
+        raise HTTPException(status_code=409, detail=str(refusal)) from refusal
+
+    receipt = submit(filled_form, persona_id, today)
+    rendered = render_action(filled_form, receipt, scheme)
+    return to_action(
+        filled_form, receipt, rendered, scheme, missing_documents(filled_form)
+    )
 
 
 @app.get("/api/evaluate", response_model=EvaluateResponse)

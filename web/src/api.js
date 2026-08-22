@@ -26,6 +26,26 @@ export function fetchPersonas() {
   return get('/api/personas');
 }
 
+export async function act(personaId, schemeId) {
+  const params = new URLSearchParams({ persona_id: personaId, scheme_id: schemeId });
+  const response = await fetch(`/api/act?${params.toString()}`, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+  });
+  const body = await response.json().catch(() => ({}));
+
+  // 409 is the action layer refusing to file for someone the engine could not clear.
+  // That is the product working, so surface the reason rather than a generic failure.
+  if (response.status === 409) {
+    return { data: null, refused: true, detail: body.detail };
+  }
+  if (response.status >= 500) {
+    return { data: null, offline: true, detail: body.detail };
+  }
+  if (!response.ok) throw new Error(body.detail || `request failed (${response.status})`);
+  return { data: body, refused: false };
+}
+
 export function fetchEvaluation(personaId, query) {
   const params = new URLSearchParams({ persona_id: personaId });
   if (query) params.set('query', query);

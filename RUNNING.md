@@ -65,6 +65,36 @@ shell, practically a dead product.
 |---|---|
 | Real | corpus → evaluator → Guard → deterministic render → API → UI |
 | Real | offline shell + stored verdicts, install to home screen |
-| **Simulated** | the "Apply with this profile" button — labelled SIMULATED, disabled, lands day 5 |
+| Real | the A+ action layer: deterministic form fill, gap list, tracking reference |
+| **Simulated** | the *submission itself*. Nothing is sent anywhere, no portal, no login. The reference is generated on this device and begins `SIM-` |
+| **Stand-in** | the Stand-Up India form layout — ours, not the official PDF. Every label says `[VERIFY AT SOURCE]` |
 | Fixtures | personas are checked-in JSON; document upload/OCR lands day 6 |
 | **Provisional** | every scheme rule is `[VERIFY AT SOURCE]` and every card says so |
+
+## The A+ action beat
+
+With the engine running, from an ELIGIBLE card press **Apply with this profile**. It
+fills what her documents prove, lists what is still missing, and issues a reference:
+
+```
+SIMULATED. Nothing has been submitted to any government portal, and this reference is
+generated on this device. It is not an application.
+SIMULATED FORM LAYOUT. This is a stand-in we built, not the official application document.
+
+I have filled what your documents can prove for Stand-Up India.
+Filled 4 fields from your documents.
+Your simulated reference: SIM-STANDUPIND-20260822-D1679F
+
+You still need to supply these:  ... 10 fields ...
+Bring your aadhaar — it supplies 4 of them.
+```
+
+Or from the command line:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/api/act?persona_id=entrepreneur-01&scheme_id=stand-up-india"
+```
+
+It refuses (HTTP 409) for anyone the engine could not clear — try `entrepreneur-02`,
+who is blocked on a caste certificate. You do not file an application for someone whose
+eligibility is unproven.

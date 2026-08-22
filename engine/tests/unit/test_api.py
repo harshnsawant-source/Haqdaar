@@ -176,3 +176,78 @@ def test_every_card_declares_its_provisional_status(client):
     for card in body["cards"]:
         assert card["verification_status"] == "PROVISIONAL"
         assert any("not yet been verified" in b for b in card["banners"])
+
+
+# --- A+ action endpoint -----------------------------------------------------
+
+
+def test_act_fills_the_form_and_returns_a_simulated_reference(client):
+    response = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["simulated"] is True
+    assert body["is_stand_in"] is True
+    assert body["reference"] == "SIM-STANDUPIND-20260822-D1679F"
+    assert body["reference"].startswith("SIM-")
+
+    assert [f["field_id"] for f in body["filled"]] == [
+        "applicant_social_category",
+        "applicant_gender",
+        "enterprise_venture_type",
+        "enterprise_loan_amount_sought",
+    ]
+    assert len(body["gaps"]) == 10
+    assert body["missing_documents"][0] == "aadhaar"
+
+
+def test_act_always_serves_the_simulated_banner(client):
+    """The marker cannot be absent from the wire, whatever else changes."""
+    body = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+    ).json()
+    assert any("SIMULATED." in b for b in body["banners"])
+    assert any("SIMULATED FORM LAYOUT." in b for b in body["banners"])
+    assert "SIMULATED" in " ".join(body["banners"])
+
+
+def test_act_refuses_a_non_eligible_verdict(client):
+    """entrepreneur-02 is blocked on a document; no application gets filled."""
+    response = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-02", "scheme_id": "stand-up-india"},
+    )
+    assert response.status_code == 409
+    assert "BLOCKED_ON_DOCUMENT" in response.json()["detail"]
+
+
+def test_act_404s_when_no_form_exists(client):
+    """NSFDC has no application form yet. Say so; do not improvise one."""
+    response = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
+    )
+    assert response.status_code == 404
+    assert "no application form" in response.json()["detail"]
+
+
+def test_act_404s_on_an_unknown_scheme(client):
+    response = client.post(
+        "/api/act", params={"persona_id": "entrepreneur-01", "scheme_id": "nope"}
+    )
+    assert response.status_code == 404
+
+
+def test_act_never_hedges(client):
+    body = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+    ).json()
+    served = " ".join([*body["lines"], *body["gap_lines"], *body["banners"]]).lower()
+    for phrase in BANNED_PHRASES:
+        assert phrase not in served
+    assert "{" not in served

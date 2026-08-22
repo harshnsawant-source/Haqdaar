@@ -27,6 +27,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from haqdaar.action.fill import FilledForm, Receipt
 from haqdaar.corpus.schema import GroupKind, NumericBound, Scheme, VerificationStatus
 from haqdaar.eligibility.aggregate import UnlockOption
 from haqdaar.eligibility.verdict import (
@@ -323,6 +324,93 @@ def render_card(
         approval_lines=approval_lines,
         banners=banners,
     )
+
+
+class RenderedAction(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    lines: list[str] = Field(default_factory=list)
+    gap_lines: list[str] = Field(default_factory=list)
+    #: Always contains the SIMULATED banner. `render_action` will not return without it.
+    banners: list[str] = Field(default_factory=list)
+
+    def text(self) -> str:
+        return "\n".join([*self.banners, *self.lines, *self.gap_lines])
+
+
+def render_action(
+    filled_form: FilledForm,
+    receipt: Receipt,
+    scheme: Scheme,
+    *,
+    language: str = "en",
+) -> RenderedAction:
+    """Render the action result. The SIMULATED banner is not optional.
+
+    It is emitted first, before any filled field, and a post-check asserts it survived.
+    If a future edit drops it, this raises instead of quietly rendering something that
+    looks like a real filing.
+    """
+    templates = load_templates(language)
+    base = {"scheme_name": scheme.name}
+
+    banners = [_fill("action.simulated_banner", templates, base, set())]
+    if filled_form.is_stand_in:
+        banners.append(_fill("action.stand_in_banner", templates, base, set()))
+
+    lines = [
+        _fill("action.headline", templates, base, set()),
+        _fill(
+            "action.filled_count",
+            templates,
+            {**base, "count": len(filled_form.filled)},
+            set(),
+        ),
+        _fill(
+            "action.tracking", templates, {**base, "reference": receipt.reference}, set()
+        ),
+    ]
+    for decider in filled_form.approval_pending_by:
+        lines.append(
+            _fill(
+                "action.approval_pending", templates, {**base, "decider": decider}, set()
+            )
+        )
+
+    gap_lines: list[str] = []
+    if filled_form.gaps:
+        gap_lines.append(_fill("action.gap_intro", templates, base, set()))
+        for gap in filled_form.gaps:
+            gap_lines.append(
+                _fill("action.gap_line", templates, {**base, "label": gap.label}, set())
+            )
+        counts: dict[str, int] = {}
+        for gap in filled_form.gaps:
+            for document in gap.obtainable_from:
+                counts[document] = counts.get(document, 0) + 1
+        for document in sorted(counts, key=lambda d: (-counts[d], d)):
+            gap_lines.append(
+                _fill(
+                    "action.gap_document",
+                    templates,
+                    {
+                        **base,
+                        "document": _label(document),
+                        "count": counts[document],
+                    },
+                    set(),
+                )
+            )
+    else:
+        gap_lines.append(_fill("action.complete", templates, base, set()))
+
+    rendered = RenderedAction(lines=lines, gap_lines=gap_lines, banners=banners)
+    if not any("SIMULATED" in b for b in rendered.banners):
+        raise RenderError(
+            "action render lost its SIMULATED banner — refusing to return output that "
+            "could be mistaken for a real filing"
+        )
+    return rendered
 
 
 def render_outside_corpus(language: str = "en") -> RenderedCard:

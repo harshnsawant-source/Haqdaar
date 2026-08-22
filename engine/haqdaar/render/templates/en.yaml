@@ -73,3 +73,22 @@ staleness.amended: "The source records a change on {last_amended}, after I read 
 provisional.banner: >-
   This rule has not yet been verified against the official source. It is not safe to
   act on.
+
+# --- A+ ACTION LAYER --------------------------------------------------------
+# Every one of these is SIMULATED. The banners below are not decoration: they are the
+# only thing standing between a demo and a citizen believing an application was filed.
+action.headline: "I have filled what your documents can prove for {scheme_name}."
+action.simulated_banner: >-
+  SIMULATED. Nothing has been submitted to any government portal, and this reference is
+  generated on this device. It is not an application.
+action.stand_in_banner: >-
+  SIMULATED FORM LAYOUT. This is a stand-in we built, not the official application
+  document.
+action.filled_count: "Filled {count} fields from your documents."
+action.gap_intro: "You still need to supply these:"
+action.gap_line: "{label}"
+action.gap_document: "Bring your {document} — it supplies {count} of them."
+action.complete: "Nothing is missing from what this form asks for."
+action.tracking: "Your simulated reference: {reference}"
+action.approval_pending: >-
+  Filing does not mean approval. That is still decided by {decider}.
