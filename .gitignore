@@ -11,3 +11,8 @@ __pycache__/
 Thumbs.db
 desktop.ini
 *~
+
+# Frontend
+node_modules/
+dist/
+.vite/

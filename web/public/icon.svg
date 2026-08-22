@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Haqdaar">
+  <rect width="512" height="512" rx="96" fill="#0f172a"/>
+  <path d="M150 132v248" stroke="#f8fafc" stroke-width="34" stroke-linecap="round"/>
+  <path d="M150 256h116" stroke="#f8fafc" stroke-width="34" stroke-linecap="round"/>
+  <path d="M266 132v248" stroke="#f8fafc" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="368" cy="196" r="46" fill="none" stroke="#34d399" stroke-width="26"/>
+  <path d="M340 330l38 42 62-92" fill="none" stroke="#34d399" stroke-width="30"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

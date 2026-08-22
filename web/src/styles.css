@@ -1,0 +1,251 @@
+/*
+ * Mobile-first. Colour carries meaning here, so the palette is part of the design:
+ *
+ *   ELIGIBLE            green   — proven, act on it
+ *   BLOCKED_ON_DOCUMENT amber   — actionable, go and fetch the paper
+ *   NOT_ELIGIBLE        slate   — a settled no, not a failure
+ *   UNVERIFIABLE        indigo  — CALM, deliberately NOT red. A refusal is the system
+ *                                 working correctly; painting it as an error teaches
+ *                                 the room to read honesty as breakage.
+ */
+
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --line: #e2e8f0;
+
+  --eligible: #059669;
+  --eligible-bg: #ecfdf5;
+  --blocked: #b45309;
+  --blocked-bg: #fffbeb;
+  --not-eligible: #475569;
+  --not-eligible-bg: #f1f5f9;
+  --unverifiable: #4f46e5;
+  --unverifiable-bg: #eef2ff;
+
+  --radius: 14px;
+  --pad: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1220;
+    --surface: #131c2e;
+    --ink: #e6edf7;
+    --ink-soft: #9fb0c9;
+    --line: #24314a;
+    --eligible-bg: #062a20;
+    --blocked-bg: #2a1d05;
+    --not-eligible-bg: #1a2333;
+    --unverifiable-bg: #191a3d;
+    --eligible: #34d399;
+    --blocked: #fbbf24;
+    --not-eligible: #94a3b8;
+    --unverifiable: #a5b4fc;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--pad);
+  padding-bottom: 48px;
+}
+
+header.masthead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0 4px;
+}
+header.masthead h1 { font-size: 1.35rem; margin: 0; letter-spacing: -0.01em; }
+header.masthead .tagline { color: var(--ink-soft); font-size: 0.9rem; }
+
+.banner {
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  margin: 10px 0;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+.banner.offline { border-color: var(--blocked); color: var(--blocked); }
+
+button {
+  font: inherit;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 12px 14px;
+  cursor: pointer;
+  min-height: 44px; /* touch target */
+}
+button.primary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  width: 100%;
+  font-weight: 600;
+}
+button:disabled { opacity: 0.55; cursor: default; }
+
+.persona-list { display: grid; gap: 10px; margin: 12px 0; }
+.persona {
+  text-align: left;
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+}
+.persona[aria-pressed='true'] { border-color: var(--ink); box-shadow: 0 0 0 2px var(--ink) inset; }
+.persona .who { font-weight: 600; }
+.persona .vertical {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.persona .desc {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ask { display: flex; gap: 8px; margin: 12px 0; }
+.ask input {
+  flex: 1;
+  font: inherit;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  min-width: 0;
+}
+
+.unlock {
+  border-radius: var(--radius);
+  border: 1px solid var(--blocked);
+  background: var(--blocked-bg);
+  padding: var(--pad);
+  margin: 14px 0;
+}
+.unlock h2 { margin: 0 0 4px; font-size: 0.78rem; text-transform: uppercase;
+             letter-spacing: 0.07em; color: var(--blocked); }
+.unlock p { margin: 0; font-weight: 600; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--pad);
+  margin: 12px 0;
+}
+.card.eligible { border-left-color: var(--eligible); background: var(--eligible-bg); }
+.card.blocked_on_document { border-left-color: var(--blocked); background: var(--blocked-bg); }
+.card.not_eligible { border-left-color: var(--not-eligible); background: var(--not-eligible-bg); }
+.card.unverifiable { border-left-color: var(--unverifiable); background: var(--unverifiable-bg); }
+
+.card .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.card .scheme { margin: 0; font-size: 1.02rem; }
+.pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+}
+.card.eligible .pill { color: var(--eligible); }
+.card.blocked_on_document .pill { color: var(--blocked); }
+.card.not_eligible .pill { color: var(--not-eligible); }
+.card.unverifiable .pill { color: var(--unverifiable); }
+
+.lines { margin: 10px 0 0; }
+.lines p { margin: 0 0 6px; }
+
+details.proof { margin-top: 10px; }
+details.proof summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+blockquote.clause {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--line);
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+blockquote.clause .meta { display: block; margin-top: 6px; font-size: 0.78rem; color: var(--ink-soft); }
+a { color: inherit; }
+
+/* The approval split renders as its own card, never merged into eligibility. */
+.approval {
+  margin-top: 10px;
+  border: 1px dashed var(--unverifiable);
+  background: var(--unverifiable-bg);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.approval h3 {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--unverifiable);
+}
+.approval p { margin: 0 0 6px; }
+
+.notes { margin-top: 10px; display: grid; gap: 6px; }
+.note {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.action-slot {
+  margin-top: 12px;
+  border: 1px dashed var(--eligible);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+.action-slot .row { display: flex; align-items: center; gap: 8px; }
+.badge-sim {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: var(--blocked);
+  border: 1px solid var(--blocked);
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+.action-slot .why { font-size: 0.8rem; color: var(--ink-soft); margin: 0; }
+
+.empty { color: var(--ink-soft); text-align: center; padding: 32px 0; }
