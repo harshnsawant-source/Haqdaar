@@ -154,6 +154,46 @@ def to_action(
     )
 
 
+class ExtractedFieldPayload(BaseModel):
+    """One profile fact, with how it got there. The origin is never hidden."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    profile_field: str
+    value: bool | int | float | str
+    confidence: float
+    origin: str
+    document_id: str
+    source_field: str
+
+
+class ExtractionReportPayload(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    document_id: str
+    document_type: str
+    engine: str
+    ocr_available: bool
+    readable: bool
+    #: Fields the rules looked for and could not read or could not trust.
+    unread: list[str] = Field(default_factory=list)
+
+
+class ExtractResponse(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    persona_id: str
+    vertical: str
+    mode: str
+    #: True when any displayed value was typed into a fixture rather than read.
+    fixture_backed: bool
+    ocr_available: bool
+    reports: list[ExtractionReportPayload] = Field(default_factory=list)
+    fields: list[ExtractedFieldPayload] = Field(default_factory=list)
+    cards: list[CardPayload] = Field(default_factory=list)
+    unlock: UnlockPayload | None = None
+
+
 class PersonaSummary(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 

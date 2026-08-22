@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { Card } from './Card.jsx';
+import { Upload } from './Upload.jsx';
 import { fetchEvaluation, fetchPersonas } from './api.js';
 import { t } from './strings.js';
 
@@ -136,6 +137,17 @@ export default function App() {
               {s.clearQuery}
             </button>
           )}
+
+          <Upload
+            personaId={selected}
+            onResult={(data) => {
+              // Extraction returns the same card shape, so the results list below is
+              // unchanged — the profile changed, not the pipeline.
+              setResult(data);
+              setOffline(null);
+              setStatus('done');
+            }}
+          />
 
           {status === 'loading' && <p className="empty">{s.loading}</p>}
 

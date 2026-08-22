@@ -68,7 +68,8 @@ shell, practically a dead product.
 | Real | the A+ action layer: deterministic form fill, gap list, tracking reference |
 | **Simulated** | the *submission itself*. Nothing is sent anywhere, no portal, no login. The reference is generated on this device and begins `SIM-` |
 | **Stand-in** | the Stand-Up India form layout — ours, not the official PDF. Every label says `[VERIFY AT SOURCE]` |
-| Fixtures | personas are checked-in JSON; document upload/OCR lands day 6 |
+| Real | document upload + local OCR extraction, with per-field confidence and origin |
+| Fixtures | personas are checked-in JSON; a fixture-backed upload labels every borrowed value |
 | **Provisional** | every scheme rule is `[VERIFY AT SOURCE]` and every card says so |
 
 ## The A+ action beat
@@ -98,3 +99,40 @@ curl -X POST "http://127.0.0.1:8000/api/act?persona_id=entrepreneur-01&scheme_id
 It refuses (HTTP 409) for anyone the engine could not clear — try `entrepreneur-02`,
 who is blocked on a caste certificate. You do not file an application for someone whose
 eligibility is unproven.
+
+## Document upload (day 6)
+
+Local OCR, on the device. No cloud extractor, no API key, no scan of anyone's caste
+certificate leaving the machine they handed it to.
+
+**The OCR engine is an optional system dependency.** Without it the app still runs and
+still tells the truth — it reports `ocr_available: false`, reads nothing, and every
+field resolves UNKNOWN. To install it:
+
+```bash
+winget install --id UB-Mannheim.TesseractOCR    # Windows
+# then reopen the terminal so tesseract is on PATH
+```
+
+`pytesseract` (the Python wrapper) is already a dependency; the binary is separate.
+
+### The two modes are a visible choice, never a silent one
+
+| Mode | What it does | When to use it |
+|---|---|---|
+| `LIVE` | Only what was actually read. Unreadable fields stay UNKNOWN, so the engine refuses or blocks. | Honest demonstration of the real path |
+| `FIXTURE_BACKED` | Read where confident, checked-in persona elsewhere — **each borrowed field labelled on screen** | Demo determinism (guard doc §6.1) |
+
+A fixture value is never shown as a live read, and a live read is never overwritten by
+a fixture. The UI shows `Read 96%` or `Demo profile` against every field.
+
+### Why a misread cannot produce a wrong answer
+
+Every extracted field carries Tesseract's real confidence. Below the floor (0.75) the
+field is *dropped*, not rounded up — so `CitizenProfile.get()` returns nothing, the
+evaluator sees no evidence, and the predicate resolves UNKNOWN. T1/T2 then produce a
+refusal or a blocked-on-document.
+
+A bad scan can therefore cost us a *yes we could have proven*. It cannot produce a
+confident wrong answer. Values outside a declared map and numbers outside a
+plausibility window are dropped the same way, never coerced to the nearest option.

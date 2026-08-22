@@ -290,3 +290,41 @@ table.filled .from {
   gap: 4px;
 }
 .gaps p:first-child { font-weight: 600; }
+
+/* --- document upload / extraction ----------------------------------------
+   Origin is a first-class visual: a value we READ and a value we borrowed from the
+   demo profile must never look the same. */
+.upload { margin: 14px 0; border: 1px solid var(--line); border-radius: var(--radius);
+          padding: var(--pad); background: var(--surface); }
+.upload h2 { margin: 0 0 10px; font-size: 0.95rem; }
+.upload-form { display: grid; gap: 10px; }
+.upload-form label { display: grid; gap: 4px; font-size: 0.85rem; color: var(--ink-soft); }
+.upload-form select, .upload-form input[type='file'] {
+  font: inherit; padding: 8px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+fieldset.mode { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+                display: grid; gap: 6px; }
+fieldset.mode legend { font-size: 0.78rem; color: var(--ink-soft); padding: 0 4px; }
+fieldset.mode label { display: flex; gap: 8px; align-items: flex-start;
+                      font-size: 0.84rem; color: var(--ink); }
+
+.extraction { margin-top: 12px; display: grid; gap: 10px; }
+table.fields { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+table.fields th[scope='col'] { text-align: left; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft);
+  padding-bottom: 6px; }
+table.fields th[scope='row'] { text-align: left; font-weight: 400;
+  color: var(--ink-soft); padding: 6px 8px 6px 0; }
+table.fields td { padding: 6px 0; font-weight: 600; }
+table.fields tbody tr + tr th, table.fields tbody tr + tr td {
+  border-top: 1px solid var(--line); }
+.origin { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 999px;
+  border: 1px solid currentColor; margin-right: 6px; }
+.origin.extracted { color: var(--eligible); }
+.origin.fixture { color: var(--blocked); }
+.conf { font-size: 0.76rem; color: var(--ink-soft); font-weight: 400; }
+.unread { font-size: 0.82rem; color: var(--ink-soft); border-top: 1px dashed var(--line);
+          padding-top: 8px; }
+.unread ul { margin: 4px 0 0; padding-left: 18px; }

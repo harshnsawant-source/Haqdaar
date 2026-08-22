@@ -1,0 +1,18 @@
+# How to READ a project report / loan proposal.
+
+document_type: project_report
+label: "Project report"
+fields:
+  - profile_field: enterprise.loan_amount_sought
+    labels: ["loan amount", "loan required", "amount sought", "term loan"]
+    numeric: true
+    min_value: 1
+    max_value: 1000000000
+
+  - profile_field: enterprise.venture_type
+    labels: [venture, enterprise, nature]
+    value_map:
+      "greenfield": GREENFIELD
+      "new": GREENFIELD
+      "existing": EXISTING
+      "brownfield": EXISTING

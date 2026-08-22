@@ -251,3 +251,126 @@ def test_act_never_hedges(client):
     for phrase in BANNED_PHRASES:
         assert phrase not in served
     assert "{" not in served
+
+
+# --- document upload / extraction -------------------------------------------
+
+
+def _png(lines):
+    """A small generated document image, so the upload path is exercised for real."""
+    import io
+
+    from PIL import Image, ImageDraw
+
+    image = Image.new("RGB", (700, 60 + 60 * len(lines)), "white")
+    draw = ImageDraw.Draw(image)
+    for i, line in enumerate(lines):
+        draw.text((20, 30 + 60 * i), line, fill="black")
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+def test_extract_fixture_backed_reproduces_the_golden_verdict(client):
+    """With nothing readable, the labelled fallback still gives the golden result."""
+    response = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "entrepreneur-01",
+            "mode": "FIXTURE_BACKED",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", _png([]), "image/png")},
+    )
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["mode"] == "FIXTURE_BACKED"
+    assert {c["scheme_id"]: c["status"] for c in body["cards"]} == {
+        "nsfdc-term-loan": "ELIGIBLE",
+        "stand-up-india": "ELIGIBLE",
+    }
+
+
+def test_extract_marks_where_every_value_came_from(client):
+    body = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "entrepreneur-01",
+            "mode": "FIXTURE_BACKED",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", _png([]), "image/png")},
+    ).json()
+
+    assert body["fixture_backed"] is True
+    origins = {f["profile_field"]: f["origin"] for f in body["fields"]}
+    assert origins  # every field says where it came from
+    assert set(origins.values()) <= {"EXTRACTED", "FIXTURE"}
+    for field in body["fields"]:
+        assert 0.0 <= field["confidence"] <= 1.0
+
+
+def test_extract_live_mode_refuses_rather_than_borrowing(client):
+    """LIVE with an unreadable page must produce UNKNOWN, not the fixture's answers.
+
+    This is the honest failure: nothing was read, so nothing is claimed.
+    """
+    body = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "entrepreneur-01",
+            "mode": "LIVE",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", _png([]), "image/png")},
+    ).json()
+
+    assert body["mode"] == "LIVE"
+    assert body["fixture_backed"] is False
+    # Nothing readable and nothing borrowed: no confident value anywhere.
+    assert all(f["origin"] == "EXTRACTED" for f in body["fields"])
+    # ...so the engine cannot clear her, and says so rather than guessing.
+    assert {c["status"] for c in body["cards"]} <= {
+        "BLOCKED_ON_DOCUMENT",
+        "UNVERIFIABLE",
+        "NOT_ELIGIBLE",
+    }
+
+
+def test_extract_reports_whether_ocr_was_even_available(client):
+    body = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "entrepreneur-01",
+            "mode": "LIVE",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", _png([]), "image/png")},
+    ).json()
+    assert isinstance(body["ocr_available"], bool)
+    assert body["reports"][0]["document_type"] == "caste_certificate"
+    # Whatever it could not read is named, not silently dropped.
+    assert isinstance(body["reports"][0]["unread"], list)
+
+
+def test_extract_rejects_mismatched_files_and_types(client):
+    response = client.post(
+        "/api/extract",
+        data={"persona_id": "entrepreneur-01", "document_types": []},
+        files={"files": ("blank.png", _png([]), "image/png")},
+    )
+    assert response.status_code == 422
+
+
+def test_extract_rejects_an_unknown_mode(client):
+    response = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "entrepreneur-01",
+            "mode": "TRUST_ME",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", _png([]), "image/png")},
+    )
+    assert response.status_code == 422

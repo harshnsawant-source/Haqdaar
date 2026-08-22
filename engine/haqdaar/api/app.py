@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from haqdaar.action.fill import ActionRefused, fill_form, missing_documents
@@ -27,6 +27,8 @@ from haqdaar.corpus.schema import Scheme
 from haqdaar.eligibility.aggregate import best_unlock
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
 from haqdaar.guard.gate import gate, gate_all
+from haqdaar.profile.extract import ExtractionMode, build_profile, extract_document
+from haqdaar.profile.ocr import tesseract_available
 from haqdaar.profile.schema import CitizenProfile, load_profile
 from haqdaar.guard.triggers import t3_no_retrieval_support
 from haqdaar.render.render import (
@@ -41,6 +43,9 @@ from haqdaar.api.schemas import (
     ActionResponse,
     CardPayload,
     EvaluateResponse,
+    ExtractedFieldPayload,
+    ExtractionReportPayload,
+    ExtractResponse,
     PersonaSummary,
     to_action,
     to_payload,
@@ -114,6 +119,24 @@ def _load_persona(persona_id: str) -> tuple[str, CitizenProfile]:
     return vertical, load_profile(path)
 
 
+def _cards_for(profile: CitizenProfile, schemes: list[Scheme], today: date):
+    """Run the pipeline and serialize. Shared so /evaluate and /extract cannot drift."""
+    verdicts = evaluate_corpus(schemes, profile)
+    unlock = best_unlock(verdicts)
+    by_id = {s.scheme_id: s for s in schemes}
+    cards = [
+        to_payload(
+            result,
+            by_id[result.verdict.scheme_id],
+            render_card(
+                result, by_id[result.verdict.scheme_id], today=today, unlock=unlock
+            ),
+        )
+        for result in gate_all(verdicts, schemes, today=today)
+    ]
+    return cards, unlock
+
+
 @app.get("/api/health")
 def health() -> dict[str, object]:
     return {"ok": True, "verticals": sorted(set(PERSONAS.values()))}
@@ -132,6 +155,89 @@ def personas() -> list[PersonaSummary]:
             )
         )
     return summaries
+
+
+@app.post("/api/extract", response_model=ExtractResponse)
+async def extract(
+    persona_id: str = Form(...),
+    mode: str = Form(ExtractionMode.FIXTURE_BACKED.value),
+    document_types: list[str] = Form(default=[]),
+    files: list[UploadFile] = File(default=[]),
+) -> ExtractResponse:
+    """Read uploaded documents, then run the same pipeline on what was read.
+
+    Nothing about the verdict path changes: extraction produces a CitizenProfile and
+    that profile flows through the same evaluator, Guard and template renderer as a
+    checked-in fixture would. A field the reader could not trust simply is not there,
+    so it resolves UNKNOWN and the existing refusal logic handles it.
+
+    `mode` is explicit and echoed back. LIVE shows only what was read; FIXTURE_BACKED
+    fills the rest from the checked-in persona and labels every borrowed field. The
+    caller chooses; the UI shows which happened. Neither is ever silently substituted.
+    """
+    try:
+        extraction_mode = ExtractionMode(mode)
+    except ValueError:
+        raise HTTPException(status_code=422, detail=f"unknown mode {mode!r}") from None
+
+    vertical, fixture = _load_persona(persona_id)
+    schemes = _load_vertical(vertical)
+    today = _today()
+
+    if len(document_types) != len(files):
+        raise HTTPException(
+            status_code=422,
+            detail="each uploaded file needs a matching document_type",
+        )
+
+    reports = []
+    for upload, document_type in zip(files, document_types):
+        payload = await upload.read()
+        reports.append(
+            extract_document(
+                payload,
+                document_type=document_type,
+                documents_dir=CORPUS_ROOT / "documents",
+                document_id=document_type,
+            )
+        )
+
+    profile = build_profile(
+        reports, profile_id=persona_id, fixture=fixture, mode=extraction_mode
+    )
+    cards, unlock = _cards_for(profile, schemes, today)
+
+    return ExtractResponse(
+        persona_id=persona_id,
+        vertical=vertical,
+        mode=extraction_mode.value,
+        fixture_backed=profile.is_fixture_backed,
+        ocr_available=tesseract_available(),
+        reports=[
+            ExtractionReportPayload(
+                document_id=r.document_id,
+                document_type=r.document_type,
+                engine=r.engine,
+                ocr_available=r.ocr_available,
+                readable=r.readable,
+                unread=list(r.unread),
+            )
+            for r in reports
+        ],
+        fields=[
+            ExtractedFieldPayload(
+                profile_field=path,
+                value=field.value,
+                confidence=field.confidence,
+                origin=field.origin.value,
+                document_id=field.document_id,
+                source_field=field.source_field,
+            )
+            for path, field in sorted(profile.fields.items())
+        ],
+        cards=cards,
+        unlock=to_unlock(unlock),
+    )
 
 
 @app.post("/api/act", response_model=ActionResponse)
@@ -205,23 +311,7 @@ def evaluate(persona_id: str, query: str | None = None) -> EvaluateResponse:
             )
         considered = [s for s in schemes if s.scheme_id in routed.scheme_ids]
 
-    verdicts = evaluate_corpus(considered, profile)
-    unlock = best_unlock(verdicts)
-    by_id = {s.scheme_id: s for s in considered}
-
-    cards = [
-        to_payload(
-            result,
-            by_id[result.verdict.scheme_id],
-            render_card(
-                result,
-                by_id[result.verdict.scheme_id],
-                today=today,
-                unlock=unlock,
-            ),
-        )
-        for result in gate_all(verdicts, considered, today=today)
-    ]
+    cards, unlock = _cards_for(profile, considered, today)
 
     return EvaluateResponse(
         persona_id=persona_id,

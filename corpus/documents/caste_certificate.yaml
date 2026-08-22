@@ -1,0 +1,21 @@
+# How to READ a caste certificate. These are parsing rules, not government rules —
+# they say where a value sits on a page, never what the value entitles anyone to.
+#
+# Anything not matched here is simply not extracted, and an unextracted field is
+# UNKNOWN. Under-claiming is the accepted failure mode; guessing is not.
+
+document_type: caste_certificate
+label: "Caste certificate"
+fields:
+  - profile_field: applicant.social_category
+    # A labelled line: one of these words, then the value nearby.
+    labels: [caste, category, varg, jat]
+    # Only these values are accepted. An OCR misread that lands outside the map is
+    # dropped rather than coerced to the nearest option.
+    value_map:
+      "scheduled caste": SC
+      "scheduled tribe": ST
+      "sc": SC
+      "st": ST
+      "obc": OBC
+      "general": GENERAL

@@ -46,6 +46,25 @@ export async function act(personaId, schemeId) {
   return { data: body, refused: false };
 }
 
+export async function extract(personaId, mode, documents) {
+  const form = new FormData();
+  form.append('persona_id', personaId);
+  form.append('mode', mode);
+  for (const { file, documentType } of documents) {
+    form.append('files', file);
+    form.append('document_types', documentType);
+  }
+
+  const response = await fetch('/api/extract', { method: 'POST', body: form });
+  const body = await response.json().catch(() => ({}));
+
+  // Offline, the extractor is simply not reachable. Say so; do not fall back to a
+  // fixture behind the user's back — the mode they chose is the mode they get.
+  if (response.status >= 500) return { data: null, offline: true, detail: body.detail };
+  if (!response.ok) throw new Error(body.detail || `request failed (${response.status})`);
+  return { data: body };
+}
+
 export function fetchEvaluation(personaId, query) {
   const params = new URLSearchParams({ persona_id: personaId });
   if (query) params.set('query', query);

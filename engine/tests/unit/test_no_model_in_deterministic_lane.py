@@ -26,6 +26,11 @@ DETERMINISTIC_LANE = [
 FORBIDDEN_ROOTS = {
     # our own model lane
     "haqdaar.llm",
+    # the input boundary: OCR/extraction may not be reached from the verdict path
+    "haqdaar.profile.ocr",
+    "haqdaar.profile.extract",
+    "pytesseract",
+    "PIL",
     # anything that could reach the network
     "http",
     "httpx",
@@ -98,3 +103,42 @@ def test_importing_the_evaluator_does_not_load_the_model_lane():
 
     loaded = {m for m in sys.modules if m.startswith("haqdaar.llm")}
     assert loaded == set()
+
+
+# --- the extraction boundary is one-way --------------------------------------
+
+EXTRACTION_MODULES = [
+    PACKAGE_ROOT / "profile" / "ocr.py",
+    PACKAGE_ROOT / "profile" / "extract.py",
+]
+
+#: Extraction may read the profile schema (it produces one) and nothing else of ours.
+ALLOWED_FROM_EXTRACTION = {"haqdaar.profile", "haqdaar.profile.schema", "haqdaar.profile.ocr"}
+
+
+def test_extraction_modules_exist():
+    assert all(p.is_file() for p in EXTRACTION_MODULES)
+
+
+@pytest.mark.parametrize("path", EXTRACTION_MODULES, ids=lambda p: p.name)
+def test_extraction_cannot_reach_the_verdict_path(path: Path):
+    """One-way boundary.
+
+    The deterministic lane must not import extraction (asserted above), and extraction
+    must not import the evaluator, Guard, renderer or action layer. If extraction could
+    reach them it could influence a verdict, and the model/OCR boundary would stop
+    meaning anything.
+    """
+    for module in _imported_roots(path):
+        if not module.startswith("haqdaar"):
+            continue
+        assert module in ALLOWED_FROM_EXTRACTION, (
+            f"{path.name} imports {module} — extraction is the input boundary and "
+            "must not reach the verdict path"
+        )
+
+
+def test_the_deterministic_lane_and_extraction_do_not_overlap():
+    lane = {p.resolve() for p in _python_files()}
+    extraction = {p.resolve() for p in EXTRACTION_MODULES}
+    assert lane.isdisjoint(extraction)

@@ -1,0 +1,26 @@
+# How to READ an Aadhaar card.
+#
+# NOTE WHAT IS ABSENT: the Aadhaar NUMBER is deliberately not extracted. Haqdaar does
+# not hold or transmit Aadhaar numbers; the citizen writes that on the form themselves
+# (see corpus/entrepreneur/forms/stand-up-india.form.yaml). Extracting it "because we
+# could" would create a liability with no benefit to her.
+
+document_type: aadhaar
+label: "Aadhaar card"
+fields:
+  - profile_field: applicant.gender
+    labels: [gender, sex, ling]
+    value_map:
+      "female": FEMALE
+      "male": MALE
+      "f": FEMALE
+      "m": MALE
+      "transgender": TRANSGENDER
+
+  - profile_field: applicant.age
+    labels: [age, "year of birth", yob]
+    numeric: true
+    # A plausibility window. A value outside it is a misread, not a person, and is
+    # dropped rather than passed to the evaluator.
+    min_value: 1
+    max_value: 120

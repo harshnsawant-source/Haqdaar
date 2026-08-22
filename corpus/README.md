@@ -138,6 +138,22 @@ transmit Aadhaar numbers.
 
 ---
 
+## Document reading rules (`documents/`)
+
+`documents/<type>.yaml` says how to READ a document — where a value sits on a page.
+These are parsing rules, never government rules: they say nothing about what a value
+entitles anyone to. Adding one teaches the extractor a new document type.
+
+Anything not matched is not extracted, and an unextracted field is UNKNOWN. Values
+outside a declared `value_map`, and numbers outside `min_value`/`max_value`, are
+dropped rather than coerced — a misread must cost us a provable yes, never produce a
+confident wrong answer.
+
+**Aadhaar numbers are deliberately not extracted**, the same way they are deliberately
+not auto-filled. Haqdaar does not hold or transmit them.
+
+---
+
 ## Repo location
 
 This repo currently lives inside OneDrive. `.gitignore` keeps `.venv/`,

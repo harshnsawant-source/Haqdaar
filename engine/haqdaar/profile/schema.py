@@ -11,13 +11,29 @@ the deterministic lane will still import only this file.
 from __future__ import annotations
 
 import json
+from enum import Enum
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
-#: Values below this are treated as unread by the extractor and fall back to the
-#: checked-in fixture (design doc s7). Day 1 fixtures are all 1.0.
+#: Values below this are treated as unread (design doc s7). A field under the floor is
+#: invisible to `get()`, so the evaluator sees no evidence and the predicate resolves
+#: UNKNOWN. An OCR misread therefore surfaces as "I could not read this", never as a
+#: confident wrong answer.
 CONFIDENCE_FLOOR = 0.75
+
+
+class FieldOrigin(str, Enum):
+    """Where a value came from. Must be visible; never blurred.
+
+    A fixture value presented as a live read, or a live read presented as a fixture,
+    are both lies about what the machine actually did.
+    """
+
+    #: Read from a document the citizen supplied, this run.
+    EXTRACTED = "EXTRACTED"
+    #: Taken from a checked-in demo fixture (typed by hand, not read).
+    FIXTURE = "FIXTURE"
 
 
 class ProfileField(BaseModel):
@@ -29,6 +45,9 @@ class ProfileField(BaseModel):
     #: Where in that document it was read from, for the proof trail.
     source_field: str
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    origin: FieldOrigin = FieldOrigin.FIXTURE
+    #: Pixel box (left, top, width, height) the value was read from, when extracted.
+    region: tuple[int, int, int, int] | None = None
 
     @property
     def is_confident(self) -> bool:
@@ -52,6 +71,14 @@ class CitizenProfile(BaseModel):
 
     def document_ids(self) -> set[str]:
         return {f.document_id for f in self.fields.values()}
+
+    def origins(self) -> dict[str, FieldOrigin]:
+        return {path: field.origin for path, field in self.fields.items()}
+
+    @property
+    def is_fixture_backed(self) -> bool:
+        """True when any value shown to the citizen was typed rather than read."""
+        return any(f.origin is FieldOrigin.FIXTURE for f in self.fields.values())
 
 
 def load_profile(path: str | Path) -> CitizenProfile:
