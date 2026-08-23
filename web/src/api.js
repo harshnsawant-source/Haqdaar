@@ -22,8 +22,10 @@ async function get(path) {
   return { data: await response.json(), offline, stored: offline, storedAt };
 }
 
-export function fetchIntakeForm() {
-  return get('/api/intake');
+export function fetchIntakeForm(vertical) {
+  const params = new URLSearchParams();
+  if (vertical) params.set('vertical', vertical);
+  return get(`/api/intake?${params.toString()}`);
 }
 
 export async function submitIntake(vertical, answers, documentsHeld) {

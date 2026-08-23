@@ -26,10 +26,10 @@ export function Intake({ vertical, onResult, onCancel }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchIntakeForm()
+    fetchIntakeForm(vertical)
       .then(({ data }) => setForm(data))
       .catch((e) => setError(e.message));
-  }, []);
+  }, [vertical]);
 
   function setAnswer(id, value) {
     setAnswers((prev) => ({ ...prev, [id]: value }));

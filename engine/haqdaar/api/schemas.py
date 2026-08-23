@@ -248,6 +248,8 @@ class IntakeFormResponse(BaseModel):
 
     version: int
     language: str
+    #: None means every section; otherwise only this domain's.
+    vertical: str | None = None
     sections: list[IntakeSectionPayload] = Field(default_factory=list)
 
 

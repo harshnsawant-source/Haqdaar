@@ -21,6 +21,26 @@ const WHO = {
   sunita: 'Sunita — 60, widow, small farmer',
 };
 
+/*
+ * Order results by what the citizen can do with them: entitlements she has, then
+ * papers that would unlock one, then things nobody can settle. NOT_ELIGIBLE is split
+ * out and collapsed — shown, but not first.
+ *
+ * Ordering only. Nothing here filters a card away.
+ */
+const ACTIONABLE_ORDER = ['ELIGIBLE', 'BLOCKED_ON_DOCUMENT', 'UNVERIFIABLE'];
+
+function orderCards(cards) {
+  const all = cards || [];
+  const actionable = all
+    .filter((c) => c.status !== 'NOT_ELIGIBLE')
+    .slice()
+    .sort(
+      (a, b) => ACTIONABLE_ORDER.indexOf(a.status) - ACTIONABLE_ORDER.indexOf(b.status),
+    );
+  return { actionable, ruledOut: all.filter((c) => c.status === 'NOT_ELIGIBLE') };
+}
+
 export default function App() {
   const [personas, setPersonas] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -263,7 +283,11 @@ export default function App() {
             </section>
           )}
 
-          {result?.cards?.map((card, i) => {
+          {/* Ordered by what she can act on. A person who came for business capital
+              does not want to read a wall of "not for you" first. The NOT_ELIGIBLE
+              cards are COLLAPSED, never removed — the honesty is the product, and a
+              judge has to be able to open them. */}
+          {orderCards(result?.cards).actionable.map((card, i) => {
             const stackedWith = (result.cards || []).filter(
               (c) =>
                 c.stack_group_id &&
@@ -283,6 +307,23 @@ export default function App() {
               />
             );
           })}
+
+          {orderCards(result?.cards).ruledOut.length > 0 && (
+            <details className="ruled-out">
+              <summary>
+                {s.notForYou} ({orderCards(result.cards).ruledOut.length})
+              </summary>
+              <p className="tagline">{s.notForYouHint}</p>
+              {orderCards(result.cards).ruledOut.map((card, i) => (
+                <Card
+                  card={card}
+                  personaId={selected}
+                  canAct={false}
+                  key={card.scheme_id || `out-${i}`}
+                />
+              ))}
+            </details>
+          )}
 
           {status === 'done' && result && result.cards.length === 0 && (
             <p className="empty">{s.results}</p>

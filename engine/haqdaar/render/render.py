@@ -28,7 +28,14 @@ import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
 from haqdaar.action.fill import FilledForm, Receipt
-from haqdaar.corpus.schema import GroupKind, NumericBound, Scheme, VerificationStatus
+from haqdaar.corpus.schema import (
+    CategoryBound,
+    GroupKind,
+    IncomeBound,
+    NumericBound,
+    Scheme,
+    VerificationStatus,
+)
 from haqdaar.eligibility.aggregate import UnlockOption
 from haqdaar.eligibility.verdict import (
     ApprovalStatus,
@@ -39,7 +46,7 @@ from haqdaar.eligibility.verdict import (
 )
 from haqdaar.guard.gate import GateResult
 from haqdaar.guard.triggers import TriggerId
-from haqdaar.render.labels import document_label, field_label
+from haqdaar.render.labels import document_label, field_label, value_label
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 
@@ -151,15 +158,27 @@ def _fill(
 
 
 def _bound_text(bound: object) -> str | None:
-    """Describe a numeric bound using only its own sourced numbers."""
-    if not isinstance(bound, NumericBound):
+    """Describe a bound using only what the corpus itself says.
+
+    Every rule type gets a description. A NOT_ELIGIBLE card whose headline promises
+    "here is exactly why" and then says nothing is worse than no card at all, and that
+    is what happened while only numeric bounds were handled.
+    """
+    if isinstance(bound, NumericBound):
+        if bound.min is not None and bound.max is not None:
+            return f"{_num(bound.min)} to {_num(bound.max)}"
+        if bound.min is not None:
+            return f"{_num(bound.min)} and above"
+        if bound.max is not None:
+            return f"{_num(bound.max)} and below"
         return None
-    if bound.min is not None and bound.max is not None:
-        return f"{_num(bound.min)} to {_num(bound.max)}"
-    if bound.min is not None:
-        return f"{_num(bound.min)} and above"
-    if bound.max is not None:
-        return f"{_num(bound.max)} and below"
+    if isinstance(bound, CategoryBound):
+        names = [value_label(v) for v in bound.values]
+        if len(names) == 1:
+            return names[0]
+        return f"{', '.join(names[:-1])} or {names[-1]}"
+    if isinstance(bound, IncomeBound):
+        return f"{_num(bound.max_value)} and below"
     return None
 
 
@@ -542,7 +561,7 @@ def _not_eligible_reason(
                 **base,
                 "bound_text": bound_text,
                 "field_label": field_label(clause.profile_field),
-                "value": failing.evidence.extracted_value,
+                "value": value_label(failing.evidence.extracted_value),
             },
             clause_texts,
         )

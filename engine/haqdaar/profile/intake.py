@@ -76,17 +76,31 @@ class IntakeSection(_Frozen):
     section_id: str
     title: dict[str, str]
     questions: list[IntakeQuestion] = Field(min_length=1)
+    #: Which verticals this section belongs to. Empty means every vertical.
+    verticals: list[str] = Field(default_factory=list)
+
+    def applies_to(self, vertical: str | None) -> bool:
+        return vertical is None or not self.verticals or vertical in self.verticals
 
 
 class IntakeSpec(_Frozen):
     version: int
     sections: list[IntakeSection] = Field(min_length=1)
 
-    def questions(self) -> list[IntakeQuestion]:
-        return [q for s in self.sections for q in s.questions]
+    def sections_for(self, vertical: str | None = None) -> list[IntakeSection]:
+        """Only the sections that belong to this domain.
 
-    def answerable_fields(self) -> set[str]:
-        return {q.profile_field for q in self.questions() if q.profile_field}
+        Someone who came for money to start a business should not be asked about
+        widowhood, BPL status or landholding, and someone who came for a pension should
+        not be asked whether this is their first business.
+        """
+        return [s for s in self.sections if s.applies_to(vertical)]
+
+    def questions(self, vertical: str | None = None) -> list[IntakeQuestion]:
+        return [q for s in self.sections_for(vertical) for q in s.questions]
+
+    def answerable_fields(self, vertical: str | None = None) -> set[str]:
+        return {q.profile_field for q in self.questions(vertical) if q.profile_field}
 
     def document_options(self) -> list[str]:
         return [d for q in self.questions() for d in q.documents]

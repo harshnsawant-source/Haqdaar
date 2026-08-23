@@ -16,11 +16,14 @@
 # enforces this in eligibility/evaluate.py by checking evidence provenance against
 # `verifiable_from`; nothing here can override it.
 #
-# The last section asks which documents she actually holds. A fact she states IS
-# attributed to a document she says she has, when that document is accepted proof for
-# the clause — she is asserting both the fact and that she can evidence it. Every
-# intake result carries a banner saying the answers are hers and the documents have not
-# been seen.
+# A declaration can also RULE A SCHEME OUT even where it cannot rule one in. You do not
+# need a death certificate to establish that you are not a widow. So a stated fact that
+# FAILS a clause records FALSE; one that would SATISFY it stays UNKNOWN until the
+# document arrives.
+#
+# The last section asks which documents she actually holds. That is routing only — it
+# tells the UI which papers she could upload next. It is never evidence: saying you have
+# a caste certificate is not evidence of what the certificate says.
 #
 # TRANSLATION: every prompt and label carries an `mr` value. Like the template set,
 # they are [NEEDS HUMAN TRANSLATION] placeholders until a native speaker fills them in.
@@ -28,7 +31,10 @@
 version: 1
 
 sections:
+  # `verticals` says which domains a section belongs to. Shared sections list both.
+  # Declared here rather than split in Python or JSX so the question set stays data.
   - section_id: about-you
+    verticals: [entrepreneur, welfare]
     title:
       en: "About you"
       mr: "[NEEDS HUMAN TRANSLATION] About you"
@@ -89,6 +95,7 @@ sections:
             label: {en: "General", mr: "[NEEDS HUMAN TRANSLATION] General"}
 
   - section_id: household
+    verticals: [welfare]
     title:
       en: "Your household"
       mr: "[NEEDS HUMAN TRANSLATION] Your household"
@@ -119,6 +126,7 @@ sections:
           mr: "[NEEDS HUMAN TRANSLATION] Is your family on the Below Poverty Line list?"
 
   - section_id: enterprise
+    verticals: [entrepreneur]
     title:
       en: "If you are starting a business"
       mr: "[NEEDS HUMAN TRANSLATION] If you are starting a business"
@@ -147,6 +155,7 @@ sections:
   # These are the questions a real form collects on the applicant's own account, which
   # is why a declaration settles them. Every one is a PM-KISAN exclusion.
   - section_id: declarations
+    verticals: [welfare]
     title:
       en: "A few things to declare"
       mr: "[NEEDS HUMAN TRANSLATION] A few things to declare"
@@ -198,6 +207,7 @@ sections:
   # Which papers she actually has. A fact is attributed to one of these when the corpus
   # accepts it as proof for that clause; otherwise the fact stands only as her word.
   - section_id: documents
+    verticals: [entrepreneur, welfare]
     title:
       en: "Which of these do you have with you?"
       mr: "[NEEDS HUMAN TRANSLATION] Which of these do you have with you?"

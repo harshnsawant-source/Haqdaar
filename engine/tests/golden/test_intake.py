@@ -280,7 +280,10 @@ def test_intake_over_http_returns_the_same_cards(client):
         "ignwps": "BLOCKED_ON_DOCUMENT",
         "sgnay": "BLOCKED_ON_DOCUMENT",
         "pmjay": "UNVERIFIABLE",
-        "avvc": "BLOCKED_ON_DOCUMENT",
+        # She said she is 60 and the rule is 70+. A declaration cannot claim a
+        # benefit, but it can rule one out — no Aadhaar needed to establish that
+        # someone is not seventy.
+        "avvc": "NOT_ELIGIBLE",
     }
     assert all(f["origin"] == "DECLARED" for f in body["fields"])
     assert all(f["document_id"] == "self_declaration" for f in body["fields"])

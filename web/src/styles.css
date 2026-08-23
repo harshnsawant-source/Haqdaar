@@ -390,3 +390,12 @@ table.fields tbody tr + tr th, table.fields tbody tr + tr td {
 .unlock.ready h2 { color: var(--eligible); }
 .unlock .why { font-weight: 400; font-size: 0.82rem; color: var(--ink-soft);
                margin-top: 6px; }
+
+/* Ruled-out schemes: present and openable, just not shouting. */
+details.ruled-out { margin-top: 18px; border: 1px solid var(--line);
+                    border-radius: var(--radius); padding: 12px 14px;
+                    background: var(--surface); }
+details.ruled-out summary { cursor: pointer; font-size: 0.8rem;
+                            text-transform: uppercase; letter-spacing: 0.07em;
+                            color: var(--ink-soft); }
+details.ruled-out .tagline { margin: 8px 0 0; }

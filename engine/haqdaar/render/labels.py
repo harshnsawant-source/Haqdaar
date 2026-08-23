@@ -49,6 +49,17 @@ def field_label(profile_field: str, language: str = "en") -> str:
     return profile_field.rsplit(".", 1)[-1].replace("_", " ")
 
 
+def value_label(value: object, language: str = "en") -> str:
+    """A citizen-facing rendering of a corpus value token.
+
+    WIDOW reads as "widow", SC stays "SC". These are the corpus's own values, so this
+    only changes how they are written, never what they are.
+    """
+    text = str(value)
+    words = [w for w in text.replace("-", "_").split("_") if w]
+    return " ".join(w.upper() if w.lower() in _ACRONYMS else w.lower() for w in words)
+
+
 def document_label(document_id: str, language: str = "en") -> str:
     """A citizen-facing name for a document id.
 

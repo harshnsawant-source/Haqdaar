@@ -228,12 +228,23 @@ def validate(verdict: Verdict) -> list[Finding]:
     eligibility = [f for f in findings if f.scope is Scope.ELIGIBILITY]
     triggers = {f.trigger for f in eligibility}
 
-    if TriggerId.T1_UNSUPPORTED_PREDICATE in triggers:
+    # A proven no outranks an unproven maybe — the same precedence `derive_status`
+    # applies, read back here rather than recomputed. A scheme can carry both a FALSE
+    # group and unresolved clauses at once (she fails one requirement outright and has
+    # not evidenced another), and when it does, NOT_ELIGIBLE is the answer however many
+    # triggers also fired.
+    rules_her_out = any(
+        g.evaluation is Evaluation.FALSE for g in verdict.eligibility_groups()
+    )
+
+    if rules_her_out:
+        expected = Status.NOT_ELIGIBLE
+    elif TriggerId.T1_UNSUPPORTED_PREDICATE in triggers:
         expected = Status.UNVERIFIABLE
     elif TriggerId.T2_MISSING_BUT_OBTAINABLE in triggers:
         expected = Status.BLOCKED_ON_DOCUMENT
     else:
-        expected = None  # ELIGIBLE or NOT_ELIGIBLE; no unresolved eligibility clause
+        expected = None  # ELIGIBLE; no unresolved eligibility clause at all
 
     if expected is not None and verdict.status is not expected:
         raise GuardViolation(

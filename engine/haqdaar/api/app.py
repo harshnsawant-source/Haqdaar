@@ -197,16 +197,22 @@ def _text(mapping: dict[str, str], language: str) -> str:
 
 
 @app.get("/api/intake", response_model=IntakeFormResponse)
-def intake_form(language: str = "en") -> IntakeFormResponse:
-    """The question set, as declared in corpus/intake.yaml.
+def intake_form(vertical: str | None = None, language: str = "en") -> IntakeFormResponse:
+    """The question set for one domain, as declared in corpus/intake.yaml.
 
-    Served rather than hardcoded in the UI so the questions stay data, and so document
-    names come from render/labels.py like every other identifier.
+    Scoped by vertical because asking someone who came for business capital about
+    widowhood, BPL status and landholding is noise, and asking a pension applicant
+    whether this is their first business is worse. Which sections belong to which
+    domain is declared in the YAML, not split here.
     """
+    if vertical is not None and vertical not in set(PERSONAS.values()):
+        raise HTTPException(status_code=404, detail=f"unknown vertical {vertical}")
+
     spec = _intake_spec()
     return IntakeFormResponse(
         version=spec.version,
         language=language,
+        vertical=vertical,
         sections=[
             IntakeSectionPayload(
                 section_id=section.section_id,
@@ -233,7 +239,7 @@ def intake_form(language: str = "en") -> IntakeFormResponse:
                     for q in section.questions
                 ],
             )
-            for section in spec.sections
+            for section in spec.sections_for(vertical)
         ],
     )
 

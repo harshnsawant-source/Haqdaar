@@ -117,24 +117,44 @@ def evaluate_clause(
     if field is None:
         return Evaluation.UNKNOWN, None
 
-    # The evidence must come from a document this clause actually accepts.
-    #
-    # `verifiable_from` is the corpus's statement of what proves a clause
-    # (01-DEMO-CORPUS.md s8). Without this check any document could settle any clause,
-    # which was harmless while every fixture happened to cite an appropriate document —
-    # and becomes the whole ballgame once a citizen can DECLARE facts about herself. A
-    # declaration is proof of what she says; it is not proof of what a caste
-    # certificate, a BPL card or a 7/12 extract says. Those clauses stay UNKNOWN and
-    # land on BLOCKED_ON_DOCUMENT, which is the honest answer: here is what you are
-    # entitled to on your own account, and here is the paper you need for the rest.
-    if field.document_id not in clause.verifiable_from:
-        return Evaluation.UNKNOWN, None
-
     result = _match(clause, field)
     if clause.rule_type is RuleType.EXCLUSION:
+        # From here on `result` means "does this clause support eligibility", with the
+        # exclusion already inverted. The provenance rule below is stated on THAT, not
+        # on the raw match, which is what makes it come out right for exclusions.
         result = _INVERSE[result]
     if result is Evaluation.UNKNOWN:
         return result, None
+
+    # PROVENANCE, AND ITS ASYMMETRY.
+    #
+    # `verifiable_from` is the corpus's statement of what proves a clause
+    # (01-DEMO-CORPUS.md s8). A value from a document this clause does not accept —
+    # in practice, a citizen's own declaration — cannot make the clause TRUE. She may
+    # not claim a benefit on her own word.
+    #
+    # But it CAN make it FALSE, and the first version of this check got that wrong.
+    # Requiring proof in order to be RULED OUT is absurd: you do not need a death
+    # certificate to establish that you are not a widow, or an Aadhaar to establish
+    # that you are not seventy. Treating it symmetrically told a 34-year-old to fetch a
+    # death certificate to unlock a widow pension.
+    #
+    # So the rule is one-directional:
+    #   declaration that would SATISFY the clause -> UNKNOWN (fetch the document)
+    #   declaration that FAILS the clause         -> FALSE (she is ruled out, cited)
+    #
+    # This can only ever remove claims. It never produces TRUE, so no group can newly
+    # resolve TRUE and no scheme can become ELIGIBLE because of it — a scheme can only
+    # move from BLOCKED to NOT_ELIGIBLE. `test_a_declaration_can_never_manufacture_an
+    # _eligible` asserts that across every persona and both corpora.
+    #
+    # For an EXCLUSION the same sentence reads correctly because of the inversion
+    # above: declaring you paid income tax yields FALSE and rules you out on your own
+    # admission, while declaring you did NOT yields TRUE and still needs the document
+    # the corpus asks for. Admitting a disqualification is believable; clearing one on
+    # your own say-so is not.
+    if result is not Evaluation.FALSE and field.document_id not in clause.verifiable_from:
+        return Evaluation.UNKNOWN, None
 
     return result, Evidence(
         document_id=field.document_id,

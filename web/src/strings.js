@@ -31,6 +31,8 @@ const en = {
   yes: 'Yes',
   no: 'No',
   intakeUnavailable: 'The engine is not reachable right now.',
+  notForYou: 'Not for you, and why',
+  notForYouHint: 'Open these to see the exact rule that rules each one out.',
   bringThese: 'Bring these papers',
   bringTheseHint:
     'Each one you can show turns a "needs proof" into an entitlement you can act on.',
