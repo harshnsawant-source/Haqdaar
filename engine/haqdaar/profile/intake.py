@@ -140,6 +140,80 @@ def self_declarable_fields(schemes: list[Scheme]) -> set[str]:
     }
 
 
+class AnswerRejected(Exception):
+    """Answers the question set does not define. Carries every problem, not just one."""
+
+    def __init__(self, problems: list[str]) -> None:
+        super().__init__("; ".join(problems))
+        self.problems = problems
+
+
+def validate_answers(
+    spec: IntakeSpec,
+    answers: dict[str, object],
+    *,
+    vertical: str | None = None,
+    documents_held: list[str] | None = None,
+) -> None:
+    """Reject any answer the declared question set cannot account for.
+
+    The engine may say "I do not know", and it may say "no, and here is the rule". It
+    must never build either sentence out of an input it could not understand.
+
+    Before this existed, `venture_type="FIRST"` — a value the corpus never defines —
+    produced "The rule says greenfield. Your venture type is first.": a definitive,
+    cited, WRONG refusal. The asymmetry made it worse, because a junk value that once
+    sat UNKNOWN and read as "bring a document" now reads as a confident no. A stale
+    client, a typo in a future UI or a hand-built request is enough.
+
+    Absent is not wrong. An unanswered question stays unanswered and still means
+    UNKNOWN; only actively unusable values are refused.
+    """
+    problems: list[str] = []
+    served = {q.question_id: q for q in spec.questions(vertical)}
+
+    for question_id, value in answers.items():
+        question = served.get(question_id)
+        if question is None:
+            known = question_id in {q.question_id for q in spec.questions()}
+            problems.append(
+                f"{question_id!r} is not asked"
+                + (f" in the {vertical} questions" if known and vertical else "")
+            )
+            continue
+        if value is None or value == "":
+            continue  # unanswered, which is a legitimate answer
+
+        if question.type == "documents":
+            problems.append(
+                f"{question_id!r} is answered by documents_held, not by a value"
+            )
+        elif question.type == "choice":
+            allowed = {option.value for option in question.options}
+            if value not in allowed:
+                problems.append(
+                    f"{question_id!r}: {value!r} is not one of {sorted(allowed)}"
+                )
+        elif question.type == "boolean":
+            if not isinstance(value, bool):
+                problems.append(f"{question_id!r}: {value!r} is not yes or no")
+        elif question.type == "number":
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                problems.append(f"{question_id!r}: {value!r} is not a number")
+            elif question.min is not None and value < question.min:
+                problems.append(f"{question_id!r}: {value!r} is below {question.min}")
+            elif question.max is not None and value > question.max:
+                problems.append(f"{question_id!r}: {value!r} is above {question.max}")
+
+    declared_documents = {d for q in spec.questions(vertical) for d in q.documents}
+    for document in documents_held or []:
+        if document not in declared_documents:
+            problems.append(f"{document!r} is not a document this form offers")
+
+    if problems:
+        raise AnswerRejected(problems)
+
+
 def build_intake_profile(
     spec: IntakeSpec,
     answers: dict[str, object],

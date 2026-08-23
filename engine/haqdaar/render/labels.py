@@ -54,9 +54,18 @@ def value_label(value: object, language: str = "en") -> str:
 
     WIDOW reads as "widow", SC stays "SC". These are the corpus's own values, so this
     only changes how they are written, never what they are.
+
+    Numbers pass through untouched. They used to go through the same word-splitting as
+    category tokens, which treats "-" as a separator — so -5 rendered as "5", and a
+    card told a citizen "Your age is 5" about an age of minus five. Changing the number
+    a person is shown is never a formatting decision.
     """
-    text = str(value)
-    words = [w for w in text.replace("-", "_").split("_") if w]
+    if isinstance(value, bool):
+        return "yes" if value else "no"
+    if isinstance(value, (int, float)):
+        return str(value)
+
+    words = [w for w in str(value).replace("-", "_").split("_") if w]
     return " ".join(w.upper() if w.lower() in _ACRONYMS else w.lower() for w in words)
 
 

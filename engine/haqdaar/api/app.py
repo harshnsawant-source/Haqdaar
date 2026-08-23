@@ -45,7 +45,12 @@ from haqdaar.eligibility.aggregate import best_unlock
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
 from haqdaar.guard.gate import gate, gate_all
 from haqdaar.profile.extract import ExtractionMode, build_profile, extract_document
-from haqdaar.profile.intake import build_intake_profile, load_intake
+from haqdaar.profile.intake import (
+    AnswerRejected,
+    build_intake_profile,
+    load_intake,
+    validate_answers,
+)
 from haqdaar.profile.ocr import tesseract_available
 from haqdaar.profile.schema import CitizenProfile, load_profile
 from haqdaar.guard.triggers import t3_no_retrieval_support
@@ -261,6 +266,19 @@ def intake(request: IntakeRequest) -> IntakeResponse:
 
     schemes = _load_vertical(request.vertical)
     spec = _intake_spec()
+    # Nothing reaches a profile until the question set can account for it. An answer we
+    # cannot understand is not a fact about the citizen, and a verdict built from one
+    # would be a confident wrong answer.
+    try:
+        validate_answers(
+            spec,
+            dict(request.answers),
+            vertical=request.vertical,
+            documents_held=list(request.documents_held),
+        )
+    except AnswerRejected as rejected:
+        raise HTTPException(status_code=422, detail=rejected.problems) from None
+
     # documents_held is deliberately NOT passed to build_intake_profile. What she says
     # she holds is not evidence of what it says; it only tells the UI which papers she
     # could upload next.
