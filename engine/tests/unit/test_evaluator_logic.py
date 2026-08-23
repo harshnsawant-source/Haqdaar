@@ -51,11 +51,22 @@ def scheme(*groups: ClauseGroup, scheme_id: str = "synthetic") -> Scheme:
     )
 
 
-def profile(**values) -> CitizenProfile:
+def profile(documents: dict[str, str] | None = None, **values) -> CitizenProfile:
+    """A synthetic profile.
+
+    `documents` names which document each value came from. It matters: since the
+    provenance check, a value only settles a clause when it comes from a document that
+    clause lists in `verifiable_from`. A fixture that stamps every field with the same
+    placeholder document is not a realistic profile, it is a profile that relies on the
+    engine not checking.
+    """
+    documents = documents or {}
     return CitizenProfile(
         profile_id="synthetic",
         fields={
-            key: ProfileField(value=value, document_id="doc", source_field=key)
+            key: ProfileField(
+                value=value, document_id=documents.get(key, "doc"), source_field=key
+            )
             for key, value in values.items()
         },
     )
@@ -106,11 +117,17 @@ def test_income_threshold_at_the_boundary_is_inclusive():
         ],
     )
     assert (
-        evaluate_scheme(scheme(group), profile(**{"applicant.income": 21000})).status
+        evaluate_scheme(
+            scheme(group),
+            profile({"applicant.income": "income_certificate"}, **{"applicant.income": 21000}),
+        ).status
         is Status.ELIGIBLE
     )
     assert (
-        evaluate_scheme(scheme(group), profile(**{"applicant.income": 21001})).status
+        evaluate_scheme(
+            scheme(group),
+            profile({"applicant.income": "income_certificate"}, **{"applicant.income": 21001}),
+        ).status
         is Status.NOT_ELIGIBLE
     )
 
@@ -129,12 +146,16 @@ def test_exclusion_inverts_polarity_but_keeps_the_evidence():
             )
         ],
     )
-    excluded = evaluate_scheme(scheme(group), profile(**{"applicant.taxpayer": True}))
+    excluded = evaluate_scheme(
+        scheme(group), profile({"applicant.taxpayer": "itr"}, **{"applicant.taxpayer": True})
+    )
     assert excluded.status is Status.NOT_ELIGIBLE
     # The verdict still shows what was read from the document.
     assert excluded.predicates[0].evidence.extracted_value is True
 
-    allowed = evaluate_scheme(scheme(group), profile(**{"applicant.taxpayer": False}))
+    allowed = evaluate_scheme(
+        scheme(group), profile({"applicant.taxpayer": "itr"}, **{"applicant.taxpayer": False})
+    )
     assert allowed.status is Status.ELIGIBLE
 
 
@@ -166,7 +187,13 @@ def test_category_matching_survives_case_and_booleans():
     )
     verdict = evaluate_scheme(
         scheme(group),
-        profile(**{"applicant.social_category": " sc ", "household.bpl": True}),
+        profile(
+            {
+                "applicant.social_category": "caste_certificate",
+                "household.bpl": "bpl_ration_card",
+            },
+            **{"applicant.social_category": " sc ", "household.bpl": True},
+        ),
     )
     assert verdict.status is Status.ELIGIBLE
 
@@ -276,7 +303,7 @@ def test_proven_no_outranks_unproven_maybe():
                 clauses=[clause("SECC", rule_type=RuleType.EXTERNAL_DATASET)],
             ),
         ),
-        profile(**{"applicant.age": 60}),
+        profile({"applicant.age": "aadhaar"}, **{"applicant.age": 60}),
     )
     assert verdict.status is Status.NOT_ELIGIBLE
 
@@ -339,7 +366,7 @@ def test_satisfied_any_group_does_not_block_on_its_unknown_members():
                 ],
             )
         ),
-        profile(**{"applicant.gender": "FEMALE"}),
+        profile({"applicant.gender": "aadhaar"}, **{"applicant.gender": "FEMALE"}),
     )
     assert verdict.status is Status.ELIGIBLE
     assert verdict.unlocking_docs == []
@@ -377,3 +404,68 @@ def test_predicate_cannot_resolve_without_evidence():
             evaluation=Evaluation.TRUE,
             evidence=None,
         )
+
+
+# --- evidence provenance ------------------------------------------------------
+
+
+def test_a_document_the_clause_does_not_accept_cannot_settle_it():
+    """The check that makes guided intake safe.
+
+    `verifiable_from` is the corpus's statement of what proves a clause. Without this,
+    any document could settle any clause — harmless while every fixture happened to
+    cite an appropriate document, and the whole ballgame once a citizen can declare
+    facts about herself. A self-declaration is proof of what she says; it is not proof
+    of what a BPL card says.
+    """
+    group = ClauseGroup(
+        group_id="g",
+        satisfy=Satisfy.ALL,
+        clauses=[
+            clause(
+                "BPL",
+                rule_type=RuleType.ENUMERATED_CATEGORY,
+                profile_field="household.bpl",
+                bound={"values": ["true"]},
+                verifiable_from=["bpl_ration_card"],
+            )
+        ],
+    )
+
+    declared = evaluate_scheme(
+        scheme(group),
+        profile({"household.bpl": "self_declaration"}, **{"household.bpl": True}),
+    )
+    assert declared.status is Status.BLOCKED_ON_DOCUMENT
+    assert declared.predicates[0].evaluation is Evaluation.UNKNOWN
+    assert declared.predicates[0].evidence is None
+    assert declared.unlocking_docs == ["bpl_ration_card"]
+
+    evidenced = evaluate_scheme(
+        scheme(group),
+        profile({"household.bpl": "bpl_ration_card"}, **{"household.bpl": True}),
+    )
+    assert evidenced.status is Status.ELIGIBLE
+
+
+def test_any_accepted_document_settles_a_clause_that_lists_several():
+    """Age from an Aadhaar or an age certificate — either is accepted proof."""
+    group = ClauseGroup(
+        group_id="g",
+        satisfy=Satisfy.ALL,
+        clauses=[
+            clause(
+                "AGE",
+                rule_type=RuleType.NUMERIC_BOUND,
+                profile_field="applicant.age",
+                bound={"min": 18},
+                verifiable_from=["aadhaar", "age_proof"],
+            )
+        ],
+    )
+    for document in ("aadhaar", "age_proof"):
+        verdict = evaluate_scheme(
+            scheme(group),
+            profile({"applicant.age": document}, **{"applicant.age": 60}),
+        )
+        assert verdict.status is Status.ELIGIBLE, document

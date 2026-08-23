@@ -203,15 +203,19 @@ winget install --id UB-Mannheim.TesseractOCR    # then reopen the terminal
    (Ctrl+Shift+R), or close the tab and reopen. Rebuilding shortly before the demo is
    exactly when this bites, so treat "I just rebuilt" as "use a new tab".
 5. Open the PWA, click through **one** persona so the shell and a verdict are cached.
-6. Rehearse the two set-pieces:
+6. Rehearse the front door: **Tell us about your situation** → pick a domain →
+   answer a few questions → tick the documents she holds. Answer WITHOUT documents
+   first to show everything land on "you need this paper", then again WITH them to
+   show the entitlement resolve. That contrast is the product in one gesture.
+7. Rehearse the two set-pieces:
    - entrepreneur: NSFDC → ELIGIBLE with proof **plus** the separate approval refusal
    - welfare: Sunita → PM-JAY refusal (SECC 2011) and "eligible in 2036" for AVVC
-7. Rehearse the failure: stop the engine, reload — the app must still open, still list
+8. Rehearse the failure: stop the engine, reload — the app must still open, still list
    personas, and say *"Showing a stored answer — you are offline."*
-8. Have the backup refusal ready: ask something out of corpus ("How much tax do I owe?").
-9. Know what is **simulated**: the submission and the Stand-Up India form layout. Say so
+9. Have the backup refusal ready: ask something out of corpus ("How much tax do I owe?").
+10. Know what is **simulated**: the submission and the Stand-Up India form layout. Say so
    before a judge asks.
-10. Know what is **provisional**: every scheme rule. Every card says so on screen.
+11. Know what is **provisional**: every scheme rule. Every card says so on screen.
 
 ## If something breaks mid-demo
 
@@ -288,3 +292,43 @@ refusing verdict — never a guessed value.
 No API keys, tokens, credentials or private keys anywhere in the working tree or in any
 commit in git history. No `.env` files exist. The engine needs no keys — there is no
 model to call and no service to authenticate against, so there is nothing to leak.
+
+---
+
+# Guided intake (the front door)
+
+A citizen answers structured questions — never a blank box, never a model. The answers
+become a profile and flow through the same evaluator, Guard and renderer as a document
+upload or a checked-in fixture. `corpus/intake.yaml` holds the questions as data.
+
+## What an answer is worth
+
+An answer is a **self-declaration**, and the corpus decides what a declaration settles.
+`eligibility/evaluate.py` checks that a value's document appears in the clause's
+`verifiable_from`, so:
+
+- PM-KISAN's exclusions — which the real form collects on the applicant's own account —
+  **are** settled by her answer.
+- A caste certificate, BPL card or 7/12 extract clause is **not** settled by someone
+  saying so. It stays UNKNOWN and becomes BLOCKED_ON_DOCUMENT.
+
+Intake also asks which documents she actually holds, and a stated fact is filed against
+one of those when the corpus accepts it as proof — she is asserting both the fact and
+that she can evidence it. We have not seen the paper, so every intake result carries:
+
+> "This is based on what you told me. I have not seen your documents, so anything that
+> needs a certificate is still marked as needing one."
+
+## The demo contrast worth showing
+
+Same person, same answers:
+
+| | Without documents | With her Aadhaar, death certificate and 7/12 |
+|---|---|---|
+| PM-KISAN | BLOCKED | **ELIGIBLE** |
+| AVVC | BLOCKED | NOT_ELIGIBLE (rule is 70+) |
+| IGNWPS / SGNAY | BLOCKED | BLOCKED — one BPL card unlocks 2 |
+| PM-JAY | UNVERIFIABLE | UNVERIFIABLE |
+
+The left column is "here is the paper you need". The right is "here is what you are
+owed". Nothing about the engine changed between them — only what she could evidence.

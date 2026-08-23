@@ -34,6 +34,9 @@ class FieldOrigin(str, Enum):
     EXTRACTED = "EXTRACTED"
     #: Taken from a checked-in demo fixture (typed by hand, not read).
     FIXTURE = "FIXTURE"
+    #: Stated by the citizen during guided intake. Her word, and where the corpus
+    #: accepts her word that is enough; where it wants a certificate it is not.
+    DECLARED = "DECLARED"
 
 
 class ProfileField(BaseModel):

@@ -117,6 +117,19 @@ def evaluate_clause(
     if field is None:
         return Evaluation.UNKNOWN, None
 
+    # The evidence must come from a document this clause actually accepts.
+    #
+    # `verifiable_from` is the corpus's statement of what proves a clause
+    # (01-DEMO-CORPUS.md s8). Without this check any document could settle any clause,
+    # which was harmless while every fixture happened to cite an appropriate document —
+    # and becomes the whole ballgame once a citizen can DECLARE facts about herself. A
+    # declaration is proof of what she says; it is not proof of what a caste
+    # certificate, a BPL card or a 7/12 extract says. Those clauses stay UNKNOWN and
+    # land on BLOCKED_ON_DOCUMENT, which is the honest answer: here is what you are
+    # entitled to on your own account, and here is the paper you need for the rest.
+    if field.document_id not in clause.verifiable_from:
+        return Evaluation.UNKNOWN, None
+
     result = _match(clause, field)
     if clause.rule_type is RuleType.EXCLUSION:
         result = _INVERSE[result]

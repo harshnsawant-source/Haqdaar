@@ -21,6 +21,7 @@ DETERMINISTIC_LANE = [
     PACKAGE_ROOT / "render",  # rendering is slot-fill; no model runs after the verdict
     PACKAGE_ROOT / "retrieval",  # routing is lexical; no embedding service
     PACKAGE_ROOT / "profile" / "schema.py",
+    PACKAGE_ROOT / "profile" / "intake.py",  # answers in, profile out; no model
 ]
 
 FORBIDDEN_ROOTS = {
@@ -82,6 +83,7 @@ def test_deterministic_lane_has_files_to_check():
         "route.py",
         "fill.py",
         "track.py",
+        "intake.py",
     } <= names
 
 

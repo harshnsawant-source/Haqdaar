@@ -74,6 +74,11 @@ provisional.banner: >-
   This rule has not yet been verified against the official source. It is not safe to
   act on.
 
+# --- GUIDED INTAKE ----------------------------------------------------------
+intake.declared_banner: >-
+  This is based on what you told me. I have not seen your documents, so anything that
+  needs a certificate is still marked as needing one.
+
 # --- A+ ACTION LAYER --------------------------------------------------------
 # Every one of these is SIMULATED. The banners below are not decoration: they are the
 # only thing standing between a demo and a citizen believing an application was filed.

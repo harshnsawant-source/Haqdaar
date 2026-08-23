@@ -22,6 +22,22 @@ async function get(path) {
   return { data: await response.json(), offline, stored: offline, storedAt };
 }
 
+export function fetchIntakeForm() {
+  return get('/api/intake');
+}
+
+export async function submitIntake(vertical, answers, documentsHeld) {
+  const response = await fetch('/api/intake', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ vertical, answers, documents_held: documentsHeld }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (response.status >= 500) return { data: null, offline: true, detail: body.detail };
+  if (!response.ok) throw new Error(body.detail || `request failed (${response.status})`);
+  return { data: body };
+}
+
 export function fetchPersonas() {
   return get('/api/personas');
 }

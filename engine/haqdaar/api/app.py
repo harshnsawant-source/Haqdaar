@@ -45,10 +45,12 @@ from haqdaar.eligibility.aggregate import best_unlock
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
 from haqdaar.guard.gate import gate, gate_all
 from haqdaar.profile.extract import ExtractionMode, build_profile, extract_document
+from haqdaar.profile.intake import build_intake_profile, load_intake
 from haqdaar.profile.ocr import tesseract_available
 from haqdaar.profile.schema import CitizenProfile, load_profile
 from haqdaar.guard.triggers import t3_no_retrieval_support
 from haqdaar.render.labels import document_label, field_label
+from haqdaar.render.render import load_templates
 from haqdaar.render.render import (
     audit_templates,
     render_action,
@@ -64,6 +66,12 @@ from haqdaar.api.schemas import (
     ExtractedFieldPayload,
     ExtractionReportPayload,
     ExtractResponse,
+    IntakeFormResponse,
+    IntakeOptionPayload,
+    IntakeQuestionPayload,
+    IntakeRequest,
+    IntakeResponse,
+    IntakeSectionPayload,
     PersonaSummary,
     to_action,
     to_payload,
@@ -173,6 +181,107 @@ def personas() -> list[PersonaSummary]:
             )
         )
     return summaries
+
+
+def _intake_spec():
+    return load_intake(CORPUS_ROOT / "intake.yaml")
+
+
+def _text(mapping: dict[str, str], language: str) -> str:
+    """Prompt text in the requested language, falling back to English.
+
+    The fallback is deliberate and visible: an untranslated prompt shows the English
+    with its [NEEDS HUMAN TRANSLATION] marker rather than a blank question.
+    """
+    return mapping.get(language) or mapping["en"]
+
+
+@app.get("/api/intake", response_model=IntakeFormResponse)
+def intake_form(language: str = "en") -> IntakeFormResponse:
+    """The question set, as declared in corpus/intake.yaml.
+
+    Served rather than hardcoded in the UI so the questions stay data, and so document
+    names come from render/labels.py like every other identifier.
+    """
+    spec = _intake_spec()
+    return IntakeFormResponse(
+        version=spec.version,
+        language=language,
+        sections=[
+            IntakeSectionPayload(
+                section_id=section.section_id,
+                title=_text(section.title, language),
+                questions=[
+                    IntakeQuestionPayload(
+                        question_id=q.question_id,
+                        type=q.type,
+                        prompt=_text(q.prompt, language),
+                        profile_field=q.profile_field,
+                        options=[
+                            IntakeOptionPayload(
+                                value=o.value, label=_text(o.label, language)
+                            )
+                            for o in q.options
+                        ],
+                        documents=[
+                            IntakeOptionPayload(value=d, label=document_label(d))
+                            for d in q.documents
+                        ],
+                        min=q.min,
+                        max=q.max,
+                    )
+                    for q in section.questions
+                ],
+            )
+            for section in spec.sections
+        ],
+    )
+
+
+@app.post("/api/intake", response_model=IntakeResponse)
+def intake(request: IntakeRequest) -> IntakeResponse:
+    """Answers in, the same cards as every other entry point out.
+
+    The decision path is untouched: intake produces an ordinary CitizenProfile and
+    hands it to the same evaluator, Guard and renderer. What an answer is worth is
+    decided by the corpus — `evaluate.py` checks evidence provenance, so a declaration
+    settles exactly the clauses a declaration is allowed to settle and a
+    certificate-gated clause stays blocked.
+    """
+    if request.vertical not in set(PERSONAS.values()):
+        raise HTTPException(
+            status_code=404, detail=f"unknown vertical {request.vertical}"
+        )
+
+    schemes = _load_vertical(request.vertical)
+    spec = _intake_spec()
+    profile = build_intake_profile(
+        spec,
+        dict(request.answers),
+        schemes=schemes,
+        documents_held=list(request.documents_held),
+    )
+    cards, unlock = _cards_for(profile, schemes, _today())
+
+    return IntakeResponse(
+        vertical=request.vertical,
+        declared_banner=load_templates(request.language)["intake.declared_banner"],
+        fields=[
+            ExtractedFieldPayload(
+                profile_field=path,
+                label=field_label(path),
+                value=field.value,
+                confidence=field.confidence,
+                origin=field.origin.value,
+                document_id=field.document_id,
+                document_label=document_label(field.document_id),
+                source_field=field.source_field,
+            )
+            for path, field in sorted(profile.fields.items())
+        ],
+        cards=cards,
+        unlock=to_unlock(unlock),
+    )
 
 
 @app.post("/api/extract", response_model=ExtractResponse)

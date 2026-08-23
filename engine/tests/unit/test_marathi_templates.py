@@ -125,3 +125,35 @@ def test_an_unknown_language_is_an_error_not_a_silent_fallback(
 
     with pytest.raises(RenderError, match="no template set"):
         load_templates("hi")
+
+
+# --- intake questions carry the same translation discipline ------------------
+
+
+def test_every_intake_string_has_a_marathi_placeholder(corpus_dir):
+    """Intake prompts live in corpus/intake.yaml, not the template set.
+
+    They are questions, not verdict sentences — no claim about anyone — so the digit
+    ban that governs template prose would be wrong for them ("How much land, in
+    hectares?" is fine; a rupee figure in a prompt is fine). But the translation
+    discipline is identical: an mr value for every string, placeholdered until a
+    native speaker fills it in, never machine translated.
+    """
+    from haqdaar.profile.intake import load_intake
+
+    spec = load_intake(corpus_dir / "intake.yaml")
+
+    strings: list[tuple[str, dict]] = []
+    for section in spec.sections:
+        strings.append((section.section_id, section.title))
+        for question in section.questions:
+            strings.append((question.question_id, question.prompt))
+            for option in question.options:
+                strings.append((f"{question.question_id}:{option.value}", option.label))
+
+    assert strings
+    for name, mapping in strings:
+        assert "en" in mapping, name
+        assert "mr" in mapping, f"{name} has no Marathi value"
+        assert PLACEHOLDER in mapping["mr"], f"{name} Marathi is not placeholdered"
+        assert PLACEHOLDER not in mapping["en"], f"{name} English carries a placeholder"

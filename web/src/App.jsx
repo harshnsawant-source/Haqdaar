@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { Card } from './Card.jsx';
+import { Intake } from './Intake.jsx';
 import { Upload } from './Upload.jsx';
 import { fetchEvaluation, fetchPersonas, purgeSession } from './api.js';
 import { t } from './strings.js';
@@ -30,6 +31,8 @@ export default function App() {
   const [error, setError] = useState(null);
   const [offline, setOffline] = useState(null);
   const [purged, setPurged] = useState(false);
+  const [intakeVertical, setIntakeVertical] = useState(null);
+  const [declaredBanner, setDeclaredBanner] = useState(null);
 
   useEffect(() => {
     fetchPersonas()
@@ -78,11 +81,15 @@ export default function App() {
     setOffline(null);
     setQuery('');
     setDraftQuery('');
+    setIntakeVertical(null);
+    setDeclaredBanner(null);
     setPurged(true);
   }
 
   function choose(personaId) {
     setPurged(false);
+    setIntakeVertical(null);
+    setDeclaredBanner(null);
     // Clear the previous person before loading the next one.
     purgeSession().finally(() => {
       setSelected(personaId);
@@ -120,11 +127,51 @@ export default function App() {
       )}
       {offline && !offline.stored && <div className="banner offline">{s.offlineNothing}</div>}
       {purged && <div className="banner purged">{s.purged}</div>}
+      {declaredBanner && <div className="banner declared">{declaredBanner}</div>}
 
-      {!selected ? (
+      {intakeVertical ? (
         <>
-          <h2>{s.choosePersona}</h2>
-          <p className="tagline">{s.chooseHint}</p>
+          <h2>{s.tellUs}</h2>
+          <p className="tagline">{s.tellUsHint}</p>
+          <Intake
+            vertical={intakeVertical}
+            onCancel={() => setIntakeVertical(null)}
+            onResult={(data) => {
+              // Intake returns the same card shape as every other entry point, so the
+              // results list below is unchanged — the profile changed, not the engine.
+              setResult(data);
+              setDeclaredBanner(data.declared_banner);
+              setSelected(`intake:${intakeVertical}`);
+              setIntakeVertical(null);
+              setStatus('done');
+            }}
+          />
+        </>
+      ) : !selected ? (
+        <>
+          <h2>{s.tellUs}</h2>
+          <p className="tagline">{s.tellUsHint}</p>
+          <p className="tagline">{s.whichDomain}</p>
+          <div className="front-door">
+            <button
+              type="button"
+              className="primary"
+              onClick={() => setIntakeVertical('welfare')}
+            >
+              {s.domainWelfare}
+            </button>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => setIntakeVertical('entrepreneur')}
+            >
+              {s.domainEntrepreneur}
+            </button>
+          </div>
+
+          <div className="secondary-block">
+          <h2>{s.orPickDemo}</h2>
+          <p className="tagline">{s.orPickDemoHint}</p>
 
           {/* Grouped by vertical because the flip between them IS the closing move:
               the same engine answering a different domain. */}
@@ -150,6 +197,7 @@ export default function App() {
               </div>
             </section>
           ))}
+          </div>
         </>
       ) : (
         <>
@@ -161,6 +209,7 @@ export default function App() {
           </div>
           <p className="tagline finish-hint">{s.finishHint}</p>
 
+          {!selected.startsWith('intake:') && (
           <form className="ask" onSubmit={ask}>
             <input
               value={draftQuery}
@@ -170,12 +219,14 @@ export default function App() {
             />
             <button type="submit">{s.ask}</button>
           </form>
+          )}
           {query && (
             <button type="button" onClick={clearQuery}>
               {s.clearQuery}
             </button>
           )}
 
+          {!selected.startsWith('intake:') && (
           <Upload
             personaId={selected}
             onResult={(data) => {
@@ -186,6 +237,7 @@ export default function App() {
               setStatus('done');
             }}
           />
+          )}
 
           {status === 'loading' && <p className="empty">{s.loading}</p>}
 
@@ -215,6 +267,10 @@ export default function App() {
                 card={card}
                 personaId={selected}
                 stackedWith={stackedWith}
+                /* Filing from an intake profile would need /api/act to accept a
+                   profile rather than a persona id. Out of scope here, so the
+                   SIMULATED action slot is hidden rather than shown broken. */
+                canAct={!selected.startsWith('intake:')}
                 key={card.scheme_id || `card-${i}`}
               />
             );

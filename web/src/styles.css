@@ -356,3 +356,31 @@ table.fields tbody tr + tr th, table.fields tbody tr + tr td {
                        font-weight: 600; margin-left: auto; }
 .finish-hint { margin: 6px 0 0; font-size: 0.8rem; }
 .banner.purged { border-color: var(--eligible); color: var(--eligible); }
+
+/* --- guided intake: the front door ---------------------------------------- */
+.intake { display: grid; gap: 14px; margin: 12px 0; }
+.intake-section { border: 1px solid var(--line); border-radius: var(--radius);
+                  padding: 12px 14px; background: var(--surface); display: grid;
+                  gap: 14px; }
+.intake-section legend { font-size: 0.74rem; text-transform: uppercase;
+                         letter-spacing: 0.08em; color: var(--ink-soft);
+                         padding: 0 6px; }
+.question { display: grid; gap: 8px; }
+.question .prompt { margin: 0; font-weight: 500; }
+.question input[type='number'] {
+  font: inherit; padding: 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); max-width: 14rem; min-height: 44px;
+}
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice { padding: 10px 14px; border-radius: 999px; font-size: 0.9rem; }
+.choice[aria-pressed='true'] { background: var(--ink); color: var(--bg);
+                               border-color: var(--ink); font-weight: 600; }
+.intake-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.intake-actions .primary { flex: 1; min-width: 12rem; }
+
+.front-door { display: grid; gap: 10px; margin: 14px 0; }
+.secondary-block { margin-top: 22px; padding-top: 14px;
+                   border-top: 1px solid var(--line); }
+.secondary-block h2 { font-size: 0.78rem; text-transform: uppercase;
+                      letter-spacing: 0.07em; color: var(--ink-soft); margin: 0 0 2px; }
+.banner.declared { border-color: var(--unverifiable); color: var(--unverifiable); }

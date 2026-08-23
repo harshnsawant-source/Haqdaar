@@ -13,7 +13,7 @@ import { t } from './strings.js';
 
 const s = t('en');
 
-export function Card({ card, personaId, stackedWith = [] }) {
+export function Card({ card, personaId, stackedWith = [], canAct = true }) {
   const [action, setAction] = useState(null);
   const [acting, setActing] = useState(false);
   const [actionError, setActionError] = useState(null);
@@ -88,7 +88,7 @@ export function Card({ card, personaId, stackedWith = [] }) {
 
       {/* A+ — it acts. Every step of this is SIMULATED and says so; the banners come
           from the engine's template set, not from this component. */}
-      {card.status === 'ELIGIBLE' && (
+      {card.status === 'ELIGIBLE' && canAct && (
         <div className="action-slot">
           {!action && (
             <>

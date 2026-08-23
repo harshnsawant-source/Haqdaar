@@ -1,0 +1,221 @@
+# Guided intake — the front door.
+#
+# Structured questions, not a free-text box and not a model. A blank box asks a citizen
+# to guess what the machine wants; a low-literacy user in particular does far better
+# with "are you a widow? yes / no" than with "describe your situation". It also keeps
+# the zero-generative-call guarantee intact: nothing here is interpreted, only recorded.
+#
+# WHAT AN ANSWER IS WORTH
+# -----------------------
+# An answer is a SELF-DECLARATION. It settles a clause only where the corpus says a
+# self-declaration settles it (`verifiable_from` contains self_declaration) — that is
+# how the real PM-KISAN form collects its exclusions, on the applicant's own account.
+#
+# A clause that needs a caste certificate, a BPL card or a 7/12 extract is NOT settled
+# by someone saying so. It stays UNKNOWN and lands on BLOCKED_ON_DOCUMENT. The engine
+# enforces this in eligibility/evaluate.py by checking evidence provenance against
+# `verifiable_from`; nothing here can override it.
+#
+# The last section asks which documents she actually holds. A fact she states IS
+# attributed to a document she says she has, when that document is accepted proof for
+# the clause — she is asserting both the fact and that she can evidence it. Every
+# intake result carries a banner saying the answers are hers and the documents have not
+# been seen.
+#
+# TRANSLATION: every prompt and label carries an `mr` value. Like the template set,
+# they are [NEEDS HUMAN TRANSLATION] placeholders until a native speaker fills them in.
+
+version: 1
+
+sections:
+  - section_id: about-you
+    title:
+      en: "About you"
+      mr: "[NEEDS HUMAN TRANSLATION] About you"
+    questions:
+      - question_id: age
+        profile_field: applicant.age
+        type: number
+        min: 0
+        max: 120
+        prompt:
+          en: "How old are you?"
+          mr: "[NEEDS HUMAN TRANSLATION] How old are you?"
+
+      - question_id: gender
+        profile_field: applicant.gender
+        type: choice
+        prompt:
+          en: "What is your gender?"
+          mr: "[NEEDS HUMAN TRANSLATION] What is your gender?"
+        options:
+          - value: FEMALE
+            label: {en: "Woman", mr: "[NEEDS HUMAN TRANSLATION] Woman"}
+          - value: MALE
+            label: {en: "Man", mr: "[NEEDS HUMAN TRANSLATION] Man"}
+          - value: TRANSGENDER
+            label: {en: "Transgender", mr: "[NEEDS HUMAN TRANSLATION] Transgender"}
+
+      - question_id: marital_status
+        profile_field: applicant.marital_status
+        type: choice
+        prompt:
+          en: "What is your marital status?"
+          mr: "[NEEDS HUMAN TRANSLATION] What is your marital status?"
+        options:
+          - value: WIDOW
+            label: {en: "Widowed", mr: "[NEEDS HUMAN TRANSLATION] Widowed"}
+          - value: DIVORCED
+            label: {en: "Divorced", mr: "[NEEDS HUMAN TRANSLATION] Divorced"}
+          - value: MARRIED
+            label: {en: "Married", mr: "[NEEDS HUMAN TRANSLATION] Married"}
+          - value: UNMARRIED
+            label: {en: "Unmarried", mr: "[NEEDS HUMAN TRANSLATION] Unmarried"}
+
+      - question_id: social_category
+        profile_field: applicant.social_category
+        type: choice
+        prompt:
+          en: "What is your social category?"
+          mr: "[NEEDS HUMAN TRANSLATION] What is your social category?"
+        options:
+          - value: SC
+            label: {en: "Scheduled Caste", mr: "[NEEDS HUMAN TRANSLATION] Scheduled Caste"}
+          - value: ST
+            label: {en: "Scheduled Tribe", mr: "[NEEDS HUMAN TRANSLATION] Scheduled Tribe"}
+          - value: OBC
+            label: {en: "OBC", mr: "[NEEDS HUMAN TRANSLATION] OBC"}
+          - value: GENERAL
+            label: {en: "General", mr: "[NEEDS HUMAN TRANSLATION] General"}
+
+  - section_id: household
+    title:
+      en: "Your household"
+      mr: "[NEEDS HUMAN TRANSLATION] Your household"
+    questions:
+      - question_id: landholding
+        profile_field: household.landholding_hectares
+        type: number
+        min: 0
+        max: 1000
+        prompt:
+          en: "How much cultivable land is in your name, in hectares?"
+          mr: "[NEEDS HUMAN TRANSLATION] How much cultivable land is in your name, in hectares?"
+
+      - question_id: annual_income
+        profile_field: household.annual_income
+        type: number
+        min: 0
+        max: 100000000
+        prompt:
+          en: "What is your family's total income for a year, in rupees?"
+          mr: "[NEEDS HUMAN TRANSLATION] What is your family's total income for a year, in rupees?"
+
+      - question_id: bpl
+        profile_field: household.bpl
+        type: boolean
+        prompt:
+          en: "Is your family on the Below Poverty Line list?"
+          mr: "[NEEDS HUMAN TRANSLATION] Is your family on the Below Poverty Line list?"
+
+  - section_id: enterprise
+    title:
+      en: "If you are starting a business"
+      mr: "[NEEDS HUMAN TRANSLATION] If you are starting a business"
+    questions:
+      - question_id: venture_type
+        profile_field: enterprise.venture_type
+        type: choice
+        prompt:
+          en: "Is this your first business?"
+          mr: "[NEEDS HUMAN TRANSLATION] Is this your first business?"
+        options:
+          - value: GREENFIELD
+            label: {en: "Yes, my first", mr: "[NEEDS HUMAN TRANSLATION] Yes, my first"}
+          - value: EXISTING
+            label: {en: "No, I already run one", mr: "[NEEDS HUMAN TRANSLATION] No, I already run one"}
+
+      - question_id: loan_amount
+        profile_field: enterprise.loan_amount_sought
+        type: number
+        min: 0
+        max: 1000000000
+        prompt:
+          en: "How much do you need to borrow, in rupees?"
+          mr: "[NEEDS HUMAN TRANSLATION] How much do you need to borrow, in rupees?"
+
+  # These are the questions a real form collects on the applicant's own account, which
+  # is why a declaration settles them. Every one is a PM-KISAN exclusion.
+  - section_id: declarations
+    title:
+      en: "A few things to declare"
+      mr: "[NEEDS HUMAN TRANSLATION] A few things to declare"
+    questions:
+      - question_id: paid_income_tax
+        profile_field: applicant.paid_income_tax
+        type: boolean
+        prompt:
+          en: "Did you pay income tax last year?"
+          mr: "[NEEDS HUMAN TRANSLATION] Did you pay income tax last year?"
+
+      - question_id: government_employee
+        profile_field: applicant.government_employee
+        type: boolean
+        prompt:
+          en: "Are you, or were you, a government employee?"
+          mr: "[NEEDS HUMAN TRANSLATION] Are you, or were you, a government employee?"
+
+      - question_id: constitutional_post
+        profile_field: applicant.constitutional_post
+        type: boolean
+        prompt:
+          en: "Have you held a constitutional post, or been a minister, legislator, mayor or district panchayat chairperson?"
+          mr: "[NEEDS HUMAN TRANSLATION] Have you held a constitutional post, or been a minister, legislator, mayor or district panchayat chairperson?"
+
+      - question_id: registered_professional
+        profile_field: applicant.registered_professional
+        type: boolean
+        prompt:
+          en: "Are you a practising doctor, engineer, lawyer, chartered accountant or architect registered with a professional body?"
+          mr: "[NEEDS HUMAN TRANSLATION] Are you a practising doctor, engineer, lawyer, chartered accountant or architect registered with a professional body?"
+
+      - question_id: institutional_landholder
+        profile_field: household.institutional_landholder
+        type: boolean
+        prompt:
+          en: "Is the land held by an institution rather than by a person?"
+          mr: "[NEEDS HUMAN TRANSLATION] Is the land held by an institution rather than by a person?"
+
+      - question_id: monthly_pension
+        profile_field: applicant.monthly_pension
+        type: number
+        min: 0
+        max: 10000000
+        prompt:
+          en: "What pension do you receive each month, in rupees?"
+          mr: "[NEEDS HUMAN TRANSLATION] What pension do you receive each month, in rupees?"
+
+  # Which papers she actually has. A fact is attributed to one of these when the corpus
+  # accepts it as proof for that clause; otherwise the fact stands only as her word.
+  - section_id: documents
+    title:
+      en: "Which of these do you have with you?"
+      mr: "[NEEDS HUMAN TRANSLATION] Which of these do you have with you?"
+    questions:
+      - question_id: documents_held
+        type: documents
+        prompt:
+          en: "Tick every document you can produce."
+          mr: "[NEEDS HUMAN TRANSLATION] Tick every document you can produce."
+        documents:
+          - aadhaar
+          - age_proof
+          - caste_certificate
+          - husband_death_certificate
+          - divorce_decree
+          - bpl_ration_card
+          - income_certificate
+          - land_record_7_12
+          - bank_passbook
+          - project_report
+          - pension_order

@@ -214,6 +214,67 @@ class ExtractResponse(BaseModel):
     unlock: UnlockPayload | None = None
 
 
+class IntakeOptionPayload(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    value: str
+    label: str
+
+
+class IntakeQuestionPayload(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    question_id: str
+    type: str
+    prompt: str
+    profile_field: str | None = None
+    options: list[IntakeOptionPayload] = Field(default_factory=list)
+    #: For the documents question: id plus the engine's name for it.
+    documents: list[IntakeOptionPayload] = Field(default_factory=list)
+    min: float | None = None
+    max: float | None = None
+
+
+class IntakeSectionPayload(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    section_id: str
+    title: str
+    questions: list[IntakeQuestionPayload] = Field(default_factory=list)
+
+
+class IntakeFormResponse(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    version: int
+    language: str
+    sections: list[IntakeSectionPayload] = Field(default_factory=list)
+
+
+class IntakeRequest(BaseModel):
+    """What the citizen answered. Values only — nothing is interpreted."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    vertical: str
+    answers: dict[str, bool | int | float | str | None] = Field(default_factory=dict)
+    documents_held: list[str] = Field(default_factory=list)
+    language: str = "en"
+
+
+class IntakeResponse(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    vertical: str
+    #: Always true: intake answers are the citizen's own account.
+    declared: bool = True
+    #: The engine-rendered sentence saying so. The UI shows this, never its own.
+    declared_banner: str
+    fields: list[ExtractedFieldPayload] = Field(default_factory=list)
+    cards: list[CardPayload] = Field(default_factory=list)
+    unlock: UnlockPayload | None = None
+
+
 class PersonaSummary(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
