@@ -217,6 +217,30 @@ winget install --id UB-Mannheim.TesseractOCR    # then reopen the terminal
    before a judge asks.
 11. Know what is **provisional**: every scheme rule. Every card says so on screen.
 
+## Two quirks that will waste your time if you do not know them
+
+**A backgrounded engine can report a failure while running perfectly.** Starting
+uvicorn in the background has repeatedly reported `exit code 127` with an empty log
+while the server was up and answering correctly. **Trust the port, not the status:**
+
+```bash
+netstat -ano | grep ":8000.*LISTENING"     # is something actually there?
+curl -s http://127.0.0.1:8000/api/health   # is it answering?
+```
+
+**A stale engine will serve you yesterday's code.** uvicorn without `--reload` loads
+the code once at startup, so a server left running from an earlier session keeps
+answering with old behaviour — twice this looked like a change had not landed. If a
+response is missing something you just added, check the port before debugging the code:
+
+```bash
+netstat -ano | grep ":8000.*LISTENING"          # note the PID
+powershell -Command "Stop-Process -Id <PID> -Force"
+```
+
+The reliable check that a server has the code you expect is to ask it for something
+only the new code can produce, rather than trusting that it restarted.
+
 ## If something breaks mid-demo
 
 The failure paths are rehearsed and asserted (`engine/tests/unit/test_failure_paths.py`).
