@@ -47,6 +47,9 @@ const en = {
   stackedWith: 'Paid together',
   stackedNote:
     'These are two parts of one payment, not two separate benefits. The engine groups them so the totals are never counted twice.',
+  finishSession: 'Finish and clear',
+  finishHint: 'Clears this person’s results from this device before the next visitor.',
+  purged: 'Cleared. Nothing from that session is left on this device.',
   uploadHeading: 'Upload a document',
   documentType: 'Which document is this?',
   chooseFile: 'Choose an image',

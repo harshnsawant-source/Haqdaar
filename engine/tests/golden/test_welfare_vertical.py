@@ -60,7 +60,7 @@ def test_positive_match_is_proven_from_her_land_record(
     card = render_card(results["pm-kisan"], next(
         s for s in schemes if s.scheme_id == "pm-kisan"), today=today)
     assert card.lines[0] == "You are eligible for PM-KISAN."
-    assert "Proven from your land record 7 12." in card.lines
+    assert "Proven from your 7/12 land record." in card.lines
 
 
 def test_stacking_groups_ignwps_and_sgnay(welfare_schemes_dir, sunita_profile, today):

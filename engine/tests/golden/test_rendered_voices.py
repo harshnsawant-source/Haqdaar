@@ -37,7 +37,7 @@ def test_voice_eligible_with_proof(schemes_dir, entrepreneur_profile, today):
     ]
     # Each proven clause is followed by the document that proves it.
     assert "Proven from your caste certificate." in card.lines
-    assert "Proven from your aadhaar." in card.lines
+    assert "Proven from your Aadhaar." in card.lines
     assert "Source: https://www.standupmitra.in/" in card.lines
 
 
@@ -174,7 +174,14 @@ def test_the_unlock_count_always_matches_the_document_it_names(
         match = re.search(r"Bring your (.+?) and this unlocks (\d+) more", line)
         if match is None:
             continue  # the single-scheme phrasing names no count at all
-        named_document, claimed = match.group(1).replace(" ", "_"), int(match.group(2))
+        from haqdaar.render.labels import document_label
+
+        named_label, claimed = match.group(1), int(match.group(2))
+        # Map the rendered name back to the document it names, so the assertion
+        # survives the display layer changing how a document is written.
+        named_document = next(
+            d for d in by_document if document_label(d) == named_label
+        )
         actual = by_document[named_document].unlock_count
         assert claimed == actual, (
             f"{card.scheme_id}: claims {named_document} unlocks {claimed}, "

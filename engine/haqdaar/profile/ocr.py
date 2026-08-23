@@ -20,6 +20,11 @@ from __future__ import annotations
 import shutil
 from dataclasses import dataclass
 
+#: Upper bound on decoded image size, in pixels. A generous A4 scan at 600 dpi is about
+#: 35 megapixels; this leaves room for that and still refuses a bomb. Pillow's own
+#: default is ~89 MP and only *warns* well below the point where memory matters.
+MAX_IMAGE_PIXELS = 50_000_000
+
 
 @dataclass(frozen=True)
 class Word:
@@ -85,10 +90,23 @@ def read(image_bytes: bytes, *, min_word_confidence: float = 0.0) -> OcrResult:
     import pytesseract
     from PIL import Image, UnidentifiedImageError
 
+    # A few kilobytes of crafted PNG can declare a 40,000 x 40,000 canvas and expand to
+    # gigabytes on decode. Bound it: a document photo needs nowhere near this, and a
+    # bomb must land on "nothing was read" like any other unreadable page rather than
+    # taking the process down mid-demo.
+    Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
+
     try:
         image = Image.open(io.BytesIO(image_bytes))
         image.load()
-    except (UnidentifiedImageError, OSError, ValueError):
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+        Image.DecompressionBombError,
+    ):
+        # DecompressionBombError derives from Exception, not OSError or ValueError, so
+        # it has to be named explicitly — it would otherwise escape as a 500.
         return OcrResult(words=[], engine="tesseract", available=True)
 
     try:

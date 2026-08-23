@@ -16,8 +16,25 @@ from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.formparsers import MultiPartParser
+
+from haqdaar.api.uploads import (
+    MAX_UPLOAD_BYTES,
+    UploadRejected,
+    check_content_length,
+    check_count,
+    check_type,
+    read_bounded,
+)
+
+# Keep an accepted upload in memory rather than on disk. Starlette spools a multipart
+# part to a temp file once it exceeds this threshold; raising it to our own per-file
+# cap means a file we accept never touches the filesystem, which is what lets the
+# no-persistence test below be true rather than aspirational.
+MultiPartParser.spool_max_size = MAX_UPLOAD_BYTES
+MultiPartParser.max_part_size = MAX_UPLOAD_BYTES
 
 from haqdaar.action.fill import ActionRefused, fill_form, missing_documents
 from haqdaar.action.track import submit
@@ -159,6 +176,7 @@ def personas() -> list[PersonaSummary]:
 
 @app.post("/api/extract", response_model=ExtractResponse)
 async def extract(
+    request: Request,
     persona_id: str = Form(...),
     mode: str = Form(ExtractionMode.FIXTURE_BACKED.value),
     document_types: list[str] = Form(default=[]),
@@ -176,6 +194,14 @@ async def extract(
     caller chooses; the UI shows which happened. Neither is ever silently substituted.
     """
     try:
+        check_content_length(request.headers.get("content-length"))
+        check_count(files, document_types)
+    except UploadRejected as rejected:
+        raise HTTPException(
+            status_code=rejected.status_code, detail=rejected.detail
+        ) from None
+
+    try:
         extraction_mode = ExtractionMode(mode)
     except ValueError:
         raise HTTPException(status_code=422, detail=f"unknown mode {mode!r}") from None
@@ -184,15 +210,15 @@ async def extract(
     schemes = _load_vertical(vertical)
     today = _today()
 
-    if len(document_types) != len(files):
-        raise HTTPException(
-            status_code=422,
-            detail="each uploaded file needs a matching document_type",
-        )
-
     reports = []
     for upload, document_type in zip(files, document_types):
-        payload = await upload.read()
+        try:
+            payload = await read_bounded(upload)
+            check_type(upload, payload)
+        except UploadRejected as rejected:
+            raise HTTPException(
+                status_code=rejected.status_code, detail=rejected.detail
+            ) from None
         reports.append(
             extract_document(
                 payload,

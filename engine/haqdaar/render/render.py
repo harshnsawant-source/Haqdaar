@@ -39,6 +39,7 @@ from haqdaar.eligibility.verdict import (
 )
 from haqdaar.guard.gate import GateResult
 from haqdaar.guard.triggers import TriggerId
+from haqdaar.render.labels import document_label
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 
@@ -573,4 +574,5 @@ def _not_eligible_reason(
 
 
 def _label(document_id: str) -> str:
-    return document_id.replace("_", " ")
+    """Citizen-facing document name. See render/labels.py for why it lives there."""
+    return document_label(document_id)

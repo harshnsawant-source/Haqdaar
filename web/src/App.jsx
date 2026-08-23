@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Card } from './Card.jsx';
 import { Upload } from './Upload.jsx';
-import { fetchEvaluation, fetchPersonas } from './api.js';
+import { fetchEvaluation, fetchPersonas, purgeSession } from './api.js';
 import { t } from './strings.js';
 
 const s = t('en');
@@ -29,6 +29,7 @@ export default function App() {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
   const [offline, setOffline] = useState(null);
+  const [purged, setPurged] = useState(false);
 
   useEffect(() => {
     fetchPersonas()
@@ -63,11 +64,32 @@ export default function App() {
       });
   }, []);
 
-  function choose(personaId) {
-    setSelected(personaId);
+  /*
+   * Ending a session, and switching between people, both purge.
+   *
+   * On a shared laptop the next citizen must not be able to reload and read the
+   * previous one's schemes and documents. The app shell and the persona list survive
+   * — they are not anyone's data — so the device still opens and works offline.
+   */
+  async function finish() {
+    await purgeSession();
+    setSelected(null);
+    setResult(null);
+    setOffline(null);
     setQuery('');
     setDraftQuery('');
-    run(personaId, '');
+    setPurged(true);
+  }
+
+  function choose(personaId) {
+    setPurged(false);
+    // Clear the previous person before loading the next one.
+    purgeSession().finally(() => {
+      setSelected(personaId);
+      setQuery('');
+      setDraftQuery('');
+      run(personaId, '');
+    });
   }
 
   function ask(event) {
@@ -97,6 +119,7 @@ export default function App() {
         </div>
       )}
       {offline && !offline.stored && <div className="banner offline">{s.offlineNothing}</div>}
+      {purged && <div className="banner purged">{s.purged}</div>}
 
       {!selected ? (
         <>
@@ -130,9 +153,13 @@ export default function App() {
         </>
       ) : (
         <>
-          <button type="button" onClick={() => { setSelected(null); setResult(null); }}>
-            ← {s.back}
-          </button>
+          <div className="session-bar">
+            <button type="button" onClick={finish}>← {s.back}</button>
+            <button type="button" className="finish" onClick={finish}>
+              {s.finishSession}
+            </button>
+          </div>
+          <p className="tagline finish-hint">{s.finishHint}</p>
 
           <form className="ask" onSubmit={ask}>
             <input

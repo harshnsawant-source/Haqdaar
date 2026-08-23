@@ -349,3 +349,10 @@ table.fields tbody tr + tr th, table.fields tbody tr + tr td {
 .stacked p { margin: 0; font-size: 0.88rem; font-weight: 600; }
 .stacked .why { font-weight: 400; font-size: 0.8rem; color: var(--ink-soft);
                 margin-top: 4px; }
+
+/* --- session hygiene on a shared device ----------------------------------- */
+.session-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.session-bar .finish { border-color: var(--blocked); color: var(--blocked);
+                       font-weight: 600; margin-left: auto; }
+.finish-hint { margin: 6px 0 0; font-size: 0.8rem; }
+.banner.purged { border-color: var(--eligible); color: var(--eligible); }

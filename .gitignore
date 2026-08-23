@@ -16,3 +16,26 @@ desktop.ini
 node_modules/
 dist/
 .vite/
+
+# ---------------------------------------------------------------------------
+# CITIZEN DOCUMENTS MUST NEVER ENTER THIS TREE.
+#
+# This repo sits inside OneDrive, which syncs to Microsoft's cloud. A real caste
+# certificate, income certificate or land record dropped in here would silently be
+# uploaded offsite and would be very hard to recall. These patterns are a safety net,
+# not permission — see the warning in RUNNING.md.
+#
+# The PWA's own icons are the deliberate exception below.
+# ---------------------------------------------------------------------------
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.tif
+*.tiff
+*.bmp
+*.heic
+*.pdf
+*.scan
+
+!web/public/icon-*.png

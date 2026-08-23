@@ -70,3 +70,37 @@ export function fetchEvaluation(personaId, query) {
   if (query) params.set('query', query);
   return get(`/api/evaluate?${params.toString()}`);
 }
+
+/*
+ * Clear everything about the citizen who just used this device.
+ *
+ * Belt and braces: ask the service worker to drop its data cache, and also delete the
+ * caches directly in case no worker is controlling this page (dev server, first load,
+ * a worker that failed to register). Resolves either way — a purge must never appear
+ * to fail, because a failed purge that looks successful is the worst outcome.
+ */
+export async function purgeSession() {
+  const results = { worker: false, direct: false };
+
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    try {
+      navigator.serviceWorker.controller.postMessage({ type: 'haqdaar:purge' });
+      results.worker = true;
+    } catch {
+      /* fall through to the direct delete */
+    }
+  }
+
+  if ('caches' in window) {
+    try {
+      const names = await caches.keys();
+      await Promise.all(
+        names.filter((n) => n.includes('data')).map((n) => caches.delete(n)),
+      );
+      results.direct = true;
+    } catch {
+      /* nothing more we can do from here */
+    }
+  }
+  return results;
+}

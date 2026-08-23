@@ -215,3 +215,72 @@ The failure paths are rehearsed and asserted (`engine/tests/unit/test_failure_pa
 A crash does not produce a stack trace on screen; the PWA shows its calm offline copy.
 The correct move is to say what happened and carry on — a system that refuses when it
 cannot answer is the product working, and that is the whole pitch.
+
+---
+
+# Privacy and safety
+
+This app handles caste certificates, land records and income documents, on a machine
+that may be shared. These are not hypotheticals for this product — they are the
+deployment story.
+
+## NEVER PUT A REAL CITIZEN DOCUMENT IN THIS FOLDER
+
+**This repo lives inside OneDrive, which syncs to Microsoft's cloud.** A real income
+certificate or land record dropped into the working tree would be uploaded offsite
+silently and would be very hard to recall.
+
+`.gitignore` refuses image and PDF types as a safety net, but a gitignored file still
+syncs to OneDrive — git has nothing to do with it. **Demo inputs only.** Better still,
+move the repo outside OneDrive entirely (`C:\dev\haqdaar`).
+
+## Shared-device hygiene
+
+The service worker caches verdicts so the app works offline. On a shared laptop that
+means the next person could otherwise reload and read the previous person's schemes,
+documents and gaps.
+
+- **"Finish and clear"** purges cached verdicts and extracted fields. Use it between
+  citizens. The app shell and persona list survive, so the device still works offline.
+- Switching to a different person purges automatically — you do not have to remember.
+- What is never purged, because it is nobody's data: the app shell, the persona list.
+
+## What the upload path does and does not do
+
+| | |
+|---|---|
+| Per-file limit | 5 MB |
+| Files per request | 4 |
+| Accepted | PNG, JPEG, WEBP, TIFF, BMP — checked by **declared type and magic bytes** |
+| Decoded-image bound | 50 megapixels (a 600 dpi A4 scan is ~35 MP) |
+| Written to disk | **nothing** — the multipart spool threshold is raised to the per-file cap so an accepted file never reaches the filesystem |
+| Retained after the response | **nothing** — asserted by `tests/unit/test_upload_security.py` |
+| Sent anywhere | **nothing.** No network calls, no cloud OCR, no keys |
+
+A refused upload reads as a refusal ("that file is not an image we can read"), never a
+stack trace. An image we accept but cannot read produces UNKNOWN fields and the normal
+refusing verdict — never a guessed value.
+
+## Dependency audit (2026-08-23)
+
+- **Python (`pip-audit`): no known vulnerabilities.**
+- **npm production (`npm audit --omit=dev`): 0 vulnerabilities.** Nothing in the built
+  `dist/` bundle is affected.
+- **npm dev: 2 findings, both in the Vite dev server** (esbuild dev-server CORS; Vite
+  path traversal, `server.fs.deny` bypass on Windows, launch-editor NTLM disclosure).
+  The only fix is Vite 8, a breaking major.
+
+  **Not upgraded before the freeze, deliberately.** All four are `npm run dev` surface
+  and none ship in the built bundle. A breaking bundler upgrade days before a demo is a
+  worse risk than a dev-only advisory. Mitigation: **use `npm run build && npm run
+  preview` for anything demo-facing** — which is what the demo instructions already say,
+  because the service worker needs a production build. Upgrade Vite after 2 September.
+
+  Note the Windows `server.fs.deny` bypass is the one to respect: do not run
+  `npm run dev` on a machine holding sensitive files while browsing untrusted sites.
+
+## Secrets
+
+No API keys, tokens, credentials or private keys anywhere in the working tree or in any
+commit in git history. No `.env` files exist. The engine needs no keys — there is no
+model to call and no service to authenticate against, so there is nothing to leak.

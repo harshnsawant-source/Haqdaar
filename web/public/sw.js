@@ -140,6 +140,28 @@ async function cacheFirst(request) {
   return fresh;
 }
 
+/*
+ * PURGE. On a shared Panchayat or CSC laptop the next citizen must not be able to
+ * reload and read the previous one's schemes, documents and gaps. The page asks for
+ * this when a session ends or a different person is selected; it drops every cached
+ * verdict and every extracted field while leaving the app shell installed, so the
+ * device stays usable offline without carrying anyone's data forward.
+ */
+self.addEventListener('message', (event) => {
+  if (!event.data || event.data.type !== 'haqdaar:purge') return;
+  event.waitUntil(
+    caches
+      .delete(DATA_CACHE)
+      .then(() => caches.open(DATA_CACHE))
+      // Re-warm only the persona list: it is not citizen data, and without it the
+      // app opens offline to an empty screen.
+      .then((cache) => Promise.allSettled(WARM_DATA.map((a) => cache.add(a))))
+      .then(() => {
+        if (event.source) event.source.postMessage({ type: 'haqdaar:purged' });
+      }),
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;

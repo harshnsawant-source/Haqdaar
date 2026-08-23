@@ -94,7 +94,14 @@ def test_corrupt_upload_reads_nothing(documents_dir, monkeypatch):
     assert report.fields == []
 
 
-def test_corrupt_upload_over_http_is_a_refusal_not_a_crash(client):
+def test_a_file_that_is_not_an_image_is_refused_cleanly(client):
+    """Bytes claiming to be a PNG but which are not.
+
+    Since the security pass this is caught by magic-byte sniffing and refused with a
+    clear reason, rather than handed to the image library to fail obscurely. Telling
+    someone "that is not a document photo" is more use than "I could not read it" when
+    the file was never an image.
+    """
     response = client.post(
         "/api/extract",
         data={
@@ -104,10 +111,36 @@ def test_corrupt_upload_over_http_is_a_refusal_not_a_crash(client):
         },
         files={"files": ("junk.png", b"\x00\x01\x02 not a png", "image/png")},
     )
+    assert response.status_code == 415
+    assert "not an image" in response.json()["detail"]
+    assert "Traceback" not in response.text
+
+
+def test_a_real_image_that_cannot_be_read_still_returns_a_verdict(client):
+    """A genuine but unreadable photo — blurred, blank, wrong page.
+
+    This is the case that must NOT be rejected: it is a document photo, we simply
+    could not get anything off it. She still gets answers, all refusing.
+    """
+    import io
+
+    from PIL import Image
+
+    buffer = io.BytesIO()
+    Image.new("RGB", (60, 40), "white").save(buffer, format="PNG")
+
+    response = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "sunita",
+            "mode": "LIVE",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", buffer.getvalue(), "image/png")},
+    )
     assert response.status_code == 200
     body = response.json()
     assert body["fields"] == []
-    # She still gets an answer — a correct, refusing one.
     assert {c["status"] for c in body["cards"]} <= {
         "BLOCKED_ON_DOCUMENT",
         "UNVERIFIABLE",
