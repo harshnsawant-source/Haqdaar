@@ -1,0 +1,74 @@
+# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+#
+# Transcribed from 01-DEMO-CORPUS.md s2, which cites the Maharashtra SJSA page and the
+# NSAP portal but is our own team document. PROVISIONAL until a human opens the source.
+#
+# REVEAL VERTICAL. This is the persona scheme: Sunita is a 60-year-old widow. It is
+# also half of the STACKING pair — in Maharashtra the Rs 1,500 a widow receives is not
+# IGNWPS *plus* SGNAY, it is IGNWPS topped up through SGNAY to reach Rs 1,500. Listing
+# them as two independent Rs 1,500 benefits would be wrong, and a judge who knows
+# Maharashtra would catch it. See stacks_with below.
+
+scheme_id: ignwps
+name: Indira Gandhi National Widow Pension Scheme
+authority: >-
+  [VERIFY AT SOURCE] National Social Assistance Programme, Ministry of Rural
+  Development, delivered through the state
+benefit: >-
+  [VERIFY AT SOURCE] Rs 1,500 per month in Maharashtra, made up of a central
+  contribution topped up by the state through Sanjay Gandhi Niradhar Anudan Yojana
+source_url: "https://sjsa.maharashtra.gov.in/en/scheme/indira-gandhi-national-widow-pension-scheme/"
+portal_url: "https://nsap.nic.in/"
+filing_office: >-
+  [VERIFY AT SOURCE] the Collector or Tehsildar Office
+retrieved_on: 2026-08-21
+verification_status: PROVISIONAL
+verify_note: >-
+  Open the Maharashtra SJSA page and the NSAP portal. Confirm: (a) verbatim eligibility
+  wording, (b) the exact central/state split and whether the total is still Rs 1,500,
+  (c) the document list — the SJSA page did not print one (01-DEMO-CORPUS.md s2), and
+  (d) what happens at age 80, where a widow is said to move to a different pension
+  track. Do not guess the 80 boundary on stage.
+
+stacks_with: [sgnay]
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: IGNWPS-C1
+        clause_text: "[VERIFY AT SOURCE] The applicant is a widow, all categories."
+        rule_type: enumerated_category
+        profile_field: applicant.marital_status
+        bound:
+          values: [WIDOW]
+        verifiable_from: [husband_death_certificate]
+        verification_status: PROVISIONAL
+        verify_note: "Confirm verbatim wording and the accepted proof of widowhood."
+
+      - clause_id: IGNWPS-C2
+        clause_text: "[VERIFY AT SOURCE] Age 40 to 79 years."
+        rule_type: numeric_bound
+        profile_field: applicant.age
+        bound:
+          min: 40
+          max: 79
+        verifiable_from: [aadhaar, age_proof]
+        verification_status: PROVISIONAL
+        verify_note: >-
+          Confirm the verbatim bounds. The upper bound of 79 matters: at 80 the
+          applicant is said to move to a different track, and that transition is
+          unverified.
+
+      - clause_id: IGNWPS-C3
+        clause_text: "[VERIFY AT SOURCE] The family is Below Poverty Line (BPL)."
+        rule_type: enumerated_category
+        profile_field: household.bpl
+        bound:
+          values: ["true"]
+        verifiable_from: [bpl_ration_card]
+        verification_status: PROVISIONAL
+        verify_note: >-
+          Confirm how BPL status is evidenced — a ration card, a list entry, or a
+          certificate. This clause is the "one document away" beat, so the document
+          named here must be the one a citizen can actually obtain.

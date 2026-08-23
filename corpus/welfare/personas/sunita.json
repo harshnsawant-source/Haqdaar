@@ -1,6 +1,6 @@
 {
   "profile_id": "sunita",
-  "description": "Reveal-vertical persona from PROJECT-BRIEF.md s6: 60, widow, small farmer, rural Maharashtra, land in her own name. Every field below is evidenced by a document she actually carries. Note what is ABSENT: nothing here can settle a SECC 2011 deprivation criterion, because no such document exists for a citizen to hold. That absence is what produces the reveal refusal.",
+  "description": "Reveal-vertical persona from PROJECT-BRIEF.md s6: 60, widow, small farmer, rural Maharashtra, land in her own name. Every field below is evidenced by a document she actually carries or a declaration she makes on the form. Note what is ABSENT: no BPL entry and no income certificate (that absence is the 'one document away' beat), and nothing here can settle a SECC 2011 deprivation criterion, because no such document exists for a citizen to hold (that absence is the refusal).",
   "fields": {
     "applicant.age": {
       "value": 60,
@@ -30,6 +30,42 @@
       "value": 0.8,
       "document_id": "land_record_7_12",
       "source_field": "area",
+      "confidence": 1.0
+    },
+    "household.institutional_landholder": {
+      "value": false,
+      "document_id": "self_declaration",
+      "source_field": "institutional_landholder",
+      "confidence": 1.0
+    },
+    "applicant.constitutional_post": {
+      "value": false,
+      "document_id": "self_declaration",
+      "source_field": "constitutional_post",
+      "confidence": 1.0
+    },
+    "applicant.government_employee": {
+      "value": false,
+      "document_id": "self_declaration",
+      "source_field": "government_employee",
+      "confidence": 1.0
+    },
+    "applicant.monthly_pension": {
+      "value": 0,
+      "document_id": "self_declaration",
+      "source_field": "monthly_pension",
+      "confidence": 1.0
+    },
+    "applicant.paid_income_tax": {
+      "value": false,
+      "document_id": "self_declaration",
+      "source_field": "paid_income_tax",
+      "confidence": 1.0
+    },
+    "applicant.registered_professional": {
+      "value": false,
+      "document_id": "self_declaration",
+      "source_field": "registered_professional",
       "confidence": 1.0
     }
   }

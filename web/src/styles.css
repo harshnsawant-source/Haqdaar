@@ -328,3 +328,24 @@ table.fields tbody tr + tr th, table.fields tbody tr + tr td {
 .unread { font-size: 0.82rem; color: var(--ink-soft); border-top: 1px dashed var(--line);
           padding-top: 8px; }
 .unread ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* --- vertical grouping (the "same engine, new corpus" flip) ---------------- */
+.vertical-group { margin: 16px 0; }
+.vertical-group h3 {
+  margin: 0 0 8px; font-size: 0.74rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-soft);
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline;
+}
+.vertical-hint { text-transform: none; letter-spacing: 0; font-weight: 400;
+                 font-size: 0.78rem; opacity: 0.75; }
+
+/* --- stacking: one payment, shown as one ---------------------------------- */
+.stacked {
+  margin-top: 10px; border: 1px dashed var(--ink-soft); border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.stacked h3 { margin: 0 0 4px; font-size: 0.7rem; text-transform: uppercase;
+              letter-spacing: 0.07em; color: var(--ink-soft); }
+.stacked p { margin: 0; font-size: 0.88rem; font-weight: 600; }
+.stacked .why { font-weight: 400; font-size: 0.8rem; color: var(--ink-soft);
+                margin-top: 4px; }

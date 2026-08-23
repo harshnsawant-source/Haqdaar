@@ -1,0 +1,63 @@
+# Marathi output templates — PLUMBING ONLY, NOT YET TRANSLATED.
+#
+# Every value below is a placeholder of the form:
+#     [NEEDS HUMAN TRANSLATION] <the English string>
+#
+# WHY THERE IS NO MACHINE TRANSLATION HERE
+# ----------------------------------------
+# These sentences are the ones a citizen reads about their own entitlement, in a
+# language most of this team does not speak. A machine translation nobody on the team
+# can check is exactly the unverifiable claim this whole project refuses to make
+# everywhere else — we would be doing to Marathi what we refuse to do to a scheme rule.
+# A native speaker fills these in. Until they do, the placeholder is the honest state,
+# and `test_marathi_templates.py` asserts a placeholder can never reach an English
+# render.
+#
+# FOR THE TRANSLATOR
+# ------------------
+# Translate the prose. Keep every {slot} exactly as written — they are filled from the
+# verdict at render time. The same rules as en.yaml apply and are enforced by tests:
+#   * NO DIGITS in template text. Every number arrives through a {slot}.
+#   * NO scheme names, document names, offices or dates — those are slots too.
+#   * NO hedging ("you may qualify", "it is possible that"). If we cannot prove it we
+#     refuse; we never soften it.
+# Delete the [NEEDS HUMAN TRANSLATION] marker from a line once it is really translated.
+
+eligible.headline: "[NEEDS HUMAN TRANSLATION] You are eligible for {scheme_name}."
+eligible.proof_intro: "[NEEDS HUMAN TRANSLATION] Here is the rule that entitles you:"
+eligible.proof_line: "[NEEDS HUMAN TRANSLATION] {clause_text}"
+eligible.proof_source: "[NEEDS HUMAN TRANSLATION] Source: {source_url}"
+eligible.evidence_line: "[NEEDS HUMAN TRANSLATION] Proven from your {document}."
+eligible.next_step: "[NEEDS HUMAN TRANSLATION] Apply at {filing_office}."
+not_eligible.headline: "[NEEDS HUMAN TRANSLATION] Not this one, and here is exactly why."
+not_eligible.reason: "[NEEDS HUMAN TRANSLATION] The rule says {bound_text}. Your {field_label} is {value}."
+not_eligible.becomes_eligible: "[NEEDS HUMAN TRANSLATION] You become eligible in {year}."
+blocked.headline: "[NEEDS HUMAN TRANSLATION] You are one document away."
+blocked.single: "[NEEDS HUMAN TRANSLATION] Bring your {document} and this unlocks {scheme_name}."
+blocked.multiple: "[NEEDS HUMAN TRANSLATION] Bring your {document} and this unlocks {count} more schemes."
+blocked.where: "[NEEDS HUMAN TRANSLATION] You can get it from {office}."
+blocked.rule: "[NEEDS HUMAN TRANSLATION] The rule this settles: {clause_text}"
+unverifiable.headline: "[NEEDS HUMAN TRANSLATION] I cannot confirm this one, and I will not guess."
+unverifiable.reason_dataset: "[NEEDS HUMAN TRANSLATION] This scheme's rule depends on records I cannot check, and nothing you have shown me can prove it."
+unverifiable.reason_discretionary: "[NEEDS HUMAN TRANSLATION] That is decided by {decider}, not by any document."
+unverifiable.rule: "[NEEDS HUMAN TRANSLATION] The rule I cannot settle: {clause_text}"
+unverifiable.also_unsettleable: "[NEEDS HUMAN TRANSLATION] The same records settle {count} further criteria in this scheme, and I cannot check any of them."
+unverifiable.next_step: "[NEEDS HUMAN TRANSLATION] Ask at {office} and quote that rule."
+unverifiable.promise: "[NEEDS HUMAN TRANSLATION] If they confirm it, come back and I will complete your application."
+unverifiable.outside_corpus: "[NEEDS HUMAN TRANSLATION] That is outside what I have rules for. I only answer where I can show you the official clause."
+approval.headline: "[NEEDS HUMAN TRANSLATION] Whether it is approved is not mine to promise."
+approval.refusal: "[NEEDS HUMAN TRANSLATION] That is decided by {decider}, and no document you hold determines it."
+approval.rule: "[NEEDS HUMAN TRANSLATION] The condition: {clause_text}"
+staleness.banner: "[NEEDS HUMAN TRANSLATION] This rule was last checked on {retrieved_on}. Confirm it is current before you rely on it."
+staleness.amended: "[NEEDS HUMAN TRANSLATION] The source records a change on {last_amended}, after I read it."
+provisional.banner: "[NEEDS HUMAN TRANSLATION] This rule has not yet been verified against the official source. It is not safe to act on."
+action.headline: "[NEEDS HUMAN TRANSLATION] I have filled what your documents can prove for {scheme_name}."
+action.simulated_banner: "[NEEDS HUMAN TRANSLATION] SIMULATED. Nothing has been submitted to any government portal, and this reference is generated on this device. It is not an application."
+action.stand_in_banner: "[NEEDS HUMAN TRANSLATION] SIMULATED FORM LAYOUT. This is a stand-in we built, not the official application document."
+action.filled_count: "[NEEDS HUMAN TRANSLATION] Filled {count} fields from your documents."
+action.gap_intro: "[NEEDS HUMAN TRANSLATION] You still need to supply these:"
+action.gap_line: "[NEEDS HUMAN TRANSLATION] {label}"
+action.gap_document: "[NEEDS HUMAN TRANSLATION] Bring your {document} — it supplies {count} of them."
+action.complete: "[NEEDS HUMAN TRANSLATION] Nothing is missing from what this form asks for."
+action.tracking: "[NEEDS HUMAN TRANSLATION] Your simulated reference: {reference}"
+action.approval_pending: "[NEEDS HUMAN TRANSLATION] Filing does not mean approval. That is still decided by {decider}."

@@ -19,7 +19,7 @@ appraisal condition for Stand-Up India, re-point this fixture.
 import pytest
 
 from haqdaar.corpus.loader import load_corpus
-from haqdaar.eligibility.aggregate import best_unlock
+from haqdaar.eligibility.aggregate import aggregate_unlocks
 from haqdaar.eligibility.evaluate import evaluate_corpus
 from haqdaar.eligibility.verdict import ApprovalStatus, Evaluation, Status
 from haqdaar.guard.gate import gate_all
@@ -130,12 +130,17 @@ def test_reveal_refusal_pmjay_secc_2011(welfare_schemes_dir, sunita_profile, tod
 
     # Nothing to send her to fetch. This is a refusal, not a blocked document.
     assert verdict.unlocking_docs == []
-    assert best_unlock(verdicts) is None  # nothing in this vertical is merely blocked
+    # Other welfare schemes ARE merely blocked (IGNWPS on a BPL card), so the vertical
+    # does produce an unlock beat — but PM-JAY must never appear in it. A refusal that
+    # leaked into "one document away" would send her for a paper that cannot help.
+    for option in aggregate_unlocks(verdicts):
+        assert "pmjay" not in option.unlocks
+        assert "pmjay" not in option.contributes_to
     assert [(f.trigger, f.scope) for f in result.findings] == [
         (TriggerId.T1_UNSUPPORTED_PREDICATE, Scope.ELIGIBILITY)
     ]
 
-    scheme = schemes[0]
+    scheme = next(s for s in schemes if s.scheme_id == "pmjay")
     card = render_card(result, scheme, today=today)
     assert card.lines[0] == "I cannot confirm this one, and I will not guess."
     assert card.lines[1] == (

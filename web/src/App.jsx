@@ -102,20 +102,31 @@ export default function App() {
         <>
           <h2>{s.choosePersona}</h2>
           <p className="tagline">{s.chooseHint}</p>
-          <div className="persona-list">
-            {personas.map((p) => (
-              <button
-                type="button"
-                className="persona"
-                key={p.persona_id}
-                aria-pressed={selected === p.persona_id}
-                onClick={() => choose(p.persona_id)}
-              >
-                <span className="vertical">{p.vertical}</span>
-                <span className="who">{WHO[p.persona_id] || p.persona_id}</span>
-              </button>
-            ))}
-          </div>
+
+          {/* Grouped by vertical because the flip between them IS the closing move:
+              the same engine answering a different domain. */}
+          {['entrepreneur', 'welfare'].map((vertical) => (
+            <section className="vertical-group" key={vertical}>
+              <h3>
+                {vertical === 'welfare' ? s.verticalWelfare : s.verticalEntrepreneur}
+                <span className="vertical-hint">{s.verticalHint}</span>
+              </h3>
+              <div className="persona-list">
+                {personas
+                  .filter((p) => p.vertical === vertical)
+                  .map((p) => (
+                    <button
+                      type="button"
+                      className="persona"
+                      key={p.persona_id}
+                      onClick={() => choose(p.persona_id)}
+                    >
+                      <span className="who">{WHO[p.persona_id] || p.persona_id}</span>
+                    </button>
+                  ))}
+              </div>
+            </section>
+          ))}
         </>
       ) : (
         <>
@@ -162,9 +173,22 @@ export default function App() {
             </section>
           )}
 
-          {result?.cards?.map((card, i) => (
-            <Card card={card} personaId={selected} key={card.scheme_id || `card-${i}`} />
-          ))}
+          {result?.cards?.map((card, i) => {
+            const stackedWith = (result.cards || []).filter(
+              (c) =>
+                c.stack_group_id &&
+                c.stack_group_id === card.stack_group_id &&
+                c.scheme_id !== card.scheme_id,
+            );
+            return (
+              <Card
+                card={card}
+                personaId={selected}
+                stackedWith={stackedWith}
+                key={card.scheme_id || `card-${i}`}
+              />
+            );
+          })}
 
           {status === 'done' && result && result.cards.length === 0 && (
             <p className="empty">{s.results}</p>

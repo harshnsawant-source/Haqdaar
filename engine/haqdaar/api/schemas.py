@@ -54,6 +54,12 @@ class CardPayload(BaseModel):
     has_approval_split: bool = False
     portal_url: str | None = None
     filing_office: str | None = None
+    #: Scheme-interaction results, computed by resolve_interactions. Pass-through: the
+    #: UI groups stacking schemes so two halves of one payment are never shown as two
+    #: independent benefits (01-DEMO-CORPUS.md s2, IGNWPS + SGNAY).
+    stack_group_id: str | None = None
+    claimable: bool = True
+    subsumed_by_scheme: str | None = None
 
 
 class UnlockPayload(BaseModel):
@@ -230,6 +236,9 @@ def to_payload(result: GateResult, scheme: Scheme, card: RenderedCard) -> CardPa
         has_approval_split=bool(card.approval_lines),
         portal_url=scheme.portal_url,
         filing_office=scheme.filing_office,
+        stack_group_id=verdict.stack_group_id,
+        claimable=verdict.claimable,
+        subsumed_by_scheme=verdict.subsumed_by_scheme,
     )
 
 

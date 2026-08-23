@@ -13,7 +13,7 @@ import { t } from './strings.js';
 
 const s = t('en');
 
-export function Card({ card, personaId }) {
+export function Card({ card, personaId, stackedWith = [] }) {
   const [action, setAction] = useState(null);
   const [acting, setActing] = useState(false);
   const [actionError, setActionError] = useState(null);
@@ -63,6 +63,17 @@ export function Card({ card, personaId }) {
             <p key={i}>{line}</p>
           ))}
         </section>
+      )}
+
+      {/* Two halves of one payment must never read as two independent benefits
+          (01-DEMO-CORPUS.md s2). The grouping is computed by the engine; this only
+          displays it. */}
+      {stackedWith.length > 0 && (
+        <div className="stacked">
+          <h3>{s.stackedWith}</h3>
+          <p>{stackedWith.map((c) => c.scheme_name).join(', ')}</p>
+          <p className="why">{s.stackedNote}</p>
+        </div>
       )}
 
       {card.banners.length > 0 && (

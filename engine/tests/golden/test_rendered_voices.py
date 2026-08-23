@@ -125,8 +125,15 @@ def test_no_rendered_card_hedges(
         *cards(schemes_dir, entrepreneur_02_profile, today).values(),
         *cards(welfare_schemes_dir, sunita_profile, today).values(),
     ]
-    # 2 entrepreneur schemes x 2 personas, plus 2 welfare schemes for Sunita.
-    assert len(everything) == 6
+    # Every card the demo can produce, both verticals. Deliberately not a fixed
+    # count: adding a scheme must widen this test's coverage, never break it.
+    assert len(everything) >= 6
+    assert {c.status for c in everything} == {
+        Status.ELIGIBLE,
+        Status.NOT_ELIGIBLE,
+        Status.BLOCKED_ON_DOCUMENT,
+        Status.UNVERIFIABLE,
+    }
     for card in everything:
         lowered = card.text().lower()
         for phrase in BANNED_PHRASES:

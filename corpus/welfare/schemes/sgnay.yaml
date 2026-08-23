@@ -1,0 +1,103 @@
+# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+#
+# Transcribed from 01-DEMO-CORPUS.md s1 (Maharashtra SJSA page). Our own team document,
+# not the official page. PROVISIONAL until a human opens the source.
+#
+# REVEAL VERTICAL, and the state anchor of the demo: genuinely obscure, with an
+# eligibility list long enough that "am I eligible?" is a real question.
+#
+# STACKING: this is how a widow's IGNWPS reaches Rs 1,500 in Maharashtra. The two are
+# one payment, not two. `stacks_with` makes the engine group them.
+#
+# STALE THRESHOLD, FLAGGED ON PURPOSE: the Rs 21,000 annual income ceiling is roughly
+# Rs 1,750 a month and has almost certainly never been indexed. Haqdaar quotes the rule
+# as written and says so, rather than silently modernising a statutory threshold — see
+# the note on SGNAY-C3 and judge Q&A Q5.
+
+scheme_id: sgnay
+name: Sanjay Gandhi Niradhar Anudan Yojana
+authority: >-
+  [VERIFY AT SOURCE] Social Justice and Special Assistance Department, Government of
+  Maharashtra
+benefit: "[VERIFY AT SOURCE] Rs 1,500 per month"
+source_url: "https://sjsa.maharashtra.gov.in/en/scheme/sanjay-gandhi-niradhar-anudan-yojana/"
+portal_url: "https://sas.mahait.org/"
+filing_office: >-
+  [VERIFY AT SOURCE] the District Collector, Tehsildar or Talathi Office
+retrieved_on: 2026-08-21
+verification_status: PROVISIONAL
+verify_note: >-
+  Open the SJSA page. Confirm: (a) verbatim eligibility wording, (b) the full category
+  list, (c) the document list — the official page did not print one
+  (01-DEMO-CORPUS.md s1), and (d) whether the Rs 21,000 ceiling is current. Do not
+  reinterpret the threshold; quote it and flag it.
+
+stacks_with: [ignwps]
+
+clause_groups:
+  - group_id: age
+    satisfy: ALL
+    clauses:
+      - clause_id: SGNAY-C1
+        clause_text: >-
+          [VERIFY AT SOURCE] Destitute men and women aged 18 to 65 years.
+        rule_type: numeric_bound
+        profile_field: applicant.age
+        bound:
+          min: 18
+          max: 65
+        verifiable_from: [aadhaar, age_proof]
+        verification_status: PROVISIONAL
+        verify_note: "Confirm the verbatim bounds."
+
+  - group_id: category
+    satisfy: ANY
+    clauses:
+      - clause_id: SGNAY-C2
+        clause_text: >-
+          [VERIFY AT SOURCE] The applicant belongs to one of the listed categories,
+          which include destitute widows, divorced women not receiving alimony,
+          persons with disability, persons with a severe illness, orphaned children,
+          abuse survivors, transgender persons, devadasis, unmarried women over
+          thirty-five, and wives of prisoners.
+        rule_type: enumerated_category
+        profile_field: applicant.marital_status
+        bound:
+          values: [WIDOW, DIVORCED]
+        verifiable_from: [husband_death_certificate, divorce_decree]
+        verification_status: PROVISIONAL
+        verify_note: >-
+          The official list is longer than what is encoded here. Only the categories
+          a citizen document can evidence are wired; the rest are deliberately absent
+          rather than mapped to fields we cannot fill. Transcribe the full list and
+          decide which are evidenceable before the demo.
+
+  - group_id: means-test
+    satisfy: ANY
+    clauses:
+      - clause_id: SGNAY-C3
+        clause_text: >-
+          [VERIFY AT SOURCE] Family annual income must not exceed Rs 21,000.
+        rule_type: income_threshold
+        profile_field: household.annual_income
+        bound:
+          max_value: 21000
+          period: ANNUAL
+        verifiable_from: [income_certificate]
+        verification_status: PROVISIONAL
+        verify_note: >-
+          STALE THRESHOLD. Roughly Rs 1,750 a month; almost certainly never indexed.
+          Quote it as written and tell the citizen to confirm current interpretation
+          with the Tehsildar. Do NOT silently modernise it — a system that rewrites a
+          statutory threshold commits a different and worse error (judge Q&A Q5).
+
+      - clause_id: SGNAY-C4
+        clause_text: >-
+          [VERIFY AT SOURCE] Or the name of the applicant appears on the BPL list.
+        rule_type: enumerated_category
+        profile_field: household.bpl
+        bound:
+          values: ["true"]
+        verifiable_from: [bpl_ration_card]
+        verification_status: PROVISIONAL
+        verify_note: "Confirm how BPL listing is evidenced."
