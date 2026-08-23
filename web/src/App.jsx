@@ -192,10 +192,13 @@ export default function App() {
           {result?.unlock && (
             <section className="unlock">
               <h2>{s.unlockHeading}</h2>
-              {/* The count comes from the aggregator, which only counts schemes the
-                  document alone would resolve. The UI does not compute it. */}
+              {/* Both halves come from the engine: the count from the aggregator
+                  (which only counts schemes the document alone would resolve) and the
+                  name from render/labels.py. The UI never turns an id into prose —
+                  that is how this chip once read "bpl ration card" above a card
+                  saying "BPL ration card". */}
               <p>
-                {result.unlock.document_id.replace(/_/g, ' ')} → {result.unlock.count}
+                {result.unlock.document_label} → {result.unlock.count}
               </p>
             </section>
           )}

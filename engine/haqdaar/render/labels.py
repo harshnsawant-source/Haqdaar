@@ -40,6 +40,15 @@ _EN: dict[str, str] = {
 _ACRONYMS = frozenset({"bpl", "sc", "st", "obc", "pan", "ifsc", "itr", "secc", "id"})
 
 
+def field_label(profile_field: str, language: str = "en") -> str:
+    """A citizen-facing name for a profile field path.
+
+    `applicant.social_category` reads as "social category". The namespace is dropped
+    because it is ours, not hers — she does not think of herself as an `applicant.`
+    """
+    return profile_field.rsplit(".", 1)[-1].replace("_", " ")
+
+
 def document_label(document_id: str, language: str = "en") -> str:
     """A citizen-facing name for a document id.
 

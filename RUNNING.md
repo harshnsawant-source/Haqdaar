@@ -198,16 +198,20 @@ winget install --id UB-Mannheim.TesseractOCR    # then reopen the terminal
 2. Start the engine, confirm `curl http://127.0.0.1:8000/api/health` returns `ok`.
 3. `npm run build && npm run preview` — use the **preview** build, not `npm run dev`:
    the service worker only registers in production, and the offline beat needs it.
-4. Open the PWA, click through **one** persona so the shell and a verdict are cached.
-5. Rehearse the two set-pieces:
+4. **If you rebuilt in the last few minutes, open a FRESH TAB.** An already-open tab
+   can hold the previous service worker and hang on stale assets — hard reload
+   (Ctrl+Shift+R), or close the tab and reopen. Rebuilding shortly before the demo is
+   exactly when this bites, so treat "I just rebuilt" as "use a new tab".
+5. Open the PWA, click through **one** persona so the shell and a verdict are cached.
+6. Rehearse the two set-pieces:
    - entrepreneur: NSFDC → ELIGIBLE with proof **plus** the separate approval refusal
    - welfare: Sunita → PM-JAY refusal (SECC 2011) and "eligible in 2036" for AVVC
-6. Rehearse the failure: stop the engine, reload — the app must still open, still list
+7. Rehearse the failure: stop the engine, reload — the app must still open, still list
    personas, and say *"Showing a stored answer — you are offline."*
-7. Have the backup refusal ready: ask something out of corpus ("How much tax do I owe?").
-8. Know what is **simulated**: the submission and the Stand-Up India form layout. Say so
+8. Have the backup refusal ready: ask something out of corpus ("How much tax do I owe?").
+9. Know what is **simulated**: the submission and the Stand-Up India form layout. Say so
    before a judge asks.
-9. Know what is **provisional**: every scheme rule. Every card says so on screen.
+10. Know what is **provisional**: every scheme rule. Every card says so on screen.
 
 ## If something breaks mid-demo
 

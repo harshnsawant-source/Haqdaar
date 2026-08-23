@@ -44,7 +44,7 @@ export function Card({ card, personaId, stackedWith = [] }) {
             <blockquote className="clause" key={c.clause_id}>
               {c.clause_text}
               <span className="meta">
-                {c.document_id ? `Proven from: ${c.document_id.replace(/_/g, ' ')} · ` : ''}
+                {c.document_label ? `Proven from: ${c.document_label} · ` : ''}
                 {c.decided_by ? `Decided by: ${c.decided_by} · ` : ''}
                 <a href={c.source_url} target="_blank" rel="noreferrer">
                   {s.sourceLink}
@@ -149,7 +149,7 @@ function FilledApplication({ action }) {
               <th scope="row">{f.label}</th>
               <td>
                 {String(f.value)}
-                <span className="from">{f.source_document.replace(/_/g, ' ')}</span>
+                <span className="from">{f.source_document_label}</span>
               </td>
             </tr>
           ))}

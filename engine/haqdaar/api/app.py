@@ -48,6 +48,7 @@ from haqdaar.profile.extract import ExtractionMode, build_profile, extract_docum
 from haqdaar.profile.ocr import tesseract_available
 from haqdaar.profile.schema import CitizenProfile, load_profile
 from haqdaar.guard.triggers import t3_no_retrieval_support
+from haqdaar.render.labels import document_label, field_label
 from haqdaar.render.render import (
     audit_templates,
     render_action,
@@ -247,16 +248,19 @@ async def extract(
                 ocr_available=r.ocr_available,
                 readable=r.readable,
                 unread=list(r.unread),
+                unread_labels=[field_label(f) for f in r.unread],
             )
             for r in reports
         ],
         fields=[
             ExtractedFieldPayload(
                 profile_field=path,
+                label=field_label(path),
                 value=field.value,
                 confidence=field.confidence,
                 origin=field.origin.value,
                 document_id=field.document_id,
+                document_label=document_label(field.document_id),
                 source_field=field.source_field,
             )
             for path, field in sorted(profile.fields.items())

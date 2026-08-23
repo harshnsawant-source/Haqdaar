@@ -111,6 +111,7 @@ def test_unlock_beat_is_served(client):
     ).json()
     assert body["unlock"] == {
         "document_id": "caste_certificate",
+        "document_label": "caste certificate",
         "count": 2,
         "scheme_ids": ["nsfdc-term-loan", "stand-up-india"],
     }
@@ -374,3 +375,68 @@ def test_extract_rejects_an_unknown_mode(client):
         files={"files": ("blank.png", _png([]), "image/png")},
     )
     assert response.status_code == 422
+
+
+def test_every_served_identifier_carries_an_engine_computed_label(client):
+    """The frontend must never derive prose from an id.
+
+    The "one document away" headline once rendered `document_id.replace(/_/g, " ")` in
+    JS, so it read "bpl ration card" directly above a card that correctly said "BPL
+    ration card" — same paper, two spellings, one screen. Labels now come from
+    render/labels.py, and this asserts the payload agrees with it so the two cannot
+    drift apart again.
+    """
+    from haqdaar.render.labels import document_label, field_label
+
+    welfare = client.get("/api/evaluate", params={"persona_id": "sunita"}).json()
+    assert welfare["unlock"]["document_label"] == document_label(
+        welfare["unlock"]["document_id"]
+    )
+    assert welfare["unlock"]["document_label"] == "BPL ration card"
+
+    for card in welfare["cards"]:
+        for citation in card["citations"]:
+            if citation["document_id"]:
+                assert citation["document_label"] == document_label(
+                    citation["document_id"]
+                )
+            else:
+                assert citation["document_label"] is None
+
+    action = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+    ).json()
+    for filled in action["filled"]:
+        assert filled["source_document_label"] == document_label(
+            filled["source_document"]
+        )
+
+    extracted = client.post(
+        "/api/extract",
+        data={
+            "persona_id": "sunita",
+            "mode": "FIXTURE_BACKED",
+            "document_types": ["caste_certificate"],
+        },
+        files={"files": ("blank.png", _png([]), "image/png")},
+    ).json()
+    for field in extracted["fields"]:
+        assert field["label"] == field_label(field["profile_field"])
+        assert field["document_label"] == document_label(field["document_id"])
+        assert "." not in field["label"]  # never a dotted path on screen
+    for report in extracted["reports"]:
+        assert report["unread_labels"] == [field_label(f) for f in report["unread"]]
+
+
+def test_the_headline_and_the_card_spell_the_document_the_same_way(client):
+    """The exact regression: chip and card, same screen, same words."""
+    body = client.get("/api/evaluate", params={"persona_id": "sunita"}).json()
+    headline = body["unlock"]["document_label"]
+
+    blocked = [c for c in body["cards"] if c["status"] == "BLOCKED_ON_DOCUMENT"]
+    assert blocked
+    for card in blocked:
+        assert any(headline in line for line in card["lines"]), (
+            f"{card['scheme_id']}: card does not spell the document as {headline!r}"
+        )

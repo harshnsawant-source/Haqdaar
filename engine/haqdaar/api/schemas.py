@@ -17,6 +17,7 @@ from haqdaar.corpus.schema import Scheme, VerificationStatus
 from haqdaar.eligibility.aggregate import UnlockOption
 from haqdaar.eligibility.verdict import Evaluation, Status
 from haqdaar.guard.gate import GateResult
+from haqdaar.render.labels import document_label, field_label
 from haqdaar.render.render import RenderedAction, RenderedCard
 
 
@@ -31,6 +32,9 @@ class Citation(BaseModel):
     evaluation: Evaluation
     #: The document that proved it, when one did.
     document_id: str | None = None
+    #: Its citizen-facing name. The UI renders this verbatim and never derives prose
+    #: from an id itself — identifiers are the engine's to name.
+    document_label: str | None = None
     #: Who decides, for a discretionary clause. Never a document.
     decided_by: str | None = None
     settleable: bool = True
@@ -66,6 +70,9 @@ class UnlockPayload(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     document_id: str
+    #: The name shown on the "one document away" chip. Computed by render/labels.py so
+    #: the headline and the card underneath it can never spell the same paper two ways.
+    document_label: str
     count: int
     scheme_ids: list[str] = Field(default_factory=list)
 
@@ -89,6 +96,7 @@ class FilledFieldPayload(BaseModel):
     label: str
     value: bool | int | float | str
     source_document: str
+    source_document_label: str
 
 
 class GapFieldPayload(BaseModel):
@@ -144,6 +152,7 @@ def to_action(
                 label=f.label,
                 value=f.value,
                 source_document=f.source_document,
+                source_document_label=document_label(f.source_document),
             )
             for f in filled_form.filled
         ],
@@ -166,10 +175,13 @@ class ExtractedFieldPayload(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     profile_field: str
+    #: Citizen-facing name for profile_field. The UI must not show a dotted path.
+    label: str
     value: bool | int | float | str
     confidence: float
     origin: str
     document_id: str
+    document_label: str
     source_field: str
 
 
@@ -183,6 +195,8 @@ class ExtractionReportPayload(BaseModel):
     readable: bool
     #: Fields the rules looked for and could not read or could not trust.
     unread: list[str] = Field(default_factory=list)
+    #: The same list, named for a citizen.
+    unread_labels: list[str] = Field(default_factory=list)
 
 
 class ExtractResponse(BaseModel):
@@ -226,6 +240,9 @@ def to_payload(result: GateResult, scheme: Scheme, card: RenderedCard) -> CardPa
                 source_url=p.source_url,
                 evaluation=p.evaluation,
                 document_id=p.evidence.document_id if p.evidence else None,
+                document_label=(
+                    document_label(p.evidence.document_id) if p.evidence else None
+                ),
                 decided_by=p.decided_by,
                 settleable=p.is_settleable,
             )
@@ -247,6 +264,7 @@ def to_unlock(option: UnlockOption | None) -> UnlockPayload | None:
         return None
     return UnlockPayload(
         document_id=option.document_id,
+        document_label=document_label(option.document_id),
         count=option.unlock_count,
         scheme_ids=list(option.unlocks),
     )

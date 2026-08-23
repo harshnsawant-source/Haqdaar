@@ -127,7 +127,7 @@ function ExtractionReport({ report }) {
         <tbody>
           {report.fields.map((f) => (
             <tr key={f.profile_field} className={f.origin.toLowerCase()}>
-              <th scope="row">{f.profile_field}</th>
+              <th scope="row">{f.label}</th>
               <td>{String(f.value)}</td>
               <td>
                 <span className={`origin ${f.origin.toLowerCase()}`}>
@@ -147,7 +147,7 @@ function ExtractionReport({ report }) {
           <p>{s.couldNotRead}</p>
           <ul>
             {report.reports.flatMap((r) =>
-              r.unread.map((u) => <li key={`${r.document_id}-${u}`}>{u}</li>),
+              r.unread_labels.map((u) => <li key={`${r.document_id}-${u}`}>{u}</li>),
             )}
           </ul>
         </div>

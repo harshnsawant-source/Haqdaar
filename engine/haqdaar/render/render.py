@@ -39,7 +39,7 @@ from haqdaar.eligibility.verdict import (
 )
 from haqdaar.guard.gate import GateResult
 from haqdaar.guard.triggers import TriggerId
-from haqdaar.render.labels import document_label
+from haqdaar.render.labels import document_label, field_label
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 
@@ -148,10 +148,6 @@ def _fill(
         if phrase in lowered:
             raise RenderError(f"{key}: rendered output contains banned phrase {phrase!r}")
     return text
-
-
-def _field_label(profile_field: str) -> str:
-    return profile_field.rsplit(".", 1)[-1].replace("_", " ")
 
 
 def _bound_text(bound: object) -> str | None:
@@ -545,7 +541,7 @@ def _not_eligible_reason(
             {
                 **base,
                 "bound_text": bound_text,
-                "field_label": _field_label(clause.profile_field),
+                "field_label": field_label(clause.profile_field),
                 "value": failing.evidence.extracted_value,
             },
             clause_texts,
