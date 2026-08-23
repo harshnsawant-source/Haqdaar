@@ -139,3 +139,44 @@ def test_no_rendered_card_hedges(
         for phrase in BANNED_PHRASES:
             assert phrase not in lowered, f"{card.scheme_id}: {phrase!r}"
         assert "{" not in card.text()
+
+
+def test_the_unlock_count_always_matches_the_document_it_names(
+    welfare_schemes_dir, sunita_profile, today
+):
+    """Regression: the count and the document must come from the same option.
+
+    Found during the day 8-9 hardening pass. The renderer paired each card's own first
+    unlocking document with the GLOBALLY best document's count, so SGNAY rendered
+    "Bring your income certificate and this unlocks 2 more schemes" — while an income
+    certificate clears exactly one. Over-claiming is the one direction of error that is
+    disqualifying, so this asserts the pairing on every blocked card in both verticals.
+    """
+    import re
+
+    from haqdaar.eligibility.aggregate import aggregate_unlocks, best_unlock
+    from haqdaar.eligibility.evaluate import evaluate_corpus
+    from haqdaar.guard.gate import gate_all
+
+    schemes = load_corpus(welfare_schemes_dir)
+    verdicts = evaluate_corpus(schemes, sunita_profile)
+    unlock = best_unlock(verdicts)
+    by_document = {o.document_id: o for o in aggregate_unlocks(verdicts)}
+    by_id = {s.scheme_id: s for s in schemes}
+
+    for result in gate_all(verdicts, schemes, today=today):
+        if result.verdict.status is not Status.BLOCKED_ON_DOCUMENT:
+            continue
+        card = render_card(
+            result, by_id[result.verdict.scheme_id], today=today, unlock=unlock
+        )
+        line = card.lines[1]
+        match = re.search(r"Bring your (.+?) and this unlocks (\d+) more", line)
+        if match is None:
+            continue  # the single-scheme phrasing names no count at all
+        named_document, claimed = match.group(1).replace(" ", "_"), int(match.group(2))
+        actual = by_document[named_document].unlock_count
+        assert claimed == actual, (
+            f"{card.scheme_id}: claims {named_document} unlocks {claimed}, "
+            f"but it unlocks {actual}"
+        )

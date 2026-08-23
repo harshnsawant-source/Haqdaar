@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from haqdaar.eligibility.verdict import Status, Verdict
+from haqdaar.eligibility.verdict import Evaluation, Status, Verdict, kleene
 
 
 class UnlockOption(BaseModel):
@@ -61,9 +61,8 @@ def aggregate_unlocks(verdicts: list[Verdict]) -> list[UnlockOption]:
     unlocks: dict[str, list[str]] = {}
     contributes: dict[str, list[str]] = {}
     for verdict in blocked:
-        sole_blocker = len(verdict.unlocking_docs) == 1
         for document in verdict.unlocking_docs:
-            target = unlocks if sole_blocker else contributes
+            target = unlocks if _would_clear(verdict, document) else contributes
             target.setdefault(document, []).append(verdict.scheme_id)
 
     options = [
@@ -75,6 +74,48 @@ def aggregate_unlocks(verdicts: list[Verdict]) -> list[UnlockOption]:
         for document in sorted(set(unlocks) | set(contributes))
     ]
     return sorted(options, key=lambda o: (-o.unlock_count, o.document_id))
+
+
+def _would_clear(verdict: Verdict, document: str) -> bool:
+    """Would supplying `document` — and nothing else — leave this scheme with no gaps?
+
+    Replays the scheme's own group logic with one change: every unresolved predicate
+    that `document` could settle is assumed to come back in the citizen's favour. If
+    every eligibility group then resolves TRUE, the document closes the scheme on its
+    own and counts as an unlock. If any group is still unresolved, it does not.
+
+    Why this is not the same as "the only document listed":
+      * An ANY group ("income under the ceiling OR on the BPL list") is satisfied by
+        EITHER document, so each one clears the scheme alone even though two are
+        listed. The previous rule under-claimed here.
+      * An ALL group needing two different documents is cleared by NEITHER alone, and
+        this must keep saying so. Sending someone across a district for a paper that
+        changes nothing is the harm the whole aggregator exists to avoid.
+
+    THE ONE OPTIMISTIC ASSUMPTION, stated plainly: we assume the document says what
+    the citizen needs it to say. A BPL card only helps if she is actually listed. So
+    this answers "which paper could settle this", not "which paper will make you
+    eligible" — the same assumption the sole-document case always made, now applied
+    consistently rather than only when one document happened to be listed. The
+    renderer's wording ("bring X and this unlocks N") inherits that meaning.
+    """
+    by_group: dict[str, list[Evaluation]] = {}
+    for predicate in verdict.predicates:
+        if predicate.group_id not in {g.group_id for g in verdict.eligibility_groups()}:
+            continue  # approval conditions are not hers to settle with paperwork
+        if predicate.evaluation is Evaluation.UNKNOWN and document in predicate.verifiable_from:
+            resolved = Evaluation.TRUE
+        else:
+            resolved = predicate.evaluation
+        by_group.setdefault(predicate.group_id, []).append(resolved)
+
+    for group in verdict.eligibility_groups():
+        members = by_group.get(group.group_id)
+        if not members:
+            continue
+        if kleene(group.satisfy, members) is not Evaluation.TRUE:
+            return False
+    return True
 
 
 def best_unlock(verdicts: list[Verdict]) -> UnlockOption | None:

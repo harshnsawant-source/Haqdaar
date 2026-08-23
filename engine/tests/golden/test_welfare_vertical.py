@@ -86,25 +86,34 @@ def test_stacking_groups_ignwps_and_sgnay(welfare_schemes_dir, sunita_profile, t
 def test_the_one_document_away_beat(welfare_schemes_dir, sunita_profile, today):
     """The BPL ration card, and an honest count.
 
-    It outright unlocks IGNWPS. For SGNAY it only *contributes*, because that scheme's
-    means test is satisfiable by EITHER a BPL entry OR an income certificate, and the
-    aggregator counts a document as unlocking a scheme only when it is the sole
-    remaining blocker. See the note at the end of this file.
+    CHANGED IN THE DAY 8-9 HARDENING PASS. This test previously asserted
+    bpl.unlocks == ["ignwps"] and income.unlocks == [], which encoded the aggregator
+    under-claim flagged on day 7: SGNAY's means test is satisfiable by EITHER a BPL
+    entry OR an income certificate, so each paper clears it alone, but the old rule
+    only counted a document as unlocking when it was the sole entry in unlocking_docs.
+
+    The numbers below are what the corpus actually implies. The demo line moves from
+    "unlocks IGNWPS" to "unlocks 2 more schemes", which is a stronger beat AND the
+    true one.
     """
     _, verdicts, _ = _run(welfare_schemes_dir, sunita_profile, today)
 
     options = {o.document_id: o for o in aggregate_unlocks(verdicts)}
     assert set(options) == {"bpl_ration_card", "income_certificate"}
 
+    # A BPL entry satisfies IGNWPS outright and satisfies SGNAY's means test on its own.
     bpl = options["bpl_ration_card"]
-    assert bpl.unlocks == ["ignwps"]
-    assert bpl.contributes_to == ["sgnay"]
+    assert bpl.unlocks == ["ignwps", "sgnay"]
+    assert bpl.contributes_to == []
 
+    # An income certificate settles SGNAY only — IGNWPS requires the BPL status itself.
     income = options["income_certificate"]
-    assert income.unlocks == []
-    assert income.contributes_to == ["sgnay"]
+    assert income.unlocks == ["sgnay"]
+    assert income.contributes_to == []
 
+    # Ranked by how many schemes each clears, so the BPL card leads.
     assert best_unlock(verdicts).document_id == "bpl_ration_card"
+    assert best_unlock(verdicts).unlock_count == 2
 
 
 def test_the_stale_threshold_is_quoted_not_reinterpreted(

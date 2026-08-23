@@ -38,11 +38,23 @@ npm run preview    # http://127.0.0.1:4173
 Both dev and preview proxy `/api` to the engine on 8000, which keeps the PWA
 same-origin so the service worker is allowed to cache API responses.
 
-## Tests
+## The pre-demo gate — run this, and nothing else, before walking on stage
 
 ```bash
 ./.venv/Scripts/python.exe -m pytest engine/tests -q
 ```
+
+**One command is the whole gate.** Green means: both rehearsed refusals produce their
+exact rendered English, all four voices are correct across both verticals, the Guard's
+five triggers hold, no output hedges, no placeholder leaks into English, the action
+layer still refuses a verdict it cannot clear, and every failure path degrades calmly.
+
+**Red means do not demo.** Not "probably fine" — a golden test going red means a
+sentence a citizen would read has changed, and you need to know which one and why
+before a judge does.
+
+The suite needs no network, no API key, and no OCR engine. It is the same command on
+any machine.
 
 ## Verifying the PWA
 
@@ -136,3 +148,70 @@ refusal or a blocked-on-document.
 A bad scan can therefore cost us a *yes we could have proven*. It cannot produce a
 confident wrong answer. Values outside a declared map and numbers outside a
 plausibility window are dropped the same way, never coerced to the nearest option.
+
+---
+
+# Demo-day readiness
+
+## Footprint (measured 2026-08-23, this machine)
+
+The "runs on a Panchayat laptop" claim, with numbers behind it.
+
+| | |
+|---|---|
+| Engine cold start (import + wire up) | **~165 ms** |
+| Evaluate + render, both verticals, 7 cards | **~23 ms** |
+| Engine process, resident | **~56 MB** |
+| API response, warm, full vertical | **median 119 ms** (min 34, max 220) |
+| PWA served bundle | **50 KB JS + 2 KB CSS gzipped**, 189 KB on disk |
+| Corpus (all rules, both verticals) | **93 KB** |
+| Network calls | **zero** |
+| API keys | **none** |
+| Generative model calls | **zero** |
+
+Test suite: **220 passing** in under two seconds, with every key stripped from the
+environment.
+
+What this buys on stage: the whole system is a ~56 MB Python process and a 50 KB page.
+It is not "cloud AI shrunk down" — there is no model to shrink. A cheap laptop at a
+Common Service Centre serves the PWA over the LAN and answers in a tenth of a second
+with the network unplugged.
+
+**Honest caveat:** these are measured on a developer laptop, not on constrained
+hardware. Nobody has run this on a low-end device yet. If a judge asks "show me on a
+cheap machine" the honest answer is that the footprint makes it plausible and it has
+not been tested there — do not claim otherwise (judge Q&A Q6).
+
+## Live OCR needs one system install
+
+Not installed on this machine, which is why the suite reports **1 skipped** — the
+real-OCR test. Everything else runs without it, and the app honestly reports
+`ocr_available: false` and reads nothing rather than guessing.
+
+```bash
+winget install --id UB-Mannheim.TesseractOCR    # then reopen the terminal
+```
+
+## Pre-flight checklist
+
+1. `pytest engine/tests -q` → green. **Red means do not demo.**
+2. Start the engine, confirm `curl http://127.0.0.1:8000/api/health` returns `ok`.
+3. `npm run build && npm run preview` — use the **preview** build, not `npm run dev`:
+   the service worker only registers in production, and the offline beat needs it.
+4. Open the PWA, click through **one** persona so the shell and a verdict are cached.
+5. Rehearse the two set-pieces:
+   - entrepreneur: NSFDC → ELIGIBLE with proof **plus** the separate approval refusal
+   - welfare: Sunita → PM-JAY refusal (SECC 2011) and "eligible in 2036" for AVVC
+6. Rehearse the failure: stop the engine, reload — the app must still open, still list
+   personas, and say *"Showing a stored answer — you are offline."*
+7. Have the backup refusal ready: ask something out of corpus ("How much tax do I owe?").
+8. Know what is **simulated**: the submission and the Stand-Up India form layout. Say so
+   before a judge asks.
+9. Know what is **provisional**: every scheme rule. Every card says so on screen.
+
+## If something breaks mid-demo
+
+The failure paths are rehearsed and asserted (`engine/tests/unit/test_failure_paths.py`).
+A crash does not produce a stack trace on screen; the PWA shows its calm offline copy.
+The correct move is to say what happened and carry on — a system that refuses when it
+cannot answer is the product working, and that is the whole pitch.

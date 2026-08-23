@@ -230,10 +230,24 @@ def render_card(
 
     elif verdict.status is Status.BLOCKED_ON_DOCUMENT:
         lines.append(_fill("blocked.headline", templates, base, clause_texts))
-        document = _label(verdict.unlocking_docs[0]) if verdict.unlocking_docs else None
-        if document is None:
+        if not verdict.unlocking_docs:
             raise RenderError(f"{verdict.scheme_id}: blocked with no unlocking document")
-        if unlock is not None and unlock.unlock_count > 1:
+
+        # The document and the count MUST come from the same option. Pairing this
+        # card's own first document with the globally-best document's count reads as
+        # "bring X and unlock N" where X unlocks fewer than N — an over-claim, and the
+        # one direction of error this project cannot afford. Only use the aggregate
+        # count when the aggregate's document actually clears THIS scheme.
+        aggregate_applies = (
+            unlock is not None
+            and unlock.unlock_count > 1
+            and verdict.scheme_id in unlock.unlocks
+            and unlock.document_id in verdict.unlocking_docs
+        )
+        document = _label(
+            unlock.document_id if aggregate_applies else verdict.unlocking_docs[0]
+        )
+        if aggregate_applies:
             lines.append(
                 _fill(
                     "blocked.multiple",

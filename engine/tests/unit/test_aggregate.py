@@ -8,12 +8,54 @@ from haqdaar.eligibility.verdict import Evaluation, GroupResult, Status
 
 
 def blocked(scheme_id: str, docs: list[str]):
+    """One unresolved clause that ANY of `docs` would evidence.
+
+    Note what this models: a single rule with several acceptable proofs (age from an
+    Aadhaar card OR an age certificate). Either document settles it. It is NOT two
+    rules needing two different papers — see `blocked_on_two_clauses` for that.
+    """
     return verdict(
         [predicate("C", "g", Evaluation.UNKNOWN, verifiable_from=docs)],
         [GroupResult(group_id="g", satisfy=Satisfy.ALL, evaluation=Evaluation.UNKNOWN)],
         Status.BLOCKED_ON_DOCUMENT,
         scheme_id=scheme_id,
         unlocking_docs=docs,
+    )
+
+
+def blocked_on_two_clauses(scheme_id: str, first: str, second: str):
+    """Two separate unresolved clauses in an ALL group, each needing its own paper.
+
+    Neither document clears the scheme alone. This is the case the aggregator must
+    never over-claim on.
+    """
+    return verdict(
+        [
+            predicate("C1", "g", Evaluation.UNKNOWN, verifiable_from=[first]),
+            predicate("C2", "g", Evaluation.UNKNOWN, verifiable_from=[second]),
+        ],
+        [GroupResult(group_id="g", satisfy=Satisfy.ALL, evaluation=Evaluation.UNKNOWN)],
+        Status.BLOCKED_ON_DOCUMENT,
+        scheme_id=scheme_id,
+        unlocking_docs=[first, second],
+    )
+
+
+def blocked_on_either_of_two_clauses(scheme_id: str, first: str, second: str):
+    """An ANY group — "income under the ceiling OR on the BPL list".
+
+    EITHER document clears the scheme on its own, even though two are listed. This is
+    the case the old sole-entry rule under-claimed on.
+    """
+    return verdict(
+        [
+            predicate("C1", "g", Evaluation.UNKNOWN, verifiable_from=[first]),
+            predicate("C2", "g", Evaluation.UNKNOWN, verifiable_from=[second]),
+        ],
+        [GroupResult(group_id="g", satisfy=Satisfy.ANY, evaluation=Evaluation.UNKNOWN)],
+        Status.BLOCKED_ON_DOCUMENT,
+        scheme_id=scheme_id,
+        unlocking_docs=[first, second],
     )
 
 
@@ -30,21 +72,67 @@ def test_one_document_unlocking_several_schemes():
 
 
 def test_a_document_that_is_one_of_several_blockers_unlocks_nothing():
-    """The honesty case.
+    """The honesty case, and the one that must never over-claim.
 
-    Scheme 'a' needs both papers. Fetching the caste certificate alone resolves
-    nothing, so promising "one document unlocks 1 more" would send someone across a
-    district for a result that does not change.
+    Scheme 'a' has TWO unresolved clauses in an ALL group, each needing its own paper.
+    Fetching the caste certificate alone resolves nothing, so promising "one document
+    unlocks 1 more" would send someone across a district for a result that does not
+    change.
     """
-    options = aggregate_unlocks([blocked("a", ["caste", "income"])])
+    scheme = blocked_on_two_clauses("a", "caste", "income")
+    options = aggregate_unlocks([scheme])
     assert [o.document_id for o in options] == ["caste", "income"]
     assert all(o.unlocks == [] for o in options)
     assert all(o.contributes_to == ["a"] for o in options)
-    assert best_unlock([blocked("a", ["caste", "income"])]) is None
+    assert best_unlock([scheme]) is None
+
+
+def test_an_any_group_is_cleared_by_either_document():
+    """The under-claim this fix removes.
+
+    "Income below the ceiling OR on the BPL list" is satisfied by either paper alone,
+    so each is a real unlock even though two are listed. The old rule counted a
+    document as unlocking only when it was the sole entry, and reported neither.
+    """
+    scheme = blocked_on_either_of_two_clauses("sgnay", "bpl", "income_certificate")
+    options = {o.document_id: o for o in aggregate_unlocks([scheme])}
+
+    assert options["bpl"].unlocks == ["sgnay"]
+    assert options["income_certificate"].unlocks == ["sgnay"]
+    assert all(o.contributes_to == [] for o in options.values())
+    assert best_unlock([scheme]).unlocks == ["sgnay"]
+
+
+def test_a_clause_with_two_acceptable_proofs_is_cleared_by_either():
+    """One rule, several acceptable papers (age from Aadhaar OR an age certificate)."""
+    scheme = blocked("a", ["aadhaar", "age_proof"])
+    options = {o.document_id: o for o in aggregate_unlocks([scheme])}
+    assert options["aadhaar"].unlocks == ["a"]
+    assert options["age_proof"].unlocks == ["a"]
+
+
+def test_a_partially_cleared_scheme_still_does_not_count_as_unlocked():
+    """Three clauses, one paper. Progress is not an unlock."""
+    scheme = verdict(
+        [
+            predicate("C1", "g", Evaluation.UNKNOWN, verifiable_from=["a_doc"]),
+            predicate("C2", "g", Evaluation.UNKNOWN, verifiable_from=["b_doc"]),
+            predicate("C3", "g", Evaluation.UNKNOWN, verifiable_from=["c_doc"]),
+        ],
+        [GroupResult(group_id="g", satisfy=Satisfy.ALL, evaluation=Evaluation.UNKNOWN)],
+        Status.BLOCKED_ON_DOCUMENT,
+        scheme_id="s",
+        unlocking_docs=["a_doc", "b_doc", "c_doc"],
+    )
+    assert all(o.unlocks == [] for o in aggregate_unlocks([scheme]))
+    assert best_unlock([scheme]) is None
 
 
 def test_sole_blocker_and_contributor_counted_separately():
-    options = aggregate_unlocks([blocked("a", ["caste"]), blocked("b", ["caste", "bpl"])])
+    """One caste certificate clears 'a' outright and only helps 'b'."""
+    options = aggregate_unlocks(
+        [blocked("a", ["caste"]), blocked_on_two_clauses("b", "caste", "bpl")]
+    )
     caste = next(o for o in options if o.document_id == "caste")
     assert caste.unlocks == ["a"]
     assert caste.contributes_to == ["b"]
