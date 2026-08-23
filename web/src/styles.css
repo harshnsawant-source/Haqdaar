@@ -384,3 +384,9 @@ table.fields tbody tr + tr th, table.fields tbody tr + tr td {
 .secondary-block h2 { font-size: 0.78rem; text-transform: uppercase;
                       letter-spacing: 0.07em; color: var(--ink-soft); margin: 0 0 2px; }
 .banner.declared { border-color: var(--unverifiable); color: var(--unverifiable); }
+
+/* After intake, the papers to bring ARE the answer — give them the loud treatment. */
+.unlock.ready { border-color: var(--eligible); background: var(--eligible-bg); }
+.unlock.ready h2 { color: var(--eligible); }
+.unlock .why { font-weight: 400; font-size: 0.82rem; color: var(--ink-soft);
+               margin-top: 6px; }

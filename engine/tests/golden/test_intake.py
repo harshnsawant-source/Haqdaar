@@ -105,8 +105,7 @@ def test_a_declaration_does_not_settle_a_certificate_gated_clause(
     profile = build_intake_profile(
         spec,
         {**SUNITA_ANSWERS, "bpl": True},
-        schemes=schemes,
-        documents_held=SUNITA_DOCUMENTS,  # note: no bpl_ration_card
+        schemes=schemes
     )
 
     # The declaration IS recorded — we do not discard what she told us.
@@ -125,21 +124,25 @@ def test_a_declaration_does_not_settle_a_certificate_gated_clause(
     assert bpl_clause.evidence is None
 
 
-def test_holding_the_card_does_settle_it(spec, welfare_schemes_dir):
-    """The other half: with the card, the same declaration resolves."""
+def test_saying_you_hold_the_card_is_not_evidence_either(spec, welfare_schemes_dir):
+    """Ticking "I have a BPL ration card" changes nothing.
+
+    An earlier version filed her stated BPL status against the card she said she held,
+    and the card then read "Proven from your BPL ration card" about a card nobody had
+    seen. Saying you have a document is not evidence of what it says. Only reading it
+    is, which is what the upload path does.
+    """
     schemes = load_corpus(welfare_schemes_dir)
     profile = build_intake_profile(
-        spec,
-        {**SUNITA_ANSWERS, "bpl": True},
-        schemes=schemes,
-        documents_held=[*SUNITA_DOCUMENTS, "bpl_ration_card"],
+        spec, {**SUNITA_ANSWERS, "bpl": True}, schemes=schemes
     )
-    assert profile.fields["household.bpl"].document_id == "bpl_ration_card"
+    assert profile.fields["household.bpl"].document_id == "self_declaration"
 
     ignwps = next(
         v for v in evaluate_corpus(schemes, profile) if v.scheme_id == "ignwps"
     )
-    assert ignwps.status is Status.ELIGIBLE
+    assert ignwps.status is Status.BLOCKED_ON_DOCUMENT
+    assert "bpl_ration_card" in ignwps.unlocking_docs
 
 
 def test_a_declaration_settles_what_the_corpus_says_it_settles(
@@ -148,7 +151,7 @@ def test_a_declaration_settles_what_the_corpus_says_it_settles(
     """PM-KISAN's exclusions are collected on the applicant's own account."""
     schemes = load_corpus(welfare_schemes_dir)
     profile = build_intake_profile(
-        spec, SUNITA_ANSWERS, schemes=schemes, documents_held=SUNITA_DOCUMENTS
+        spec, SUNITA_ANSWERS, schemes=schemes
     )
     pm_kisan = next(
         v for v in evaluate_corpus(schemes, profile) if v.scheme_id == "pm-kisan"
@@ -163,38 +166,68 @@ def test_a_declaration_settles_what_the_corpus_says_it_settles(
 # --- intake reproduces the golden verdicts ----------------------------------
 
 
-def test_intake_reproduces_sunitas_golden_verdicts(
-    spec, welfare_schemes_dir, sunita_profile, today
+def test_intake_reproduces_the_document_independent_subset(
+    spec, welfare_schemes_dir, sunita_profile
 ):
-    """Answers equivalent to her fixture give the same statuses and predicates.
+    """Intake matches her fixture exactly wherever a declaration is enough.
 
-    This is what makes intake a real front door rather than a second engine: the same
-    person described two ways produces the same verdicts, clause for clause.
+    It deliberately does NOT match everywhere. Her fixture carries values read from an
+    Aadhaar, a death certificate and a 7/12 extract; intake carries her word. Where the
+    corpus accepts her word the two agree clause for clause. Where it wants a
+    certificate the fixture resolves and intake blocks — which is the whole point.
+
+    An earlier version of this test asserted full equality. It could only pass because
+    intake was crediting documents nobody had read.
     """
     schemes = load_corpus(welfare_schemes_dir)
-    declared = build_intake_profile(
-        spec, SUNITA_ANSWERS, schemes=schemes, documents_held=SUNITA_DOCUMENTS
-    )
+    declared = build_intake_profile(spec, SUNITA_ANSWERS, schemes=schemes)
 
     from_intake = {v.scheme_id: v for v in evaluate_corpus(schemes, declared)}
     from_fixture = {v.scheme_id: v for v in evaluate_corpus(schemes, sunita_profile)}
 
-    assert {k: v.status for k, v in from_intake.items()} == {
-        k: v.status for k, v in from_fixture.items()
-    }
     for scheme_id, verdict in from_intake.items():
-        golden = from_fixture[scheme_id]
-        assert [(p.clause_id, p.evaluation) for p in verdict.predicates] == [
-            (p.clause_id, p.evaluation) for p in golden.predicates
-        ], scheme_id
-        assert verdict.unlocking_docs == golden.unlocking_docs, scheme_id
+        golden = {p.clause_id: p for p in from_fixture[scheme_id].predicates}
+        for predicate in verdict.predicates:
+            if predicate.evidence is None:
+                continue  # blocked on a document she has not shown us
+            # Where her word sufficed, it agrees with the read document exactly.
+            assert predicate.evaluation is golden[predicate.clause_id].evaluation
+            assert predicate.evidence.document_id == "self_declaration"
+
+    # And the whole set resolves to answers, never to silence.
+    assert {v.status for v in from_intake.values()} <= {
+        Status.BLOCKED_ON_DOCUMENT,
+        Status.UNVERIFIABLE,
+        Status.NOT_ELIGIBLE,
+    }
+
+
+def test_intake_alone_never_produces_eligible_for_a_certificate_gated_scheme(
+    spec, welfare_schemes_dir, schemes_dir
+):
+    """Both verticals behave identically. They did not before.
+
+    Welfare was already strict; entrepreneur credited an unseen caste certificate and
+    rendered NSFDC ELIGIBLE. Same engine, two behaviours — now one.
+    """
+    for directory, answers in (
+        (welfare_schemes_dir, SUNITA_ANSWERS),
+        (
+            schemes_dir,
+            {"gender": "FEMALE", "social_category": "SC", "venture_type": "GREENFIELD"},
+        ),
+    ):
+        schemes = load_corpus(directory)
+        profile = build_intake_profile(spec, answers, schemes=schemes)
+        for verdict in evaluate_corpus(schemes, profile):
+            assert verdict.status is not Status.ELIGIBLE, verdict.scheme_id
 
 
 def test_intake_fields_are_marked_declared(spec, welfare_schemes_dir):
     """Never passed off as something we read."""
     schemes = load_corpus(welfare_schemes_dir)
     profile = build_intake_profile(
-        spec, SUNITA_ANSWERS, schemes=schemes, documents_held=SUNITA_DOCUMENTS
+        spec, SUNITA_ANSWERS, schemes=schemes
     )
     assert profile.fields
     assert all(f.origin is FieldOrigin.DECLARED for f in profile.fields.values())
@@ -240,14 +273,155 @@ def test_intake_over_http_returns_the_same_cards(client):
 
     assert body["declared"] is True
     assert "not seen your documents" in body["declared_banner"]
+    # Strict: her word settles what the corpus lets it settle and nothing else, so
+    # every certificate-gated scheme asks for the paper instead of resolving.
     assert {c["scheme_id"]: c["status"] for c in body["cards"]} == {
-        "pm-kisan": "ELIGIBLE",
+        "pm-kisan": "BLOCKED_ON_DOCUMENT",
         "ignwps": "BLOCKED_ON_DOCUMENT",
         "sgnay": "BLOCKED_ON_DOCUMENT",
         "pmjay": "UNVERIFIABLE",
-        "avvc": "NOT_ELIGIBLE",
+        "avvc": "BLOCKED_ON_DOCUMENT",
     }
     assert all(f["origin"] == "DECLARED" for f in body["fields"])
+    assert all(f["document_id"] == "self_declaration" for f in body["fields"])
+
+    # Documents she says she holds are echoed as a routing hint, never as evidence.
+    assert [d["value"] for d in body["documents_held"]] == SUNITA_DOCUMENTS
+    assert {d["value"] for d in body["ready_to_upload"]} == {
+        "aadhaar",
+        "husband_death_certificate",
+        "land_record_7_12",
+    }
+
+
+def test_the_proven_from_line_can_never_name_an_unseen_document(client):
+    """The specific assertion: "Proven from your X" must be earned.
+
+    Intake carries her word, so the only document any intake card may cite is the
+    self-declaration itself. If a certificate name ever appears after "Proven from", we
+    are telling a citizen we read a paper we have never seen — which is the exact claim
+    a judge would go after, and they would be right.
+    """
+    import re
+
+    from haqdaar.render.labels import document_label
+
+    proven = re.compile(r"Proven from your (.+)\.$")
+    for vertical, answers in (
+        ("welfare", {**SUNITA_ANSWERS, "bpl": True}),
+        (
+            "entrepreneur",
+            {
+                "gender": "FEMALE",
+                "social_category": "SC",
+                "venture_type": "GREENFIELD",
+                "loan_amount": 1500000,
+            },
+        ),
+    ):
+        body = client.post(
+            "/api/intake",
+            json={
+                "vertical": vertical,
+                "answers": answers,
+                # She claims every document. It must still change nothing.
+                "documents_held": [
+                    "aadhaar",
+                    "caste_certificate",
+                    "bpl_ration_card",
+                    "land_record_7_12",
+                    "husband_death_certificate",
+                    "project_report",
+                ],
+            },
+        ).json()
+
+        cited = 0
+        for card in body["cards"]:
+            for line in card["lines"]:
+                match = proven.match(line)
+                if match is None:
+                    continue
+                assert match.group(1) == document_label("self_declaration"), (
+                    f"{vertical}/{card['scheme_id']}: claims to have read "
+                    f"{match.group(1)!r}, which nobody uploaded"
+                )
+            # And no citation cites anything else either.
+            for citation in card["citations"]:
+                if citation["document_id"]:
+                    cited += 1
+                    assert citation["document_id"] == "self_declaration"
+
+        # Guard against this test passing because there was nothing to check.
+        assert cited > 0, f"{vertical}: no evidenced citations, test proved nothing"
+
+
+def test_a_rendered_intake_card_names_the_declaration_not_a_certificate(spec):
+    """Positive control for the "Proven from" line.
+
+    The HTTP test above scans real cards, but strict intake currently produces no
+    ELIGIBLE card in either vertical — so its "Proven from" scan has nothing to match
+    and proves nothing on its own. This forces the case: a synthetic scheme whose only
+    clause a declaration genuinely settles, rendered, so the sentence actually appears.
+    It must name the declaration and never a certificate.
+    """
+    from datetime import date
+
+    from haqdaar.corpus.schema import (
+        CategoryBound,
+        Clause,
+        ClauseGroup,
+        RuleType,
+        Satisfy,
+        Scheme,
+        VerificationStatus,
+    )
+    from haqdaar.eligibility.evaluate import evaluate_scheme
+    from haqdaar.guard.gate import gate
+    from haqdaar.render.render import render_card
+
+    declarable = Scheme(
+        scheme_id="synthetic-declarable",
+        name="Synthetic Declarable Scheme",
+        authority="test",
+        benefit="test",
+        source_url="https://example.invalid/",
+        retrieved_on=date(2026, 8, 21),
+        verification_status=VerificationStatus.PROVISIONAL,
+        verify_note="synthetic",
+        clause_groups=[
+            ClauseGroup(
+                group_id="g",
+                satisfy=Satisfy.ALL,
+                clauses=[
+                    Clause(
+                        clause_id="D1",
+                        clause_text="[VERIFY AT SOURCE] The applicant declares no income tax.",
+                        rule_type=RuleType.ENUMERATED_CATEGORY,
+                        profile_field="applicant.paid_income_tax",
+                        bound=CategoryBound(values=["false"]),
+                        verifiable_from=["self_declaration"],
+                        verification_status=VerificationStatus.PROVISIONAL,
+                        verify_note="synthetic",
+                    )
+                ],
+            )
+        ],
+    )
+
+    profile = build_intake_profile(
+        spec, {"paid_income_tax": False}, schemes=[declarable]
+    )
+    verdict = evaluate_scheme(declarable, profile)
+    assert verdict.status is Status.ELIGIBLE  # so the line actually renders
+
+    card = render_card(
+        gate(verdict, declarable, today=date(2026, 8, 22)),
+        declarable,
+        today=date(2026, 8, 22),
+    )
+    proven_lines = [line for line in card.lines if line.startswith("Proven from")]
+    assert proven_lines == ["Proven from your self-declaration."]
 
 
 def test_intake_output_can_never_hedge(client):

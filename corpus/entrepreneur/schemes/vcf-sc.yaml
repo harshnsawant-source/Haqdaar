@@ -1,0 +1,77 @@
+# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+#
+# Named in PROJECT-BRIEF-ADDENDUM.md s3 ("Venture Capital Fund for SC") and nowhere
+# else in this repo. That single mention is the entire sourced basis for this file.
+#
+# WHAT IS ENCODED, AND WHY ONLY THIS MUCH
+# ---------------------------------------
+# Two clauses, and both are things the scheme's own name and form make structurally
+# certain rather than criteria anyone has transcribed:
+#
+#   VCFSC-C1  the beneficiary is a Scheduled Caste entrepreneur — this is in the name
+#             of the fund itself
+#   VCFSC-C2  the investment is the fund's decision — every venture capital fund
+#             decides what it invests in, and that decision is nobody's document
+#
+# DELIBERATELY ABSENT: turnover thresholds, company-form requirements, minimum or
+# maximum investment size, promoter-stake rules, sector restrictions. Real funds have
+# such conditions and this one certainly does. Nobody on this team has read them, so
+# they are not here. Inventing a plausible turnover floor would be exactly the failure
+# this project exists to prevent, and a judge who knows the scheme would catch it.
+#
+# Until someone opens the official page this scheme can only ever tell a citizen
+# "you are the right kind of applicant; the investment decision is not mine to make".
+# That is thin, and it is true.
+
+scheme_id: vcf-sc
+name: Venture Capital Fund for Scheduled Castes
+authority: >-
+  [VERIFY AT SOURCE] Ministry of Social Justice and Empowerment
+benefit: >-
+  [VERIFY AT SOURCE] Equity or quasi-equity investment in enterprises promoted by
+  Scheduled Caste entrepreneurs
+source_url: "https://socialjustice.gov.in/"
+retrieved_on: 2026-08-21
+verification_status: PROVISIONAL
+verify_note: >-
+  Nobody has opened an official page for this fund. Confirm: (a) the correct
+  administering body and current source URL, (b) the verbatim eligibility conditions,
+  (c) EVERY condition deliberately omitted here — turnover, company form, investment
+  size, promoter stake, sector — and (d) whether a caste certificate is the accepted
+  proof of the SC criterion. Do not demo this scheme until that is done.
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: VCFSC-C1
+        clause_text: >-
+          [VERIFY AT SOURCE] The enterprise is promoted by an entrepreneur belonging to
+          a Scheduled Caste.
+        rule_type: enumerated_category
+        profile_field: applicant.social_category
+        bound:
+          values: [SC]
+        verifiable_from: [caste_certificate]
+        verification_status: PROVISIONAL
+        verify_note: >-
+          Transcribe the verbatim wording and confirm the accepted proof. The SC
+          criterion is taken from the name of the fund; everything about HOW it is
+          evidenced is unverified.
+
+  # The refusal. Structurally identical to NSFDC's sanction clause: no document the
+  # applicant carries determines what a fund chooses to invest in.
+  - group_id: investment-decision
+    kind: APPROVAL
+    satisfy: ALL
+    clauses:
+      - clause_id: VCFSC-C2
+        clause_text: >-
+          [VERIFY AT SOURCE] Investment is subject to the appraisal and decision of the
+          fund.
+        rule_type: discretionary
+        decided_by: "the fund's investment committee"
+        verification_status: PROVISIONAL
+        verify_note: >-
+          Confirm the verbatim wording and who actually decides — the fund, its
+          manager, or a committee.

@@ -46,7 +46,7 @@ def test_voice_blocked_on_document(schemes_dir, entrepreneur_02_profile, today):
     assert card.status is Status.BLOCKED_ON_DOCUMENT
     assert card.lines[0] == "You are one document away."
     assert card.lines[1] == (
-        "Bring your caste certificate and this unlocks 2 more schemes."
+        "Bring your caste certificate and this unlocks 3 more schemes."
     )
     assert card.lines[2].startswith("The rule this settles: [VERIFY AT SOURCE]")
 

@@ -255,17 +255,26 @@ def intake(request: IntakeRequest) -> IntakeResponse:
 
     schemes = _load_vertical(request.vertical)
     spec = _intake_spec()
-    profile = build_intake_profile(
-        spec,
-        dict(request.answers),
-        schemes=schemes,
-        documents_held=list(request.documents_held),
-    )
+    # documents_held is deliberately NOT passed to build_intake_profile. What she says
+    # she holds is not evidence of what it says; it only tells the UI which papers she
+    # could upload next.
+    profile = build_intake_profile(spec, dict(request.answers), schemes=schemes)
     cards, unlock = _cards_for(profile, schemes, _today())
+
+    held = list(request.documents_held)
+    blocking = [d for card in cards for d in card.unlocking_docs]
+    ready = [d for d in held if d in blocking]
 
     return IntakeResponse(
         vertical=request.vertical,
         declared_banner=load_templates(request.language)["intake.declared_banner"],
+        documents_held=[
+            IntakeOptionPayload(value=d, label=document_label(d)) for d in held
+        ],
+        ready_to_upload=[
+            IntakeOptionPayload(value=d, label=document_label(d))
+            for d in dict.fromkeys(ready)
+        ],
         fields=[
             ExtractedFieldPayload(
                 profile_field=path,

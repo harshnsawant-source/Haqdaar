@@ -266,6 +266,7 @@ def test_fixture_backed_profile_reproduces_the_golden_verdict(
     assert {v.scheme_id: v.status for v in evaluate_corpus(schemes, fallback)} == {
         "nsfdc-term-loan": Status.ELIGIBLE,
         "stand-up-india": Status.ELIGIBLE,
+        "vcf-sc": Status.ELIGIBLE,
     }
     assert all(f.origin is FieldOrigin.FIXTURE for f in fallback.fields.values())
 

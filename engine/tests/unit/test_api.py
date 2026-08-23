@@ -112,8 +112,8 @@ def test_unlock_beat_is_served(client):
     assert body["unlock"] == {
         "document_id": "caste_certificate",
         "document_label": "caste certificate",
-        "count": 2,
-        "scheme_ids": ["nsfdc-term-loan", "stand-up-india"],
+        "count": 3,
+        "scheme_ids": ["nsfdc-term-loan", "stand-up-india", "vcf-sc"],
     }
     assert all(c["status"] == "BLOCKED_ON_DOCUMENT" for c in body["cards"])
 
@@ -290,6 +290,7 @@ def test_extract_fixture_backed_reproduces_the_golden_verdict(client):
     assert {c["scheme_id"]: c["status"] for c in body["cards"]} == {
         "nsfdc-term-loan": "ELIGIBLE",
         "stand-up-india": "ELIGIBLE",
+        "vcf-sc": "ELIGIBLE",
     }
 
 

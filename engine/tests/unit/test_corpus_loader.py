@@ -10,7 +10,11 @@ from haqdaar.corpus.schema import Clause, RuleType, VerificationStatus
 
 def test_day_one_corpus_loads(schemes_dir: Path):
     schemes = load_corpus(schemes_dir)
-    assert [s.scheme_id for s in schemes] == ["nsfdc-term-loan", "stand-up-india"]
+    assert [s.scheme_id for s in schemes] == [
+        "nsfdc-term-loan",
+        "stand-up-india",
+        "vcf-sc",
+    ]
 
 
 def test_strict_mode_yields_nothing_yet(schemes_dir: Path):

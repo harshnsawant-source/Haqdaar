@@ -241,6 +241,14 @@ export default function App() {
 
           {status === 'loading' && <p className="empty">{s.loading}</p>}
 
+          {declaredBanner && result?.ready_to_upload?.length > 0 && (
+            <section className="unlock ready">
+              <h2>{s.youAlreadyHave}</h2>
+              <p>{result.ready_to_upload.map((d) => d.label).join(', ')}</p>
+              <p className="why">{s.bringTheseHint}</p>
+            </section>
+          )}
+
           {result?.unlock && (
             <section className="unlock">
               <h2>{s.unlockHeading}</h2>

@@ -229,12 +229,34 @@ def test_no_engine_module_retains_uploaded_bytes(client):
                 pytest.fail(f"{name}.{attribute} retained the uploaded document")
 
 
-def test_the_engine_writes_no_files_during_a_normal_evaluation(client, tmp_path):
-    """The verdict path is pure. Nothing about a citizen is written anywhere."""
-    before = _temp_snapshot()
+def test_the_engine_writes_no_files_during_a_normal_evaluation(client, monkeypatch):
+    """The verdict path is pure. Nothing about a citizen is written anywhere.
+
+    Asserted by intercepting `open` rather than by watching the temp directory: the
+    system temp directory is shared, so a snapshot fails whenever any unrelated process
+    happens to write during the test. That is a flaky test pretending to be a security
+    guarantee. This one cannot be fooled either way — a write attempt raises.
+    """
+    import builtins
+
+    real_open = builtins.open
+    writes: list[str] = []
+
+    def guarded(file, mode="r", *args, **kwargs):
+        if any(flag in mode for flag in ("w", "a", "x", "+")):
+            writes.append(f"{file!r} mode={mode!r}")
+        return real_open(file, mode, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "open", guarded)
+
     assert client.get("/api/evaluate", params={"persona_id": "sunita"}).status_code == 200
     assert client.post(
         "/api/act",
         params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
     ).status_code == 200
-    assert _temp_snapshot() - before == set()
+    assert client.post(
+        "/api/intake",
+        json={"vertical": "welfare", "answers": {"age": 60}, "documents_held": []},
+    ).status_code == 200
+
+    assert writes == [], f"the verdict path opened files for writing: {writes}"

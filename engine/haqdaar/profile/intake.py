@@ -19,14 +19,23 @@ card or a 7/12 extract stays UNKNOWN and becomes BLOCKED_ON_DOCUMENT.
 That produces the honest output the product is for: *here is what you are entitled to
 on your own account, and here is the paper you need to prove the rest.*
 
-ATTRIBUTION, and the one judgement call in this module
------------------------------------------------------
-Intake also asks which documents she actually holds. A stated fact is attributed to one
-of those documents when the corpus accepts it as proof for that clause — she is
-asserting both the fact and that she can evidence it, which is what an intake desk
-records. We have not seen the document, so every such field is marked
-`FieldOrigin.DECLARED` and every intake result carries a banner saying so. A field
-attributed to `self_declaration` is her word alone and settles only what her word can.
+ATTRIBUTION: HER WORD, AND ONLY HER WORD
+----------------------------------------
+Every fact stated at intake is filed under `self_declaration`. Nothing else. Ticking
+"I have a caste certificate" is not evidence of what the certificate says — we have not
+read it — so it cannot make a clause resolve.
+
+An earlier version attributed a stated fact to a document she said she held, on the
+reasoning that she was asserting both the fact and that she could evidence it. That was
+wrong, and its own banner proved it: the banner promises "I have not seen your
+documents, so anything that needs a certificate is still marked as needing one", while
+the card underneath said "Proven from your caste certificate" about a certificate
+nobody had seen. **"Proven" is the strongest word this product uses and it has to stay
+earned.** The banner was the half that was right.
+
+Intake still asks which documents she holds, because it is useful — the UI can point
+her straight at the upload step for the papers she already has. It just never counts
+as evidence.
 """
 
 from __future__ import annotations
@@ -122,11 +131,14 @@ def build_intake_profile(
     answers: dict[str, object],
     *,
     schemes: list[Scheme],
-    documents_held: list[str] | None = None,
     profile_id: str = "intake",
 ) -> CitizenProfile:
-    """Turn answers into a profile. Attribution is explained in the module docstring."""
-    documents_held = documents_held or []
+    """Turn answers into a profile. Every field is her own declaration; see above.
+
+    Note there is no `documents_held` parameter. It used to be here and it used to
+    change the answer, which was the bug. What she says she holds is a routing hint for
+    the UI, not evidence, so it does not reach the profile at all.
+    """
     fields: dict[str, ProfileField] = {}
 
     for question in spec.questions():
@@ -138,16 +150,11 @@ def build_intake_profile(
         if value is None or value == "":
             continue  # unanswered is unknown, and unknown is a real answer
 
-        accepted = accepted_documents(schemes, question.profile_field)
-        # Prefer a document she says she holds; fall back to her word alone.
-        evidenced_by = next((d for d in accepted if d in documents_held), None)
-        document = evidenced_by or SELF_DECLARATION
-
         fields[question.profile_field] = ProfileField(
             value=value,
-            document_id=document,
+            # Always. A document she says she holds is not a document we have read.
+            document_id=SELF_DECLARATION,
             source_field=question.question_id,
-            # She told us. We have not seen the paper, and the UI says so.
             confidence=1.0,
             origin=FieldOrigin.DECLARED,
         )

@@ -270,6 +270,12 @@ class IntakeResponse(BaseModel):
     declared: bool = True
     #: The engine-rendered sentence saying so. The UI shows this, never its own.
     declared_banner: str
+    #: Documents she said she holds. NOT evidence — nothing here changed a verdict.
+    #: Served so the UI can point her at the upload step for papers she already has.
+    documents_held: list[IntakeOptionPayload] = Field(default_factory=list)
+    #: Documents that would unlock something AND that she says she already holds. This
+    #: is the whole point of an intake screen: "you have these — upload them."
+    ready_to_upload: list[IntakeOptionPayload] = Field(default_factory=list)
     fields: list[ExtractedFieldPayload] = Field(default_factory=list)
     cards: list[CardPayload] = Field(default_factory=list)
     unlock: UnlockPayload | None = None

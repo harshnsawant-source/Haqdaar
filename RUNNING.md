@@ -303,7 +303,11 @@ upload or a checked-in fixture. `corpus/intake.yaml` holds the questions as data
 
 ## What an answer is worth
 
-An answer is a **self-declaration**, and the corpus decides what a declaration settles.
+An answer is a **self-declaration, and only that.** Every intake fact is filed under
+`self_declaration`. Ticking "I have a caste certificate" is not evidence of what the
+certificate says — we have not read it — so it settles nothing.
+
+The corpus decides what a declaration settles.
 `eligibility/evaluate.py` checks that a value's document appears in the clause's
 `verifiable_from`, so:
 
@@ -312,23 +316,30 @@ An answer is a **self-declaration**, and the corpus decides what a declaration s
 - A caste certificate, BPL card or 7/12 extract clause is **not** settled by someone
   saying so. It stays UNKNOWN and becomes BLOCKED_ON_DOCUMENT.
 
-Intake also asks which documents she actually holds, and a stated fact is filed against
-one of those when the corpus accepts it as proof — she is asserting both the fact and
-that she can evidence it. We have not seen the paper, so every intake result carries:
+Intake still asks which documents she holds, but only to point her at the upload step
+for papers she already has. It never counts as evidence. Every intake result carries:
 
 > "This is based on what you told me. I have not seen your documents, so anything that
 > needs a certificate is still marked as needing one."
 
-## The demo contrast worth showing
+## The demo arc: intake, then upload
 
-Same person, same answers:
+Intake alone will usually show **everything blocked**. That is the correct answer, and
+it is the better arc — it is the setup, not the payoff:
 
-| | Without documents | With her Aadhaar, death certificate and 7/12 |
+1. **Tell us your situation.** → "Here are the three papers to bring."
+2. **Upload them.** → the same schemes resolve, now with real proof read off real
+   documents.
+
+Same person, same answers, before and after the documents are actually read:
+
+| | Intake only (her word) | After uploading her documents |
 |---|---|---|
-| PM-KISAN | BLOCKED | **ELIGIBLE** |
-| AVVC | BLOCKED | NOT_ELIGIBLE (rule is 70+) |
+| PM-KISAN | BLOCKED → bring 7/12 | **ELIGIBLE**, proven from the 7/12 |
+| AVVC | BLOCKED → bring Aadhaar | NOT_ELIGIBLE (rule is 70+) |
 | IGNWPS / SGNAY | BLOCKED | BLOCKED — one BPL card unlocks 2 |
-| PM-JAY | UNVERIFIABLE | UNVERIFIABLE |
+| PM-JAY | UNVERIFIABLE | UNVERIFIABLE (SECC 2011, forever) |
 
-The left column is "here is the paper you need". The right is "here is what you are
-owed". Nothing about the engine changed between them — only what she could evidence.
+Nothing about the engine changes between the two columns. Only what she could
+evidence does. **"Proven from your X" appears only where X was actually read** — a test
+asserts an intake card can never claim it.

@@ -122,6 +122,7 @@ def test_one_document_unlocks_both_schemes(schemes_dir, entrepreneur_02_profile)
     assert {v.scheme_id: v.status for v in verdicts} == {
         "nsfdc-term-loan": Status.BLOCKED_ON_DOCUMENT,
         "stand-up-india": Status.BLOCKED_ON_DOCUMENT,
+        "vcf-sc": Status.BLOCKED_ON_DOCUMENT,
     }
     for v in verdicts:
         assert v.unlocking_docs == ["caste_certificate"]
@@ -130,8 +131,8 @@ def test_one_document_unlocks_both_schemes(schemes_dir, entrepreneur_02_profile)
     option = best_unlock(verdicts)
     assert option is not None
     assert option.document_id == "caste_certificate"
-    assert option.unlocks == ["nsfdc-term-loan", "stand-up-india"]
-    assert option.unlock_count == 2
+    assert option.unlocks == ["nsfdc-term-loan", "stand-up-india", "vcf-sc"]
+    assert option.unlock_count == 3
     assert option.contributes_to == []
 
     # Her eligibility is blocked on paperwork; the bank's discretion is still separate.
