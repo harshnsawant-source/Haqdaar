@@ -16,6 +16,8 @@ desktop.ini
 node_modules/
 dist/
 .vite/
+*.log
+
 
 # ---------------------------------------------------------------------------
 # CITIZEN DOCUMENTS MUST NEVER ENTER THIS TREE.

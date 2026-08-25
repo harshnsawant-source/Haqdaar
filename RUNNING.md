@@ -45,9 +45,12 @@ same-origin so the service worker is allowed to cache API responses.
 ```
 
 **One command is the whole gate.** Green means: both rehearsed refusals produce their
-exact rendered English, all four voices are correct across both verticals, the Guard's
-five triggers hold, no output hedges, no placeholder leaks into English, the action
-layer still refuses a verdict it cannot clear, and every failure path degrades calmly.
+exact rendered English, all four voices are correct across all three verticals, the
+Guard's six triggers hold, no output hedges, no placeholder leaks into English, the
+action layer still refuses a verdict it cannot clear (including into a lapsed scheme),
+verified schemes carry no unread marker and unverified ones carry it on every clause,
+no engine module has learned what a "student" is, and every failure path degrades
+calmly.
 
 **Red means do not demo.** Not "probably fine" — a golden test going red means a
 sentence a citizen would read has changed, and you need to know which one and why
@@ -79,10 +82,37 @@ shell, practically a dead product.
 | Real | offline shell + stored verdicts, install to home screen |
 | Real | the A+ action layer: deterministic form fill, gap list, tracking reference |
 | **Simulated** | the *submission itself*. Nothing is sent anywhere, no portal, no login. The reference is generated on this device and begins `SIM-` |
-| **Stand-in** | the Stand-Up India form layout — ours, not the official PDF. Every label says `[VERIFY AT SOURCE]` |
+| **Stand-in** | both application form layouts (Stand-Up India, NSFDC) — ours, not the official PDFs. Every label says `[VERIFY AT SOURCE]` |
 | Real | document upload + local OCR extraction, with per-field confidence and origin |
 | Fixtures | personas are checked-in JSON; a fixture-backed upload labels every borrowed value |
-| **Provisional** | every scheme rule is `[VERIFY AT SOURCE]` and every card says so |
+| Real | **9 of 10 scheme rules transcribed verbatim from official government sources**, each carrying its URL and the date we read it |
+| **Provisional** | SGNAY only, and on one clause: its page never says whether the 18-65 age range governs the widow categories. The card says so. See the file header |
+| **Lapsed** | Stand-Up India (ended 31.03.2025) and VCF-SC (guidelines period ended 31.03.2026). The engine says so and refuses to file into either |
+
+### Corpus, as of 2026-08-26
+
+| Vertical | Schemes |
+|---|---|
+| entrepreneur | stand-up-india *(lapsed)*, nsfdc-term-loan, vcf-sc *(lapsed)* |
+| welfare | pm-kisan, ignwps, sgnay *(provisional)*, pmjay, avvc |
+| student | pre-matric-sc, top-class-sc |
+
+A vertical is a corpus folder plus an intake section. No engine code knows which
+verticals exist, and `test_student_vertical.py` fails if any of it learns.
+
+### API surface
+
+| | |
+|---|---|
+| `GET /api/health` | ok + the list of verticals |
+| `GET /api/personas` | demo fixtures and their vertical |
+| `GET /api/needs` | the front door in the citizen's words, each routed to a vertical |
+| `GET /api/intake` | the question set for one vertical, in one language |
+| `POST /api/intake` | answers in, cards out |
+| `GET /api/evaluate` | one persona through the whole pipeline |
+| `POST /api/extract` | document upload and OCR |
+| `GET /api/compare` | 2-4 schemes side by side. **No best fit, ever** |
+| `POST /api/act` | SIMULATED form fill. 409 on an uncleared or lapsed scheme |
 
 ## The A+ action beat
 
@@ -153,24 +183,25 @@ plausibility window are dropped the same way, never coerced to the nearest optio
 
 # Demo-day readiness
 
-## Footprint (measured 2026-08-23, this machine)
+## Footprint (re-measured 2026-08-26, this machine)
 
-The "runs on a Panchayat laptop" claim, with numbers behind it.
+The "runs on a Panchayat laptop" claim, with numbers behind it. Re-measure before the
+demo rather than quoting these: the corpus grew from 6 schemes to 10 and from two
+verticals to three since the first measurement, and every number here moved.
 
 | | |
 |---|---|
-| Engine cold start (import + wire up) | **~165 ms** |
-| Evaluate + render, both verticals, 7 cards | **~23 ms** |
-| Engine process, resident | **~56 MB** |
-| API response, warm, full vertical | **median 119 ms** (min 34, max 220) |
-| PWA served bundle | **50 KB JS + 2 KB CSS gzipped**, 189 KB on disk |
-| Corpus (all rules, both verticals) | **93 KB** |
+| Engine cold start (import + wire up) | **~187 ms** |
+| Evaluate + render, all three verticals, 10 cards | **~42 ms** |
+| Engine process, resident | **~53 MB** |
+| PWA served bundle | **51 KB JS + 3 KB CSS gzipped**, 169 KB on disk |
+| Corpus (all rules, three verticals) | **165 KB** |
 | Network calls | **zero** |
 | API keys | **none** |
 | Generative model calls | **zero** |
 
-Test suite: **220 passing** in under two seconds, with every key stripped from the
-environment.
+Test suite: **351 passing, 1 skipped** in about four seconds, with every key stripped
+from the environment. The skip is the live-OCR test, which needs Tesseract installed.
 
 What this buys on stage: the whole system is a ~56 MB Python process and a 50 KB page.
 It is not "cloud AI shrunk down" — there is no model to shrink. A cheap laptop at a
@@ -217,7 +248,7 @@ winget install --id UB-Mannheim.TesseractOCR    # then reopen the terminal
    before a judge asks.
 11. Know what is **provisional**: every scheme rule. Every card says so on screen.
 
-## Two quirks that will waste your time if you do not know them
+## Three quirks that will waste your time if you do not know them
 
 **A backgrounded engine can report a failure while running perfectly.** Starting
 uvicorn in the background has repeatedly reported `exit code 127` with an empty log
@@ -240,6 +271,13 @@ powershell -Command "Stop-Process -Id <PID> -Force"
 
 The reliable check that a server has the code you expect is to ask it for something
 only the new code can produce, rather than trusting that it restarted.
+
+**3. `vite preview` binds to localhost, not to 127.0.0.1.** Without `--host` it listens
+on IPv6 `::1` only, so `curl http://127.0.0.1:4173/` fails with a connection error while
+`http://localhost:4173/` returns 200. If you are scripting a pre-flight check, use
+`localhost`. It also picks the next free port silently when 4173 is taken, and prints the
+real one, so read its output rather than assuming.
+
 
 ## If something breaks mid-demo
 

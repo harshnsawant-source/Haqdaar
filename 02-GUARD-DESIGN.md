@@ -56,8 +56,8 @@ template set — the model never phrases a verdict. Nothing the citizen reads is
 
 ## 3. What triggers a refusal
 
-Five triggers. All are checks on the verdict object, all are pure functions, all are unit
-testable. Write a test for each before 30 Aug.
+Six triggers. All are checks on the verdict object, all are pure functions, all are unit
+testable, and all are tested.
 
 **T1. Unsupported predicate.**
 Any predicate with `evaluation = UNKNOWN` and no document in the profile that could ever
@@ -90,8 +90,34 @@ parse, it is cheap and provable — not a model second-guessing the model.
 **T5. Stale or amended rule.**
 `last_amended` is newer than `retrieved_on`, or `retrieved_on` is older than a configured
 window. Status: flagged, answer shown with a visible staleness banner.
-*Corpus instance:* PMAY-G exclusions relaxed in 2024, Ayushman Vay Vandana added Oct 2024.
-Both are in the corpus doc.
+*Corpus instance:* none live, and that is correct. Every scheme was read on 2026-08-26,
+so no transcription is stale. AVVC's Oct 2024 expansion precedes our reading and
+therefore does NOT fire T5: the trigger means "our copy may have drifted", and ours has
+not. If a demo needs a live T5, point it at a source that has changed since we read it.
+Do not manufacture one.
+
+**T6. Lapsed scheme.** *(added 2026-08-26)*
+`today` falls outside the scheme's own `valid_from` / `valid_until` window. Status:
+flagged, and the closure LEADS the card, quoting the source sentence that states it.
+Filing into a lapsed scheme is refused by the action layer with a 409, not merely hidden
+in the UI.
+
+T5 and T6 are independent and easy to confuse. **T5 asks whether our reading of a rule
+has gone stale. T6 asks whether the scheme is still open.** A rule transcribed this
+morning can belong to a scheme that closed last year, which is exactly what happened.
+
+A lapse is reported BESIDE eligibility and never instead of it, for the same reason
+approval is: a citizen can be provably eligible under the published rules of a scheme
+that has shut, and collapsing those into NOT_ELIGIBLE would repeat the mistake the
+approval split exists to prevent. She keeps the proof, because a successor scheme
+normally carries the rules forward.
+
+*Corpus instances, both found by reading official sources rather than by testing:*
+Stand-Up India, whose DFS page states the scheme ran "upto 31.03.2025"; and VCF-SC,
+whose operational guidelines are titled "(01.04.2021 to 31.03.2026)". Note the second is
+NOT the fund closing, since the same document puts the fund's life at 2039. What lapsed
+is the period the rules cover, which is why the rendered wording says the sanctioned
+period has ended rather than claiming the scheme is gone.
 
 ---
 
@@ -222,7 +248,7 @@ Three layers of insurance, cheapest first:
    what you are being judged on.
 2. **Temperature 0 and a pinned prompt** for the extraction model. Rendering runs no model
    (deterministic slot-fill), so its output is asserted exactly in tests, not snapshotted for fuzz.
-3. **Golden verdict tests.** For each of the six schemes plus the two refusal queries, a
+3. **Golden verdict tests.** For each scheme in the corpus plus the two refusal queries, a
    test asserts the exact `status` and the exact set of `predicates`. Red test means no
    deploy. Run these as the last thing you do before walking on stage.
 
@@ -238,7 +264,7 @@ product working as designed. That is worth building.
 The Guard is the smallest high-value thing in the whole project and it gates the pitch.
 
 1. Verdict object + typed predicate evaluator (deterministic, no model). Half a day.
-2. T1 and T2 triggers, with `verifiable_from` populated for the six schemes. Half a day.
+2. T1 and T2 triggers, with `verifiable_from` populated for every scheme. Half a day.
 3. Golden tests for Sunita across all six. Half a day.
 4. T4 slot-binding check. Half a day now that rendering is deterministic slot-fill: assert
    at build time that no template carries an unbound factual claim, and at runtime that every
