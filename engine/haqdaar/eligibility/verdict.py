@@ -18,7 +18,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from haqdaar.corpus.schema import GroupKind, Satisfy, VerificationStatus
+from haqdaar.corpus.schema import GroupKind, Satisfy, Scheme, VerificationStatus
 
 
 class Evaluation(str, Enum):
@@ -41,6 +41,21 @@ class ApprovalStatus(str, Enum):
     NOT_MET = "NOT_MET"
     UNVERIFIABLE = "UNVERIFIABLE"
     BLOCKED_ON_DOCUMENT = "BLOCKED_ON_DOCUMENT"
+
+
+class SchemeWindow(str, Enum):
+    """Whether the scheme itself is open, independent of who is asking.
+
+    This is deliberately NOT a `Status`. A citizen can be provably eligible under the
+    published rules of a scheme that has closed; those are two different facts and
+    collapsing them would repeat exactly the mistake the approval split exists to
+    prevent. Eligibility answers "do the rules entitle you". This answers "is the
+    door open".
+    """
+
+    OPEN = "OPEN"
+    LAPSED = "LAPSED"
+    NOT_YET_OPEN = "NOT_YET_OPEN"
 
 
 class _Frozen(BaseModel):
@@ -111,6 +126,20 @@ class ApprovalNote(_Frozen):
     unlocking_docs: list[str] = Field(default_factory=list)
 
 
+class WindowNote(_Frozen):
+    """The scheme's operating window, reported beside eligibility and never inside it.
+
+    "The rules would entitle you, and here is the proof. The scheme's sanctioned
+    period ended on this date, so I will not send you to apply for it."
+    """
+
+    state: SchemeWindow
+    valid_from: date | None = None
+    valid_until: date | None = None
+    #: Verbatim source wording that states the window, so a closure is cited.
+    validity_text: str | None = None
+
+
 class Verdict(_Frozen):
     scheme_id: str
     #: Eligibility only. Approval never changes this value.
@@ -123,6 +152,9 @@ class Verdict(_Frozen):
     staleness_flag: bool = False
     #: None when the scheme has no APPROVAL group.
     approval: ApprovalNote | None = None
+    #: None when the scheme declares no operating window. Set by the Guard gate, which
+    #: is the only place that knows what day it is.
+    window: WindowNote | None = None
     #: False when another eligible scheme subsumes this one (resolve_interactions).
     claimable: bool = True
     subsumed_by_scheme: str | None = None
@@ -257,3 +289,30 @@ def collect_unlocking_docs(
             if doc not in docs:
                 docs.append(doc)
     return docs
+
+
+def derive_window(scheme: Scheme, *, today: date) -> WindowNote | None:
+    """Where `today` falls in the scheme's own operating window.
+
+    Returns None when the scheme declares no window, which is the honest default: not
+    knowing whether a scheme is open is different from knowing it is open, and this
+    function will not invent the difference. A scheme with no declared window renders
+    exactly as it did before this existed.
+
+    `today` is injected rather than read from the clock for the same reason T5 does it:
+    a golden test must not start failing because the calendar moved.
+    """
+    if scheme.valid_from is None and scheme.valid_until is None:
+        return None
+    if scheme.valid_until is not None and today > scheme.valid_until:
+        state = SchemeWindow.LAPSED
+    elif scheme.valid_from is not None and today < scheme.valid_from:
+        state = SchemeWindow.NOT_YET_OPEN
+    else:
+        state = SchemeWindow.OPEN
+    return WindowNote(
+        state=state,
+        valid_from=scheme.valid_from,
+        valid_until=scheme.valid_until,
+        validity_text=scheme.validity_text,
+    )

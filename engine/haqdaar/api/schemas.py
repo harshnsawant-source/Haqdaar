@@ -51,6 +51,10 @@ class CardPayload(BaseModel):
     lines: list[str] = Field(default_factory=list)
     approval_lines: list[str] = Field(default_factory=list)
     banners: list[str] = Field(default_factory=list)
+    #: T6. The scheme's own operating window, rendered ahead of everything else.
+    window_lines: list[str] = Field(default_factory=list)
+    #: OPEN | LAPSED | NOT_YET_OPEN, or None when the scheme declares no window.
+    window_state: str | None = None
     citations: list[Citation] = Field(default_factory=list)
     unlocking_docs: list[str] = Field(default_factory=list)
     staleness_flag: bool = False
@@ -302,6 +306,8 @@ def to_payload(result: GateResult, scheme: Scheme, card: RenderedCard) -> CardPa
         lines=list(card.lines),
         approval_lines=list(card.approval_lines),
         banners=list(card.banners),
+        window_lines=list(card.window_lines),
+        window_state=verdict.window.state.value if verdict.window else None,
         citations=[
             Citation(
                 clause_id=p.clause_id,

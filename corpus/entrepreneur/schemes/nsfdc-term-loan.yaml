@@ -1,64 +1,107 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official source on 2026-08-26.
 #
-# Paraphrased from PROJECT-BRIEF-ADDENDUM.md s3 ("NSFDC / NSKFDC term loans (income
-# ceiling + caste certificate)"), which is our own team document, not an official
-# source. Present on day 1 to exercise the discretionary refusal mechanism.
+# Every clause_text below is transcribed verbatim from nsfdc.nic.in, the National
+# Scheduled Castes Finance and Development Corporation's own site. Pages read:
 #
-# NOTE THE ABSENT INCOME CEILING. The addendum says an income ceiling exists but names
-# no figure, and nobody has read the official rule. Encoding a guessed number would be
-# exactly the failure mode this project exists to avoid, so the clause is omitted
-# rather than invented. Add it when it is sourced — see verify_note.
+#   nsfdc.nic.in/eligibility-requirements  — the eligibility criteria
+#   nsfdc.nic.in/how-to-apply-2            — the channel-partner route
+#
+# THE INCOME CEILING IS NOW SOURCED. The earlier provisional version deliberately
+# omitted it because the addendum named no figure. The official page gives it, together
+# with the date it took effect, so it is encoded with that date on `last_amended`. Note
+# how recent it is: a corpus assembled before January 2026 carries the wrong ceiling.
+#
+# NO VALIDITY WINDOW IS DECLARED. The page states no start or end date for the scheme
+# itself, so `valid_from` and `valid_until` are absent and the engine reports no window
+# at all. Not knowing a scheme is open is different from knowing it is, and the corpus
+# does not close that gap with a guess.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# Age. The eligibility page states none, so none is encoded.
+# Loan ceiling, interest rate and repayment period. Not on the eligibility page, and
+# they are product terms rather than eligibility tests.
+# The proof documents for caste and income. The page does not name them; the
+# `verifiable_from` lists below reflect standard practice, which is flagged per clause.
 
 scheme_id: nsfdc-term-loan
 name: NSFDC Term Loan
-authority: >-
-  [VERIFY AT SOURCE] National Scheduled Castes Finance and Development Corporation,
-  Ministry of Social Justice and Empowerment
-benefit: "[VERIFY AT SOURCE] Concessional term loan for income-generating activity"
-source_url: "https://nsfdc.nic.in/"
-retrieved_on: 2026-08-21
-verification_status: PROVISIONAL
+authority: "National Scheduled Castes Finance and Development Corporation, Ministry of Social Justice and Empowerment"
+benefit: "Concessional financial assistance for economic empowerment of persons belonging to Scheduled Castes"
+source_url: "https://nsfdc.nic.in/eligibility-requirements"
+retrieved_on: 2026-08-26
+#: The income ceiling took effect on this date, per the source. Earlier than our
+#: reading, so T5 correctly stays silent: our transcription already reflects it.
+last_amended: 2026-01-07
+verification_status: VERIFIED
 verify_note: >-
-  Nobody has opened the official NSFDC scheme page. Confirm: (a) verbatim eligibility
-  wording, (b) THE INCOME CEILING FIGURE AND PERIOD — deliberately not encoded here,
-  do not guess it, (c) whether NSFDC lends directly or only through State Channelising
-  Agencies, since that changes who the discretionary decision-maker actually is, and
-  (d) the exact document that evidences caste.
+  Clause text transcribed verbatim from nsfdc.nic.in/eligibility-requirements and
+  nsfdc.nic.in/how-to-apply-2, both read on 2026-08-26. The pages state no age
+  requirement and no scheme validity window, so neither is encoded. They also do not
+  name the documents that evidence caste or income; `verifiable_from` reflects standard
+  practice and is noted as such on each clause.
+
+portal_url: "https://pmsuraj.dosje.gov.in/"
+filing_office: "the nearest State Channelising Agency or Channelising Agency office"
 
 clause_groups:
   - group_id: eligibility
     satisfy: ALL
     clauses:
       - clause_id: NSF-C1
-        clause_text: >-
-          [VERIFY AT SOURCE] The applicant belongs to a Scheduled Caste.
+        clause_text: "The beneficiary(ies) must belong to the Scheduled Caste (SC) community."
         rule_type: enumerated_category
         profile_field: applicant.social_category
         bound:
           values: [SC]
         verifiable_from: [caste_certificate]
-        verification_status: PROVISIONAL
-        verify_note: "Confirm verbatim wording and the accepted caste proof document."
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26. The
+          page does not name the accepted proof document; a caste certificate reflects
+          standard practice, and an SCA may accept others.
 
-  # The refusal (addendum s5), in its own APPROVAL group. Structurally identical to
-  # PM-JAY's SECC-2011 clause — verifiable_from is empty, so nothing the applicant
-  # fetches can ever settle it — but it answers a different question. Approval is not
-  # eligibility: she stays ELIGIBLE with her proof, and the engine refuses separately
-  # to predict what the bank will do.
+      - clause_id: NSF-C2
+        clause_text: >-
+          The annual family income of applicants must not exceed Rs 5.00 lakh
+          (applicable to both rural and urban areas, effective from January 7, 2026).
+        rule_type: income_threshold
+        profile_field: household.annual_income
+        bound:
+          max_value: 500000
+          currency: INR
+          period: ANNUAL
+        verifiable_from: [income_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26, with
+          the rupee sign written out so the clause text stays plain ASCII. The ceiling
+          is the same for rural and urban areas, which the page states explicitly, and
+          it took effect on 2026-01-07.
+
+  # The refusal, now on sourced wording. The earlier version invented a sentence about
+  # "appraisal of the proposal by the lending institution", which was our paraphrase
+  # and not something any official page said. The real sourced fact is narrower and
+  # more interesting: NSFDC does not verify eligibility itself.
   #
-  # The schema now rejects a discretionary clause in an ELIGIBILITY group, so this
-  # cannot regress into hiding her entitlement behind the bank's discretion.
-  - group_id: sanction
+  # It stays in an APPROVAL group. She remains ELIGIBLE with her proof intact, and the
+  # engine refuses separately to predict what the channelising agency will conclude.
+  - group_id: verification-by-agency
     kind: APPROVAL
     satisfy: ALL
     clauses:
-      - clause_id: NSF-C2
+      - clause_id: NSF-C3
         clause_text: >-
-          [VERIFY AT SOURCE] Sanction of the loan is subject to appraisal of the
-          proposal by the lending institution.
+          verification of eligibility criteria shall be the sole responsibility of the
+          concerned SCAs/CAs
         rule_type: discretionary
-        decided_by: "the lending institution's credit appraisal"
-        verification_status: PROVISIONAL
+        decided_by: "the concerned State Channelising Agency or Channelising Agency"
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm the verbatim wording of the appraisal condition and who performs it
-          (NSFDC, the State Channelising Agency, or the bank).
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26. Lower
+          case and no full stop because that is how the sentence appears in the source;
+          the renderer never opens a line with this slot, so the casing is safe.
+          nsfdc.nic.in/how-to-apply-2 confirms NSFDC lends "through its designated
+          Channel Partners, including State Channelizing Agencies (SCAs), Banks, and
+          other Channelizing Agencies (CAs)", which is why the decider is the agency
+          rather than a bank.

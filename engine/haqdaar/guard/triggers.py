@@ -25,8 +25,10 @@ from haqdaar.eligibility.verdict import (
     ApprovalStatus,
     Evaluation,
     Predicate,
+    SchemeWindow,
     Status,
     Verdict,
+    derive_window,
 )
 from haqdaar.retrieval.route import RouteResult
 
@@ -39,6 +41,7 @@ class TriggerId(str, Enum):
     T2_MISSING_BUT_OBTAINABLE = "T2"
     T3_NO_RETRIEVAL_SUPPORT = "T3"
     T5_STALE_RULE = "T5"
+    T6_LAPSED_SCHEME = "T6"
 
 
 class Scope(str, Enum):
@@ -69,6 +72,9 @@ class Finding(BaseModel):
     #: T5 only: the dates that made the rule stale, as ISO strings for the banner slot.
     retrieved_on: str | None = None
     last_amended: str | None = None
+    #: T6 only: the scheme's own window, as ISO strings for the banner slots.
+    valid_from: str | None = None
+    valid_until: str | None = None
 
 
 def _unresolved(verdict: Verdict, kind: GroupKind) -> list[Predicate]:
@@ -275,3 +281,30 @@ def validate(verdict: Verdict) -> list[Finding]:
             "unsettleable approval clause"
         )
     return findings
+
+
+def t6_lapsed_scheme(scheme: Scheme, *, today: date) -> Finding | None:
+    """The scheme's own door is shut, whatever the rules say about this citizen.
+
+    T5 asks whether *our reading* of a rule has gone stale. T6 asks whether the
+    *scheme* is still open. They are independent: a rule transcribed this morning can
+    belong to a scheme that closed last year, and a scheme still running can carry a
+    transcription nobody has refreshed in a year.
+
+    Like T5 this is additive and never suppresses the eligibility proof. The citizen
+    keeps the finding that the published rules entitle her, which is worth knowing when
+    a successor scheme opens, and gains the fact that this particular door is closed.
+    NOT_YET_OPEN is reported the same way, because "come back in April" is as
+    actionable as "this closed".
+    """
+    window = derive_window(scheme, today=today)
+    if window is None or window.state is SchemeWindow.OPEN:
+        return None
+    return Finding(
+        trigger=TriggerId.T6_LAPSED_SCHEME,
+        scope=Scope.ELIGIBILITY,
+        scheme_id=scheme.scheme_id,
+        clause_ids=[],
+        valid_from=window.valid_from.isoformat() if window.valid_from else None,
+        valid_until=window.valid_until.isoformat() if window.valid_until else None,
+    )

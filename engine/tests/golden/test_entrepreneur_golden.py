@@ -35,27 +35,34 @@ def test_standup_india_eligible(stand_up_india, entrepreneur_profile):
     assert verdict.unlocking_docs == []
 
     by_id = {p.clause_id: p for p in verdict.predicates}
-    assert set(by_id) == {"SUI-C1", "SUI-C2", "SUI-C3", "SUI-C4"}
+    # SUI-C3 (age) and SUI-C6 (not in default) arrived with the verified corpus on
+    # 2026-08-26. C6 is an APPROVAL clause and is UNKNOWN by construction, so the
+    # all-TRUE assertion below is scoped to the eligibility clauses.
+    assert set(by_id) == {"SUI-C1", "SUI-C2", "SUI-C3", "SUI-C4", "SUI-C5", "SUI-C6"}
 
-    # Every predicate resolves TRUE for this persona.
-    assert all(p.evaluation is Evaluation.TRUE for p in verdict.predicates)
+    eligibility = [p for p in verdict.predicates if p.clause_id != "SUI-C6"]
+    assert all(p.evaluation is Evaluation.TRUE for p in eligibility)
 
     # And every resolved predicate points at a real value in a real document. This is
     # the invariant the whole design rests on.
-    for predicate in verdict.predicates:
+    for predicate in eligibility:
         assert predicate.evidence is not None
         assert predicate.evidence.document_id
-        assert predicate.source_url == "https://www.standupmitra.in/"
+        assert predicate.source_url == "https://www.standupmitra.in/Home/SUISchemes"
 
     assert by_id["SUI-C1"].evidence.document_id == "caste_certificate"
     assert by_id["SUI-C1"].evidence.extracted_value == "SC"
-    assert by_id["SUI-C4"].evidence.extracted_value == 1500000
+    assert by_id["SUI-C5"].evidence.extracted_value == 1500000
 
-    # The ANY group is satisfied; the ALL group is satisfied.
+    # No clause_text carries the unverified marker any more.
+    assert not any("[VERIFY AT SOURCE]" in p.clause_text for p in verdict.predicates)
+
     groups = {g.group_id: g.evaluation for g in verdict.group_results}
     assert groups == {
         "applicant-category": Evaluation.TRUE,
+        "applicant-age": Evaluation.TRUE,
         "enterprise-conditions": Evaluation.TRUE,
+        "lending-conditions": Evaluation.UNKNOWN,
     }
 
 
@@ -76,25 +83,33 @@ def test_nsfdc_eligible_with_a_separate_approval_refusal(nsfdc, entrepreneur_pro
     assert verdict.unlocking_docs == []
 
     by_id = {p.clause_id: p for p in verdict.predicates}
-    assert set(by_id) == {"NSF-C1", "NSF-C2"}
+    # NSF-C2 (the Rs 5.00 lakh income ceiling) arrived with the verified corpus on
+    # 2026-08-26; the provisional version deliberately omitted it because no figure
+    # had been sourced. The discretionary clause moved to NSF-C3.
+    assert set(by_id) == {"NSF-C1", "NSF-C2", "NSF-C3"}
 
     # The caste clause resolves, with evidence.
     assert by_id["NSF-C1"].evaluation is Evaluation.TRUE
     assert by_id["NSF-C1"].evidence.document_id == "caste_certificate"
 
+    # The sourced income ceiling resolves too.
+    assert by_id["NSF-C2"].evaluation is Evaluation.TRUE
+    assert by_id["NSF-C2"].evidence.document_id == "income_certificate"
+
     # The discretionary clause is permanently unsettleable: no document, ever.
-    appraisal = by_id["NSF-C2"]
+    decider = "the concerned State Channelising Agency or Channelising Agency"
+    appraisal = by_id["NSF-C3"]
     assert appraisal.evaluation is Evaluation.UNKNOWN
     assert appraisal.evidence is None
     assert appraisal.verifiable_from == []
     assert appraisal.is_settleable is False
-    assert appraisal.decided_by == "the lending institution's credit appraisal"
+    assert appraisal.decided_by == decider
 
     # The refusal, reported beside the eligibility rather than on top of it.
     assert verdict.approval is not None
     assert verdict.approval.status is ApprovalStatus.UNVERIFIABLE
-    assert verdict.approval.deciders == ["the lending institution's credit appraisal"]
-    assert verdict.approval.clause_ids == ["NSF-C2"]
+    assert verdict.approval.deciders == [decider]
+    assert verdict.approval.clause_ids == ["NSF-C3"]
     assert verdict.approval.unlocking_docs == []  # nothing to fetch; it is not hers
 
     # T1 fires on approval only. Eligibility is untouched.

@@ -27,28 +27,56 @@ def cards(schemes_path, profile, today, *, use_unlock: bool = True):
 
 
 def test_voice_eligible_with_proof(schemes_dir, entrepreneur_profile, today):
-    card = cards(schemes_dir, entrepreneur_profile, today)["stand-up-india"]
+    """The proof beat, now on NSFDC — an open scheme with verbatim official wording.
+
+    It moved off Stand-Up India on 2026-08-26. Stand-Up India's own DFS page states the
+    scheme ran "upto 31.03.2025", so it is encoded LAPSED and its card now leads with a
+    closure. The proof beat needs a door that is actually open.
+    """
+    card = cards(schemes_dir, entrepreneur_profile, today)["nsfdc-term-loan"]
     assert card.status is Status.ELIGIBLE
+    assert card.window_lines == []  # no closure to announce
     assert card.lines[:3] == [
-        "You are eligible for Stand-Up India.",
+        "You are eligible for NSFDC Term Loan.",
         "Here is the rule that entitles you:",
-        "[VERIFY AT SOURCE] The applicant belongs to a Scheduled Caste or Scheduled "
-        "Tribe.",
+        "The beneficiary(ies) must belong to the Scheduled Caste (SC) community.",
     ]
     # Each proven clause is followed by the document that proves it.
     assert "Proven from your caste certificate." in card.lines
-    assert "Proven from your Aadhaar." in card.lines
-    assert "Source: https://www.standupmitra.in/" in card.lines
+    assert "Proven from your income certificate." in card.lines
+    assert "Source: https://nsfdc.nic.in/eligibility-requirements" in card.lines
+    # Verified corpus: nothing on screen carries the unread marker.
+    assert "[VERIFY AT SOURCE]" not in card.text()
+
+
+def test_voice_lapsed_scheme_leads_with_the_closure(
+    schemes_dir, entrepreneur_profile, today
+):
+    """T6 on the real corpus, not a synthetic scheme.
+
+    She is genuinely eligible under Stand-Up India's published rules and the card says
+    so underneath. What she reads first is that the scheme is shut, quoted from the
+    Department of Financial Services' own page.
+    """
+    card = cards(schemes_dir, entrepreneur_profile, today)["stand-up-india"]
+    assert card.status is Status.ELIGIBLE
+    assert card.window_lines[0] == "This scheme is closed. Do not spend a day on it."
+    assert "Its sanctioned period ended on 2025-03-31." in card.window_lines
+    assert any("15th Finance Commission" in line for line in card.window_lines)
+    # The closure is read before the entitlement, not after it.
+    assert card.text().startswith("This scheme is closed.")
 
 
 def test_voice_blocked_on_document(schemes_dir, entrepreneur_02_profile, today):
-    card = cards(schemes_dir, entrepreneur_02_profile, today)["stand-up-india"]
+    card = cards(schemes_dir, entrepreneur_02_profile, today)["nsfdc-term-loan"]
     assert card.status is Status.BLOCKED_ON_DOCUMENT
     assert card.lines[0] == "You are one document away."
     assert card.lines[1] == (
         "Bring your caste certificate and this unlocks 3 more schemes."
     )
-    assert card.lines[2].startswith("The rule this settles: [VERIFY AT SOURCE]")
+    assert card.lines[2].startswith(
+        "The rule this settles: The beneficiary(ies) must belong to"
+    )
 
 
 def test_blocked_names_the_scheme_when_it_unlocks_only_that_one(
@@ -56,10 +84,10 @@ def test_blocked_names_the_scheme_when_it_unlocks_only_that_one(
 ):
     """Without an aggregator count, the card must not invent one."""
     card = cards(schemes_dir, entrepreneur_02_profile, today, use_unlock=False)[
-        "stand-up-india"
+        "nsfdc-term-loan"
     ]
     assert card.lines[1] == (
-        "Bring your caste certificate and this unlocks Stand-Up India."
+        "Bring your caste certificate and this unlocks NSFDC Term Loan."
     )
 
 
@@ -110,9 +138,19 @@ def test_a_rule_amended_before_we_read_it_is_not_stale(
     assert not any("records a change" in b for b in card.banners)
 
 
-def test_provisional_corpus_always_says_so(schemes_dir, entrepreneur_profile, today):
-    for card in cards(schemes_dir, entrepreneur_profile, today).values():
-        assert any("not yet been verified" in b for b in card.banners)
+def test_each_card_declares_whether_its_rules_were_verified(
+    schemes_dir, entrepreneur_profile, today
+):
+    """Both directions, because only one of them is dangerous.
+
+    An unverified scheme must carry the banner. A verified one must NOT, or the banner
+    means nothing and citizens learn to ignore it. Until 2026-08-26 every scheme was
+    provisional and this test simply asserted the banner everywhere.
+    """
+    verified = {"stand-up-india", "nsfdc-term-loan"}
+    for scheme_id, card in cards(schemes_dir, entrepreneur_profile, today).items():
+        says_unverified = any("not yet been verified" in b for b in card.banners)
+        assert says_unverified is (scheme_id not in verified), scheme_id
 
 
 def test_no_rendered_card_hedges(

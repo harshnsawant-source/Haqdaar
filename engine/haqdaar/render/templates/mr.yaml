@@ -45,6 +45,14 @@ unverifiable.also_unsettleable: "[NEEDS HUMAN TRANSLATION] The same records sett
 unverifiable.next_step: "[NEEDS HUMAN TRANSLATION] Ask at {office} and quote that rule."
 unverifiable.promise: "[NEEDS HUMAN TRANSLATION] If they confirm it, come back and I will complete your application."
 unverifiable.outside_corpus: "[NEEDS HUMAN TRANSLATION] That is outside what I have rules for. I only answer where I can show you the official clause."
+# --- SCHEME WINDOW (T6) -----------------------------------------------------
+window.lapsed_headline: "[NEEDS HUMAN TRANSLATION] This scheme is closed. Do not spend a day on it."
+window.lapsed_reason: "[NEEDS HUMAN TRANSLATION] Its sanctioned period ended on {valid_until}."
+window.lapsed_source: "[NEEDS HUMAN TRANSLATION] The official page says: {validity_text}"
+window.lapsed_proof_kept: "[NEEDS HUMAN TRANSLATION] I have still checked you against its published rules below, because a successor scheme normally carries them forward."
+window.not_yet_open_headline: "[NEEDS HUMAN TRANSLATION] This scheme has not opened yet."
+window.not_yet_open_reason: "[NEEDS HUMAN TRANSLATION] It opens on {valid_from}."
+
 approval.headline: "[NEEDS HUMAN TRANSLATION] Whether it is approved is not mine to promise."
 approval.refusal: "[NEEDS HUMAN TRANSLATION] That is decided by {decider}, and no document you hold determines it."
 approval.rule: "[NEEDS HUMAN TRANSLATION] The condition: {clause_text}"

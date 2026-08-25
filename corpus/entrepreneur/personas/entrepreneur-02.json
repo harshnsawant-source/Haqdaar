@@ -1,6 +1,6 @@
 {
   "profile_id": "entrepreneur-02",
-  "description": "PROVISIONAL demo persona for the 'one document away' beat. A first-time entrepreneur with a project report and Aadhaar but NO caste certificate. That single missing document is the sole blocker on both provisional schemes, which is what makes the unlock aggregator's headline true rather than merely plausible. A persona is demo fiction and is fine to author; scheme rules are not, and none are invented here.",
+  "description": "PROVISIONAL demo persona for the 'one document away' beat. A first-time entrepreneur with a project report and Aadhaar but NO caste certificate. That single missing document is the sole blocker on both provisional schemes, which is what makes the unlock aggregator's headline true rather than merely plausible. A persona is demo fiction and is fine to author; scheme rules are not, and none are invented here. Age added 2026-08-26: the verified Stand-Up India corpus carries the official 'above 18 years of age' condition, which no persona previously had evidence for. Household income added 2026-08-26 for the same reason as age: the verified NSFDC corpus carries the official Rs 5.00 lakh annual family income ceiling (effective 2026-01-07), which no persona had evidence for. 02 keeps the caste certificate as its single blocker so the unlock beat stays true.",
   "fields": {
     "applicant.gender": {
       "value": "MALE",
@@ -18,6 +18,18 @@
       "value": 2000000,
       "document_id": "project_report",
       "source_field": "loan_amount_sought",
+      "confidence": 1.0
+    },
+    "applicant.age": {
+      "value": 29,
+      "document_id": "aadhaar",
+      "source_field": "age",
+      "confidence": 1.0
+    },
+    "household.annual_income": {
+      "value": 240000,
+      "document_id": "income_certificate",
+      "source_field": "annual_income",
       "confidence": 1.0
     }
   }

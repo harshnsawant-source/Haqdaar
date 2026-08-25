@@ -13,13 +13,14 @@ from datetime import date
 from pydantic import BaseModel, ConfigDict, Field
 
 from haqdaar.corpus.schema import Scheme
-from haqdaar.eligibility.verdict import Verdict
+from haqdaar.eligibility.verdict import Verdict, derive_window
 from haqdaar.guard.triggers import (
     STALENESS_WINDOW_DAYS,
     Finding,
     GuardViolation,
     check,
     t5_stale_rule,
+    t6_lapsed_scheme,
     validate,
 )
 
@@ -47,7 +48,8 @@ def gate(
     """Validate a verdict and collect every finding that applies to it.
 
     Raises GuardViolation if the verdict's status contradicts its own predicates.
-    Staleness (T5) is additive: it flags the answer, it never suppresses it.
+    Staleness (T5) and a closed scheme window (T6) are both additive: they flag the
+    answer, they never suppress it. The eligibility proof survives either one.
     """
     if verdict.scheme_id != scheme.scheme_id:
         raise GuardViolation(
@@ -60,8 +62,19 @@ def gate(
     if stale is not None:
         findings.append(stale)
 
+    lapsed = t6_lapsed_scheme(scheme, today=today)
+    if lapsed is not None:
+        findings.append(lapsed)
+
     return GateResult(
-        verdict=verdict.model_copy(update={"staleness_flag": stale is not None}),
+        verdict=verdict.model_copy(
+            update={
+                "staleness_flag": stale is not None,
+                # Set here and nowhere else: the gate is the only layer that is told
+                # what day it is, which is exactly why `today` is injected into it.
+                "window": derive_window(scheme, today=today),
+            }
+        ),
         findings=findings,
     )
 

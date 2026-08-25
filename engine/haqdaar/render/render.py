@@ -41,6 +41,7 @@ from haqdaar.eligibility.verdict import (
     ApprovalStatus,
     Evaluation,
     Predicate,
+    SchemeWindow,
     Status,
     Verdict,
 )
@@ -79,9 +80,13 @@ class RenderedCard(BaseModel):
     #: Rendered separately so the UI can colour it differently (guard doc s3-T2/T1).
     approval_lines: list[str] = Field(default_factory=list)
     banners: list[str] = Field(default_factory=list)
+    #: T6. Leads the card, because a shut door outranks everything below it.
+    window_lines: list[str] = Field(default_factory=list)
 
     def text(self) -> str:
-        return "\n".join([*self.lines, *self.approval_lines, *self.banners])
+        return "\n".join(
+            [*self.window_lines, *self.lines, *self.approval_lines, *self.banners]
+        )
 
 
 @lru_cache(maxsize=None)
@@ -346,6 +351,7 @@ def render_card(
 
     approval_lines = _render_approval(verdict, templates, base, clause_texts)
     banners = _render_banners(result, scheme, templates, base, clause_texts)
+    window_lines = _render_window(verdict, templates, base, clause_texts)
 
     return RenderedCard(
         scheme_id=verdict.scheme_id,
@@ -353,6 +359,7 @@ def render_card(
         lines=lines,
         approval_lines=approval_lines,
         banners=banners,
+        window_lines=window_lines,
     )
 
 
@@ -490,6 +497,60 @@ def _render_approval(
                 "approval.rule",
                 templates,
                 {**base, "clause_text": clause.clause_text},
+                clause_texts,
+            )
+        )
+    return lines
+
+
+def _render_window(
+    verdict: Verdict,
+    templates: dict[str, str],
+    base: dict[str, object],
+    clause_texts: set[str],
+) -> list[str]:
+    """The scheme's own operating window, rendered ahead of any eligibility claim.
+
+    Silent when the scheme declares no window or the window is open, so a scheme that
+    never stated one reads exactly as it did before T6 existed. Not knowing a scheme
+    is closed and knowing it is open are different facts, and only the second one
+    earns a line on the card.
+    """
+    window = verdict.window
+    if window is None or window.state is SchemeWindow.OPEN:
+        return []
+
+    lines: list[str] = []
+    if window.state is SchemeWindow.LAPSED:
+        lines.append(_fill("window.lapsed_headline", templates, base, clause_texts))
+        if window.valid_until is not None:
+            lines.append(
+                _fill(
+                    "window.lapsed_reason",
+                    templates,
+                    {**base, "valid_until": window.valid_until.isoformat()},
+                    clause_texts,
+                )
+            )
+        if window.validity_text:
+            lines.append(
+                _fill(
+                    "window.lapsed_source",
+                    templates,
+                    {**base, "validity_text": window.validity_text},
+                    clause_texts,
+                )
+            )
+        lines.append(_fill("window.lapsed_proof_kept", templates, base, clause_texts))
+        return lines
+
+    lines.append(_fill("window.not_yet_open_headline", templates, base, clause_texts))
+    if window.valid_from is not None:
+        lines.append(
+            _fill(
+                "window.not_yet_open_reason",
+                templates,
+                {**base, "valid_from": window.valid_from.isoformat()},
                 clause_texts,
             )
         )

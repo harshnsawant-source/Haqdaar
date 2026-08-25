@@ -1,6 +1,6 @@
 {
   "profile_id": "entrepreneur-01",
-  "description": "PROVISIONAL demo persona for SIH26092. A first-time SC woman entrepreneur seeking a term loan for a new enterprise. The content lane owns her name and story; the engine only reads the fields below. Confidence is 1.0 throughout because these are typed fixture values, not OCR output — day 6 replaces them with extracted values carrying real confidence scores.",
+  "description": "PROVISIONAL demo persona for SIH26092. A first-time SC woman entrepreneur seeking a term loan for a new enterprise. The content lane owns her name and story; the engine only reads the fields below. Confidence is 1.0 throughout because these are typed fixture values, not OCR output — day 6 replaces them with extracted values carrying real confidence scores. Age added 2026-08-26: the verified Stand-Up India corpus carries the official 'above 18 years of age' condition, which no persona previously had evidence for. Household income added 2026-08-26 for the same reason as age: the verified NSFDC corpus carries the official Rs 5.00 lakh annual family income ceiling (effective 2026-01-07), which no persona had evidence for. 02 keeps the caste certificate as its single blocker so the unlock beat stays true.",
   "fields": {
     "applicant.social_category": {
       "value": "SC",
@@ -24,6 +24,18 @@
       "value": 1500000,
       "document_id": "project_report",
       "source_field": "loan_amount_sought",
+      "confidence": 1.0
+    },
+    "applicant.age": {
+      "value": 34,
+      "document_id": "aadhaar",
+      "source_field": "age",
+      "confidence": 1.0
+    },
+    "household.annual_income": {
+      "value": 240000,
+      "document_id": "income_certificate",
+      "source_field": "annual_income",
       "confidence": 1.0
     }
   }

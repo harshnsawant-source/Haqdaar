@@ -156,7 +156,7 @@ def test_approval_pending_is_carried_into_the_action(schemes_dir, entrepreneur_p
     )
     filled_form = fill_form(form, verdict, entrepreneur_profile)
     assert filled_form.approval_pending_by == [
-        "the lending institution's credit appraisal"
+        "the concerned State Channelising Agency or Channelising Agency"
     ]
 
     rendered = render_action(

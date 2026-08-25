@@ -1,0 +1,114 @@
+# STAND-IN FORM — NOT THE OFFICIAL DOCUMENT. DO NOT PRESENT AS ONE.
+#
+# WHY THIS FILE EXISTS
+# --------------------
+# The action beat used to run on Stand-Up India. On 2026-08-26 that scheme was verified
+# against the Department of Financial Services' page, which states its sanctioned
+# period ran "upto 31.03.2025". The engine now reports it LAPSED and refuses to file
+# into it, which is correct and leaves the action beat without a scheme. NSFDC is
+# verified and declares no closing date, so the beat moves here.
+#
+# The real blank NSFDC / PM-SURAJ application is a CONTENT-LANE DEPENDENCY that has not
+# landed. This is a representative layout so the action layer is demonstrable. It is
+# not a transcription of a government form, and nothing here should be read as a
+# statement about what the government requires.
+#
+# Consequences, enforced by engine/haqdaar/corpus/forms.py:
+#   * every label carries [VERIFY AT SOURCE]
+#   * every field's requirement is UNVERIFIED — we have not read the official form, so
+#     we do not know which fields are mandatory, and guessing would be inventing a
+#     government requirement
+#
+# TO PROMOTE THIS TO THE REAL FORM:
+#   1. Obtain the official blank application from https://pmsuraj.dosje.gov.in/ or the
+#      nearest State Channelising Agency
+#   2. Transcribe each field's exact label, marker removed
+#   3. Set the true requirement (REQUIRED / OPTIONAL) per the form
+#   4. Set is_stand_in: false and verification_status: VERIFIED
+#   5. Run the tests — the golden action test will fail because labels changed. Read
+#      every diff before updating it. That failure is the system working.
+
+form_id: nsfdc-term-loan-application
+scheme_id: nsfdc-term-loan
+title: "[VERIFY AT SOURCE] NSFDC term loan application"
+source_url: "https://pmsuraj.dosje.gov.in/"
+retrieved_on: 2026-08-26
+is_stand_in: true
+verification_status: PROVISIONAL
+verify_note: >-
+  Nobody has obtained the official blank application form. Every label and every
+  requirement below is a placeholder. Replace with the real form before any demo that
+  shows a filled application, and say "stand-in" out loud if it is shown before then.
+  Note that NSFDC lends through State Channelising Agencies, so the real form may be
+  the SCA's rather than a single national document.
+
+sections:
+  - section_id: applicant
+    title: "[VERIFY AT SOURCE] Applicant details"
+    fields:
+      - field_id: applicant_name
+        label: "[VERIFY AT SOURCE] Full name of applicant"
+        obtainable_from: [aadhaar]
+
+      - field_id: applicant_social_category
+        label: "[VERIFY AT SOURCE] Social category (SC)"
+        profile_field: applicant.social_category
+        obtainable_from: [caste_certificate]
+
+      - field_id: applicant_age
+        label: "[VERIFY AT SOURCE] Age"
+        profile_field: applicant.age
+        obtainable_from: [aadhaar]
+
+      - field_id: applicant_aadhaar_number
+        label: "[VERIFY AT SOURCE] Aadhaar number"
+        obtainable_from: [aadhaar]
+        note: >-
+          Deliberately NOT wired to a profile field. Haqdaar does not hold or transmit
+          Aadhaar numbers; the citizen writes this on the form themselves.
+
+  - section_id: household
+    title: "[VERIFY AT SOURCE] Family income"
+    fields:
+      - field_id: household_annual_income
+        label: "[VERIFY AT SOURCE] Annual family income (Rs)"
+        profile_field: household.annual_income
+        obtainable_from: [income_certificate]
+
+  - section_id: contact
+    title: "[VERIFY AT SOURCE] Contact"
+    fields:
+      - field_id: applicant_address
+        label: "[VERIFY AT SOURCE] Residential address"
+        obtainable_from: [aadhaar, domicile_certificate]
+
+      - field_id: applicant_mobile
+        label: "[VERIFY AT SOURCE] Mobile number"
+        obtainable_from: []
+
+  - section_id: activity
+    title: "[VERIFY AT SOURCE] Proposed income-generating activity"
+    fields:
+      - field_id: activity_description
+        label: "[VERIFY AT SOURCE] Description of the proposed activity"
+        obtainable_from: [project_report]
+
+      - field_id: activity_loan_amount_sought
+        label: "[VERIFY AT SOURCE] Loan amount sought (Rs)"
+        profile_field: enterprise.loan_amount_sought
+        obtainable_from: [project_report]
+
+      - field_id: activity_project_cost
+        label: "[VERIFY AT SOURCE] Total project cost (Rs)"
+        obtainable_from: [project_report]
+
+  - section_id: banking
+    title: "[VERIFY AT SOURCE] Bank account for disbursal"
+    fields:
+      - field_id: bank_account_number
+        label: "[VERIFY AT SOURCE] Bank account number"
+        obtainable_from: [bank_passbook]
+
+      - field_id: bank_ifsc
+        label: "[VERIFY AT SOURCE] IFSC code"
+        obtainable_from: [bank_passbook]

@@ -56,6 +56,21 @@ unverifiable.outside_corpus: >-
   That is outside what I have rules for. I only answer where I can show you the
   official clause.
 
+# --- SCHEME WINDOW (T6) -----------------------------------------------------
+# The scheme's own door, which is a different question from this citizen's
+# eligibility. These lines LEAD the card. A closed scheme buried under a proof of
+# eligibility would send someone to a counter that is shut, which is the same harm
+# the Guard exists to prevent, just arriving from a different direction.
+window.lapsed_headline: "This scheme is closed. Do not spend a day on it."
+window.lapsed_reason: "Its sanctioned period ended on {valid_until}."
+window.lapsed_source: "The official page says: {validity_text}"
+window.lapsed_proof_kept: >-
+  I have still checked you against its published rules below, because a successor
+  scheme normally carries them forward.
+window.not_yet_open_headline: "This scheme has not opened yet."
+window.not_yet_open_reason: "It opens on {valid_from}."
+
+
 # --- APPROVAL (reported beside eligibility, never instead of it) ------------
 approval.headline: "Whether it is approved is not mine to promise."
 # Phrased so the sentence never opens with a slot — a lower-case decider would

@@ -1,85 +1,158 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official sources on 2026-08-26.
 #
-# Every clause below is a paraphrase taken from PROJECT-BRIEF-ADDENDUM.md s3, which is
-# our own team document, not an official source. It exists so the evaluator and the
-# first golden tests are runnable on day 1. Replace clause_text with verbatim wording
-# from the official page, then flip verification_status to VERIFIED.
+# Every clause_text below is transcribed verbatim from a Government of India page. The
+# two sources used, both read on 2026-08-26:
 #
-# Clauses whose exact figures we could not source are ABSENT rather than guessed.
-# See verify_note on the scheme.
+#   standupmitra.in/Home/SUISchemes   — the scheme portal's own eligibility page
+#   financialservices.gov.in/stand-india-scheme-supi — DFS, Ministry of Finance
+#
+# READ THIS BEFORE DEMOING THE SCHEME
+# -----------------------------------
+# DFS states: "the SUPI Scheme is upto 31.03.2025, in line with the 15th Finance
+# Commission." That date is in the past. The scheme is encoded with a validity window
+# and the engine reports it as LAPSED, which is the correct and honest behaviour: the
+# published rules still describe who was entitled, and the door is shut.
+#
+# Union Budget 2025-26 announced a successor for first-time SC/ST and women
+# entrepreneurs (term loans up to Rs 2 crore, 5 lakh beneficiaries over five years).
+# It is NOT encoded here. No official page we could find names it, states its
+# eligibility, or gives its verbatim rules, and this corpus does not carry a scheme we
+# cannot quote. Add it when a government source publishes the wording.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# "In case of non-individual enterprises, 51% of the shareholding and controlling stake
+# should be held by either SC/ST and/or Women Entrepreneur." This is real, sourced
+# wording, but it applies only to non-individual applicants and the clause schema has
+# no way to express a condition that applies to some applicants and not others.
+# Encoding it unconditionally would wrongly block every individual applicant. Absent
+# rather than guessed at, per the corpus rule.
 
 scheme_id: stand-up-india
 name: Stand-Up India
-authority: "[VERIFY AT SOURCE] Department of Financial Services, Ministry of Finance"
-benefit: "[VERIFY AT SOURCE] Bank loan between Rs 10 lakh and Rs 1 crore for a greenfield enterprise"
-source_url: "https://www.standupmitra.in/"
-retrieved_on: 2026-08-21
-verification_status: PROVISIONAL
+authority: "Department of Financial Services, Ministry of Finance, Government of India"
+benefit: "Composite loan (inclusive of term loan and working capital) between 10 lakh and upto 100 lakh"
+source_url: "https://www.standupmitra.in/Home/SUISchemes"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
 verify_note: >-
-  Nobody on the team has opened the official Stand-Up India scheme page yet. Confirm:
-  (a) the verbatim eligibility wording, (b) whether the SC/ST-or-woman test and the
-  greenfield test are separate conditions, (c) the exact loan range and whether it is
-  an eligibility bound at all or a product limit, and (d) the full exclusion list,
-  which is deliberately NOT encoded here because we could not source it.
+  Clause text transcribed verbatim from standupmitra.in/Home/SUISchemes and
+  financialservices.gov.in/stand-india-scheme-supi, both read on 2026-08-26 and in
+  agreement on the eligibility wording. The non-individual 51% shareholding condition
+  is sourced but deliberately not encoded; see the header.
+
+# The scheme's own operating window, which is a different fact from `retrieved_on`.
+# We read this page today; the scheme still closed on 31.03.2025.
+valid_until: 2025-03-31
+validity_text: "the SUPI Scheme is upto 31.03.2025, in line with the 15th Finance Commission"
+
+portal_url: "https://www.standupmitra.in/"
+filing_office: "any Scheduled Commercial Bank branch"
 
 clause_groups:
-  # ANY group: the applicant qualifies through either route. This is also the day-1
-  # exercise of ANY semantics, which PM-JAY (D1..D7) will need in the reveal vertical.
+  # ANY: the official wording is "SC/ST and/or woman entrepreneurs", so either route
+  # qualifies on its own. Both clauses quote that one sentence verbatim, because that
+  # single sentence is what carries both limbs; the decomposition into two machine-
+  # readable clauses is ours, the words are the government's.
   - group_id: applicant-category
     satisfy: ANY
     clauses:
       - clause_id: SUI-C1
-        clause_text: >-
-          [VERIFY AT SOURCE] The applicant belongs to a Scheduled Caste or Scheduled
-          Tribe.
+        clause_text: "SC/ST and/or woman entrepreneurs, above 18 years of age."
         rule_type: enumerated_category
         profile_field: applicant.social_category
         bound:
           values: [SC, ST]
         verifiable_from: [caste_certificate]
-        verification_status: PROVISIONAL
-        verify_note: "Confirm verbatim wording and the accepted proof document."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from standupmitra.in/Home/SUISchemes, read 2026-08-26."
+        note: >-
+          The SC/ST limb of the eligibility sentence. A caste certificate is the
+          document that evidences it; the page does not name a proof document, so this
+          reflects standard practice rather than the source, and a bank may accept
+          others.
 
       - clause_id: SUI-C2
-        clause_text: "[VERIFY AT SOURCE] The applicant is a woman."
+        clause_text: "SC/ST and/or woman entrepreneurs, above 18 years of age."
         rule_type: enumerated_category
         profile_field: applicant.gender
         bound:
           values: [FEMALE]
         verifiable_from: [aadhaar]
-        verification_status: PROVISIONAL
-        verify_note: "Confirm verbatim wording and the accepted proof document."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from standupmitra.in/Home/SUISchemes, read 2026-08-26."
+        note: "The woman-entrepreneur limb of the same eligibility sentence."
+
+  - group_id: applicant-age
+    satisfy: ALL
+    clauses:
+      - clause_id: SUI-C3
+        clause_text: "SC/ST and/or woman entrepreneurs, above 18 years of age."
+        rule_type: numeric_bound
+        profile_field: applicant.age
+        bound:
+          min: 18
+        verifiable_from: [aadhaar]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from standupmitra.in/Home/SUISchemes, corroborated by DFS
+          ("entrepreneurs above 18 years of age"), both read 2026-08-26.
+        note: >-
+          Its own ALL group, not part of the ANY above: the age condition applies to
+          every applicant regardless of which category route they qualify through.
+          Folding it into the ANY group would let an 8-year-old woman qualify.
 
   - group_id: enterprise-conditions
     satisfy: ALL
     clauses:
-      - clause_id: SUI-C3
+      - clause_id: SUI-C4
         clause_text: >-
-          [VERIFY AT SOURCE] The loan is for a greenfield enterprise, that is the
-          applicant's first venture in the manufacturing, services, trading or
-          allied agricultural sector.
+          Loans under the scheme is available for only green field project. Green field
+          signifies, in this context, the first time venture of the beneficiary in the
+          manufacturing, services, agri-allied activities or the trading sector.
         rule_type: enumerated_category
         profile_field: enterprise.venture_type
         bound:
           values: [GREENFIELD]
         verifiable_from: [project_report, self_declaration]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm the verbatim definition of greenfield and which document evidences
-          it. A self-declaration may not be acceptable proof.
+          Both sentences verbatim from standupmitra.in/Home/SUISchemes, read
+          2026-08-26. The page states the rule but does not name an acceptable proof
+          document, so `verifiable_from` is unchanged from our earlier reading rather
+          than tightened or loosened on a guess.
 
-      - clause_id: SUI-C4
+      - clause_id: SUI-C5
         clause_text: >-
-          [VERIFY AT SOURCE] The loan amount sought is between Rs 10 lakh and
-          Rs 1 crore.
+          Composite loan (inclusive of term loan and working capital) between 10 lakh
+          and upto 100 lakh.
         rule_type: numeric_bound
         profile_field: enterprise.loan_amount_sought
         bound:
           min: 1000000
           max: 10000000
         verifiable_from: [project_report]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm whether this range is an eligibility condition or merely the
-          product's sanction limit. If it is a product limit it does not belong in an
-          eligibility group at all.
+          Verbatim from standupmitra.in/Home/SUISchemes, read 2026-08-26. This answers
+          the open question on the earlier provisional version: the portal states the
+          range as the scope of the loan available under the scheme, so a request
+          outside it is not a Stand-Up India loan.
+
+  # The refusal, on official wording rather than an invented bank-appraisal line. No
+  # document a citizen can carry proves they are not in default to ANY bank in India;
+  # that lives in credit records the lender pulls. So it is external_dataset, and it
+  # sits in an APPROVAL group because it is a lending condition the bank checks, not a
+  # test of who she is.
+  - group_id: lending-conditions
+    satisfy: ALL
+    kind: APPROVAL
+    clauses:
+      - clause_id: SUI-C6
+        clause_text: "Borrower should not be in default to any bank/financial institution."
+        rule_type: external_dataset
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from standupmitra.in/Home/SUISchemes, read 2026-08-26, and
+          corroborated by DFS. No citizen-held document settles it, which is why
+          `verifiable_from` is empty.

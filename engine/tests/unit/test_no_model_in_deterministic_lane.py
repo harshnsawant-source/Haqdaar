@@ -98,13 +98,27 @@ def test_no_model_or_network_import(path: Path):
 
 
 def test_importing_the_evaluator_does_not_load_the_model_lane():
-    for name in [m for m in sys.modules if m.startswith("haqdaar")]:
-        del sys.modules[name]
+    """Import the evaluator into a clean interpreter and assert the model lane stays out.
 
-    import haqdaar.eligibility.evaluate  # noqa: F401
+    The purge below MUST be restored. Without the restore, every test module that runs
+    after this one holds references to the pre-purge classes while the engine hands
+    back freshly re-imported ones, so `x is SomeEnum.MEMBER` starts returning False for
+    reasons that have nothing to do with the code under test. That cost real debugging
+    time on 2026-08-26; the snapshot is not optional tidiness.
+    """
+    snapshot = {m: mod for m, mod in sys.modules.items() if m.startswith("haqdaar")}
+    try:
+        for name in snapshot:
+            del sys.modules[name]
 
-    loaded = {m for m in sys.modules if m.startswith("haqdaar.llm")}
-    assert loaded == set()
+        import haqdaar.eligibility.evaluate  # noqa: F401
+
+        loaded = {m for m in sys.modules if m.startswith("haqdaar.llm")}
+        assert loaded == set()
+    finally:
+        for name in [m for m in sys.modules if m.startswith("haqdaar")]:
+            del sys.modules[name]
+        sys.modules.update(snapshot)
 
 
 # --- the extraction boundary is one-way --------------------------------------

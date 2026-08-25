@@ -252,7 +252,7 @@ def test_the_engine_writes_no_files_during_a_normal_evaluation(client, monkeypat
     assert client.get("/api/evaluate", params={"persona_id": "sunita"}).status_code == 200
     assert client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
     ).status_code == 200
     assert client.post(
         "/api/intake",

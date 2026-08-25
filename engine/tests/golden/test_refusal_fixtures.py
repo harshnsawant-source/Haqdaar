@@ -31,6 +31,10 @@ from haqdaar.retrieval.route import route
 # --- PRIMARY: the entrepreneur approval refusal -----------------------------
 
 
+#: Verbatim from nsfdc.nic.in/how-to-apply-2 via the corpus, read 2026-08-26.
+DECIDER = "the concerned State Channelising Agency or Channelising Agency"
+
+
 def test_primary_refusal_approval_is_not_eligibility(
     schemes_dir, entrepreneur_profile, today
 ):
@@ -52,15 +56,15 @@ def test_primary_refusal_approval_is_not_eligibility(
     # Eligibility resolves, with evidence, and is NOT suppressed by the appraisal.
     assert verdict.status is Status.ELIGIBLE
     by_id = {p.clause_id: p for p in verdict.predicates}
-    assert set(by_id) == {"NSF-C1", "NSF-C2"}
+    assert set(by_id) == {"NSF-C1", "NSF-C2", "NSF-C3"}
     assert by_id["NSF-C1"].evaluation is Evaluation.TRUE
     assert by_id["NSF-C1"].evidence.document_id == "caste_certificate"
 
     # The refusal is scoped to approval.
-    assert by_id["NSF-C2"].evaluation is Evaluation.UNKNOWN
-    assert by_id["NSF-C2"].evidence is None
+    assert by_id["NSF-C3"].evaluation is Evaluation.UNKNOWN
+    assert by_id["NSF-C3"].evidence is None
     assert verdict.approval.status is ApprovalStatus.UNVERIFIABLE
-    assert verdict.approval.deciders == ["the lending institution's credit appraisal"]
+    assert verdict.approval.deciders == [DECIDER]
     assert [(f.trigger, f.scope) for f in result.findings] == [
         (TriggerId.T1_UNSUPPORTED_PREDICATE, Scope.APPROVAL)
     ]
@@ -70,19 +74,20 @@ def test_primary_refusal_approval_is_not_eligibility(
 
     assert card.status is Status.ELIGIBLE
     assert card.lines[0] == "You are eligible for NSFDC Term Loan."
-    assert any("belongs to a Scheduled Caste" in line for line in card.lines)
+    assert any("must belong to the Scheduled Caste" in line for line in card.lines)
     assert "Proven from your caste certificate." in card.lines
 
     # The approval refusal renders separately, using decided_by as the noun.
     assert card.approval_lines == [
         "Whether it is approved is not mine to promise.",
-        "That is decided by the lending institution's credit appraisal, and no "
-        "document you hold determines it.",
-        "The condition: [VERIFY AT SOURCE] Sanction of the loan is subject to appraisal "
-        "of the proposal by the lending institution.",
+        f"That is decided by {DECIDER}, and no document you hold determines it.",
+        "The condition: verification of eligibility criteria shall be the sole "
+        "responsibility of the concerned SCAs/CAs",
     ]
-    # Provisional corpus never renders without saying so.
-    assert any("not yet been verified" in b for b in card.banners)
+    # Verified corpus: the unverified banner is correctly absent, and nothing on the
+    # card carries the unread marker.
+    assert not any("not yet been verified" in b for b in card.banners)
+    assert "[VERIFY AT SOURCE]" not in card.text()
 
 
 # --- REVEAL: the welfare SECC-2011 refusal ----------------------------------

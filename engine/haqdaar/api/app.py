@@ -434,8 +434,9 @@ def act(persona_id: str, scheme_id: str) -> ActionResponse:
             status_code=404, detail=f"no application form for {scheme_id}"
         )
 
-    verdict = evaluate_scheme(scheme, profile)
-    gate(verdict, scheme, today=today)  # never act on an unvalidated verdict
+    # The gated verdict, not the raw one: the gate is what attaches the scheme's
+    # operating window, and filing must be able to see a closed door.
+    verdict = gate(evaluate_scheme(scheme, profile), scheme, today=today).verdict
 
     try:
         filled_form = fill_form(form, verdict, profile)

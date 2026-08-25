@@ -24,12 +24,24 @@ export function Card({ card, personaId, stackedWith = [], canAct = true }) {
   // Show the clauses that carry the verdict: what was proven, or what could not be.
   const shown = proven.length ? proven : unsettled;
 
+  const lapsed = card.window_state === 'LAPSED' || card.window_state === 'NOT_YET_OPEN';
+
   return (
-    <article className={`card ${tone}`}>
+    <article className={`card ${tone}${lapsed ? ' shut' : ''}`}>
       <div className="head">
         <h2 className="scheme">{card.scheme_name || s.results}</h2>
         <span className="pill">{s.statusLabels[card.status] || card.status}</span>
       </div>
+
+      {/* T6. The scheme's own door, ahead of anything about this citizen. A closed
+          scheme read after a proof of eligibility sends someone to a shut counter. */}
+      {card.window_lines?.length > 0 && (
+        <div className="window">
+          {card.window_lines.map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+        </div>
+      )}
 
       <div className="lines">
         {card.lines.map((line, i) => (
@@ -88,7 +100,7 @@ export function Card({ card, personaId, stackedWith = [], canAct = true }) {
 
       {/* A+ — it acts. Every step of this is SIMULATED and says so; the banners come
           from the engine's template set, not from this component. */}
-      {card.status === 'ELIGIBLE' && canAct && (
+      {card.status === 'ELIGIBLE' && canAct && !lapsed && (
         <div className="action-slot">
           {!action && (
             <>

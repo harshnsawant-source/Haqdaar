@@ -195,6 +195,15 @@ class Scheme(_Frozen):
     verify_note: str
     clause_groups: list[ClauseGroup] = Field(min_length=1)
     last_amended: date | None = None
+    #: The scheme's OWN operating window, as stated by its official page. This is a
+    #: different fact from `retrieved_on`/`last_amended`, which describe our reading of
+    #: the rule. A rule we transcribed yesterday can belong to a scheme that closed last
+    #: year, and only this pair can say so.
+    valid_from: date | None = None
+    valid_until: date | None = None
+    #: Verbatim wording from the source that states the window. Rendered as the proof
+    #: for a lapse, so a closure is cited exactly like an eligibility clause is.
+    validity_text: str | None = None
     portal_url: str | None = None
     filing_office: str | None = None
     #: scheme_ids. Parsed and carried on day 1; resolved by the evaluator on day 2.
@@ -219,6 +228,28 @@ class Scheme(_Frozen):
                         f"{self.scheme_id}: has PROVISIONAL clause {clause.clause_id} "
                         "but is marked VERIFIED"
                     )
+        return self
+
+    @model_validator(mode="after")
+    def _validity_window_is_coherent(self) -> Scheme:
+        if (
+            self.valid_from is not None
+            and self.valid_until is not None
+            and self.valid_until < self.valid_from
+        ):
+            raise ValueError(
+                f"{self.scheme_id}: valid_until {self.valid_until} precedes "
+                f"valid_from {self.valid_from}"
+            )
+        if (
+            self.valid_from is None
+            and self.valid_until is None
+            and self.validity_text is not None
+        ):
+            raise ValueError(
+                f"{self.scheme_id}: validity_text quotes a window the scheme does not "
+                "declare — set valid_from and/or valid_until, or drop the quote"
+            )
         return self
 
     def clauses(self) -> list[Clause]:

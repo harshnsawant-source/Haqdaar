@@ -17,22 +17,47 @@ def test_day_one_corpus_loads(schemes_dir: Path):
     ]
 
 
-def test_strict_mode_yields_nothing_yet(schemes_dir: Path):
-    """Tripwire. This changes the day the content lane lands a VERIFIED rule.
+#: Schemes whose clause text has been transcribed verbatim from an official
+#: government page. The tripwire below names them one by one on purpose: adding a
+#: scheme here is a deliberate act that says a human read the source, and a scheme
+#: cannot drift into the verified set by accident.
+VERIFIED_SCHEMES = {"stand-up-india", "nsfdc-term-loan"}
 
-    If this assertion starts failing, that is good news — update it to name the
-    scheme that got verified.
+
+def test_strict_mode_yields_only_the_schemes_we_have_actually_read(schemes_dir: Path):
+    """The tripwire fired on 2026-08-26, which is what it was built for.
+
+    It used to assert that strict mode yielded nothing at all. Stand-Up India is now
+    transcribed verbatim from standupmitra.in and financialservices.gov.in, so the
+    assertion becomes the stricter one: strict mode yields exactly the schemes we can
+    name, and nothing else.
     """
-    assert load_corpus(schemes_dir, strict=True) == []
+    assert {s.scheme_id for s in load_corpus(schemes_dir, strict=True)} == {
+        s for s in VERIFIED_SCHEMES if (schemes_dir / f"{s}.yaml").is_file()
+    }
 
 
-def test_every_day_one_clause_is_marked_provisional(schemes_dir: Path):
+def test_every_unverified_clause_still_carries_the_marker(schemes_dir: Path):
+    """The rule that has not changed: anything unread is loudly labelled unread.
+
+    A verified scheme must carry no [VERIFY AT SOURCE] marker anywhere, and an
+    unverified one must carry it on every clause. The dangerous state is a scheme
+    marked VERIFIED that still contains a paraphrase nobody checked, so both
+    directions are asserted.
+    """
     for scheme in load_corpus(schemes_dir):
-        assert scheme.verification_status is VerificationStatus.PROVISIONAL
+        verified = scheme.scheme_id in VERIFIED_SCHEMES
+        expected = (
+            VerificationStatus.VERIFIED if verified else VerificationStatus.PROVISIONAL
+        )
+        assert scheme.verification_status is expected, scheme.scheme_id
         for clause in scheme.clauses():
-            assert clause.verification_status is VerificationStatus.PROVISIONAL
-            assert "[VERIFY AT SOURCE]" in clause.clause_text
+            assert clause.verification_status is expected, clause.clause_id
             assert clause.verify_note
+            if verified:
+                assert "[VERIFY AT SOURCE]" not in clause.clause_text, clause.clause_id
+            else:
+                assert "[VERIFY AT SOURCE]" in clause.clause_text, clause.clause_id
 
 
 def test_provisional_clause_without_the_marker_is_rejected():

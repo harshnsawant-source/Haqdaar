@@ -24,7 +24,12 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from haqdaar.corpus.forms import FormDefinition, FormField
-from haqdaar.eligibility.verdict import ApprovalStatus, Status, Verdict
+from haqdaar.eligibility.verdict import (
+    ApprovalStatus,
+    SchemeWindow,
+    Status,
+    Verdict,
+)
 from haqdaar.profile.schema import CitizenProfile
 
 
@@ -115,6 +120,15 @@ def fill_form(
         raise ActionRefused(
             f"{verdict.scheme_id}: will not fill an application on a "
             f"{verdict.status.value} verdict — the engine could not clear eligibility"
+        )
+    # T6. Eligibility under the published rules is not permission to file: the scheme
+    # itself may be shut. Refused here rather than only in the UI, because hiding a
+    # button is a suggestion and this has to be a guarantee.
+    if verdict.window is not None and verdict.window.state is not SchemeWindow.OPEN:
+        raise ActionRefused(
+            f"{verdict.scheme_id}: will not file into a scheme that is "
+            f"{verdict.window.state.value} — the rules entitle her, the scheme is not "
+            "accepting applications"
         )
 
     filled: list[FilledField] = []

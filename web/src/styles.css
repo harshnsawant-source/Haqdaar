@@ -163,6 +163,22 @@ button:disabled { opacity: 0.55; cursor: default; }
 .card.not_eligible { border-left-color: var(--not-eligible); background: var(--not-eligible-bg); }
 .card.unverifiable { border-left-color: var(--unverifiable); background: var(--unverifiable-bg); }
 
+/* T6 — a scheme whose own door is shut. The status colour below stays whatever the
+   eligibility was, because she may well be eligible; this greys the card so the
+   closure is read first and the card is visibly not actionable. */
+.card.shut { border-left-color: var(--ink-soft); background: var(--surface); }
+.card.shut .lines, .card.shut .proof, .card.shut .approval { opacity: 0.6; }
+.card .window {
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin: 10px 0 4px;
+  background: var(--surface);
+}
+.card .window p { margin: 0 0 6px; }
+.card .window p:first-child { font-weight: 700; color: var(--ink); }
+.card .window p:last-child { margin-bottom: 0; }
+
 .card .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .card .scheme { margin: 0; font-size: 1.02rem; }
 .pill {

@@ -97,10 +97,17 @@ def test_citations_are_verbatim_with_sources(client):
     ).json()
     standup = next(c for c in body["cards"] if c["scheme_id"] == "stand-up-india")
 
-    assert len(standup["citations"]) == 4
+    # Six since the 2026-08-26 verification: the age clause and the not-in-default
+    # clause both arrived with the official wording.
+    assert len(standup["citations"]) == 6
     for citation in standup["citations"]:
-        assert citation["clause_text"].startswith("[VERIFY AT SOURCE]")
-        assert citation["source_url"] == "https://www.standupmitra.in/"
+        assert "[VERIFY AT SOURCE]" not in citation["clause_text"]
+        assert citation["source_url"] == "https://www.standupmitra.in/Home/SUISchemes"
+
+    # SUI-C6 is the APPROVAL clause: no citizen document settles it, so it is UNKNOWN
+    # with no evidence. Every eligibility clause is proven from a document.
+    eligibility = [c for c in standup["citations"] if c["clause_id"] != "SUI-C6"]
+    for citation in eligibility:
         assert citation["evaluation"] == "TRUE"
         assert citation["document_id"]
 
@@ -169,14 +176,22 @@ def test_no_served_string_ever_hedges(client):
             assert "{" not in served
 
 
-def test_every_card_declares_its_provisional_status(client):
-    """Nothing unverified reaches the UI without saying so."""
+def test_every_card_declares_whether_its_rules_were_verified(client):
+    """Nothing unverified reaches the UI without saying so, in both directions.
+
+    A verified scheme must not carry the banner, or it stops meaning anything.
+    """
+    verified = {"stand-up-india", "nsfdc-term-loan"}
     body = client.get(
         "/api/evaluate", params={"persona_id": "entrepreneur-01"}
     ).json()
     for card in body["cards"]:
-        assert card["verification_status"] == "PROVISIONAL"
-        assert any("not yet been verified" in b for b in card["banners"])
+        is_verified = card["scheme_id"] in verified
+        assert card["verification_status"] == (
+            "VERIFIED" if is_verified else "PROVISIONAL"
+        ), card["scheme_id"]
+        says_unverified = any("not yet been verified" in b for b in card["banners"])
+        assert says_unverified is not is_verified, card["scheme_id"]
 
 
 # --- A+ action endpoint -----------------------------------------------------
@@ -185,23 +200,25 @@ def test_every_card_declares_its_provisional_status(client):
 def test_act_fills_the_form_and_returns_a_simulated_reference(client):
     response = client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
     )
     assert response.status_code == 200
     body = response.json()
 
     assert body["simulated"] is True
     assert body["is_stand_in"] is True
-    assert body["reference"] == "SIM-STANDUPIND-20260822-D1679F"
+    assert body["reference"] == "SIM-NSFDCTERML-20260822-A63911"
     assert body["reference"].startswith("SIM-")
 
+    # The NSFDC stand-in form, which the action beat moved to on 2026-08-26 when
+    # Stand-Up India was verified as lapsed. Order follows the form's own field order.
     assert [f["field_id"] for f in body["filled"]] == [
         "applicant_social_category",
-        "applicant_gender",
-        "enterprise_venture_type",
-        "enterprise_loan_amount_sought",
+        "applicant_age",
+        "household_annual_income",
+        "activity_loan_amount_sought",
     ]
-    assert len(body["gaps"]) == 10
+    assert len(body["gaps"]) == 8
     assert body["missing_documents"][0] == "aadhaar"
 
 
@@ -209,7 +226,7 @@ def test_act_always_serves_the_simulated_banner(client):
     """The marker cannot be absent from the wire, whatever else changes."""
     body = client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
     ).json()
     assert any("SIMULATED." in b for b in body["banners"])
     assert any("SIMULATED FORM LAYOUT." in b for b in body["banners"])
@@ -220,20 +237,39 @@ def test_act_refuses_a_non_eligible_verdict(client):
     """entrepreneur-02 is blocked on a document; no application gets filled."""
     response = client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-02", "scheme_id": "stand-up-india"},
+        params={"persona_id": "entrepreneur-02", "scheme_id": "nsfdc-term-loan"},
     )
     assert response.status_code == 409
     assert "BLOCKED_ON_DOCUMENT" in response.json()["detail"]
 
 
 def test_act_404s_when_no_form_exists(client):
-    """NSFDC has no application form yet. Say so; do not improvise one."""
+    """VCF-SC has no application form. Say so; do not improvise one.
+
+    This used to point at NSFDC. NSFDC gained a stand-in form on 2026-08-26 when the
+    action beat moved off the now-lapsed Stand-Up India.
+    """
     response = client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
+        params={"persona_id": "entrepreneur-01", "scheme_id": "vcf-sc"},
     )
     assert response.status_code == 404
     assert "no application form" in response.json()["detail"]
+
+
+def test_act_refuses_to_file_into_a_lapsed_scheme(client):
+    """T6 over HTTP, which is where it actually has to hold.
+
+    The frontend hides the button for a closed scheme. That is a suggestion. This is
+    the guarantee: Stand-Up India has a form and this persona is provably ELIGIBLE
+    under its published rules, and the engine still will not file.
+    """
+    response = client.post(
+        "/api/act",
+        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+    )
+    assert response.status_code == 409
+    assert "LAPSED" in response.json()["detail"]
 
 
 def test_act_404s_on_an_unknown_scheme(client):
@@ -246,7 +282,7 @@ def test_act_404s_on_an_unknown_scheme(client):
 def test_act_never_hedges(client):
     body = client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
     ).json()
     served = " ".join([*body["lines"], *body["gap_lines"], *body["banners"]]).lower()
     for phrase in BANNED_PHRASES:
@@ -406,7 +442,7 @@ def test_every_served_identifier_carries_an_engine_computed_label(client):
 
     action = client.post(
         "/api/act",
-        params={"persona_id": "entrepreneur-01", "scheme_id": "stand-up-india"},
+        params={"persona_id": "entrepreneur-01", "scheme_id": "nsfdc-term-loan"},
     ).json()
     for filled in action["filled"]:
         assert filled["source_document_label"] == document_label(

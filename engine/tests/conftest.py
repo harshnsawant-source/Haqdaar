@@ -8,7 +8,7 @@ CORPUS_DIR = REPO_ROOT / "corpus"
 
 #: Fixed "today" for every test. The clock is never read in the deterministic lane, so
 #: a golden test cannot start failing because the calendar moved.
-TODAY = date(2026, 8, 22)
+TODAY = date(2026, 8, 26)
 
 
 @pytest.fixture(scope="session")
