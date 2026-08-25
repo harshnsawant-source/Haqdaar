@@ -92,6 +92,7 @@ PERSONAS = {
     "entrepreneur-01": "entrepreneur",
     "entrepreneur-02": "entrepreneur",
     "sunita": "welfare",
+    "student-01": "student",
 }
 
 @asynccontextmanager

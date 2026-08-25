@@ -34,7 +34,7 @@ sections:
   # `verticals` says which domains a section belongs to. Shared sections list both.
   # Declared here rather than split in Python or JSX so the question set stays data.
   - section_id: about-you
-    verticals: [entrepreneur, welfare]
+    verticals: [entrepreneur, welfare, student]
     title:
       en: "About you"
       mr: "[NEEDS HUMAN TRANSLATION] About you"
@@ -214,10 +214,62 @@ sections:
           en: "Pension from service other than Multi Tasking Staff, Class IV or Group D: how much do you receive each month, in rupees?"
           mr: "[NEEDS HUMAN TRANSLATION] Pension from service other than Multi Tasking Staff, Class IV or Group D: how much do you receive each month, in rupees?"
 
+  # STUDENT VERTICAL, added 2026-08-26. Both schemes it serves belong to the Ministry of
+  # Social Justice & Empowerment, the same ministry as problem statement SIH26092.
+  - section_id: study
+    verticals: [student]
+    title:
+      en: "About your studies"
+      mr: "[NEEDS HUMAN TRANSLATION] About your studies"
+    questions:
+      - question_id: class_level
+        profile_field: student.class_level
+        type: number
+        min: 1
+        max: 12
+        prompt:
+          en: "Which class are you in at school? Leave this blank if you have finished school."
+          mr: "[NEEDS HUMAN TRANSLATION] Which class are you in at school? Leave this blank if you have finished school."
+
+      - question_id: school_recognised
+        profile_field: student.school_recognised
+        type: boolean
+        prompt:
+          en: "Are you a regular, full time student at a government school, or a school recognised by the government or a Central or State Board?"
+          mr: "[NEEDS HUMAN TRANSLATION] Are you a regular, full time student at a government school, or a school recognised by the government or a Central or State Board?"
+
+      - question_id: admission_secured
+        profile_field: student.admission_secured
+        type: boolean
+        prompt:
+          en: "Have you secured admission to a full time course at a college or institution?"
+          mr: "[NEEDS HUMAN TRANSLATION] Have you secured admission to a full time course at a college or institution?"
+
+      - question_id: year_of_study
+        profile_field: student.year_of_study
+        type: number
+        min: 1
+        max: 10
+        prompt:
+          en: "Which year of that course are you in?"
+          mr: "[NEEDS HUMAN TRANSLATION] Which year of that course are you in?"
+
+      # DO NOT SIMPLIFY. The official exclusion carves out the National Means-cum-Merit
+      # scholarship inside the same sentence, and the evaluator cannot say "excluded
+      # unless it is NMMS". Shortening this to "any other scholarship" would disqualify
+      # students the scheme explicitly allows. Same pattern as the PM-KISAN Class IV
+      # exception in the declarations section.
+      - question_id: other_central_prematric_scholarship
+        profile_field: student.other_central_prematric_scholarship
+        type: boolean
+        prompt:
+          en: "Are you receiving another centrally funded pre-matric scholarship, other than the National Means-cum-Merit scholarship?"
+          mr: "[NEEDS HUMAN TRANSLATION] Are you receiving another centrally funded pre-matric scholarship, other than the National Means-cum-Merit scholarship?"
+
   # Which papers she actually has. A fact is attributed to one of these when the corpus
   # accepts it as proof for that clause; otherwise the fact stands only as her word.
   - section_id: documents
-    verticals: [entrepreneur, welfare]
+    verticals: [entrepreneur, welfare, student]
     title:
       en: "Which of these do you have with you?"
       mr: "[NEEDS HUMAN TRANSLATION] Which of these do you have with you?"
@@ -239,3 +291,6 @@ sections:
           - bank_passbook
           - project_report
           - pension_order
+          - bonafide_certificate
+          - admission_letter
+          - school_id_card

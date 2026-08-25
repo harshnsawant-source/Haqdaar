@@ -23,8 +23,8 @@ const en = {
     'A few questions. Answer what you can — anything you skip simply stays unknown.',
   startIntake: 'Answer a few questions',
   whichDomain: 'What are you looking for?',
-  domainWelfare: 'Pensions and welfare',
-  domainEntrepreneur: 'Money to start a business',
+  // Per-vertical labels moved to VERTICAL_LABELS in App.jsx on 2026-08-26,
+  // keyed by vertical id, so adding a corpus folder does not need a string here.
   showMyEntitlements: 'Show what I am entitled to',
   checking: 'Checking the rules…',
   cancel: 'Back',
@@ -63,8 +63,6 @@ const en = {
   simulatedNote: 'Nothing is submitted anywhere. The reference is generated on this device.',
   acting: 'Filling the form…',
   actionUnavailable: 'No application form is loaded for this scheme yet.',
-  verticalEntrepreneur: 'Entrepreneur schemes',
-  verticalWelfare: 'Welfare schemes',
   verticalHint: 'Same engine. Different folder of rules.',
   stackedWith: 'Paid together',
   stackedNote:

@@ -1,0 +1,131 @@
+# VERIFIED against the official source on 2026-08-26.
+#
+# Source: "CENTRALLY-SPONSORED SCHEME OF PRE MATRIC SCHOLARSHIP FOR SCHEDULED CASTE
+# STUDENTS STUDYING IN CLASSES 9TH & 10TH — GUIDELINES", Ministry of Social Justice &
+# Empowerment, downloaded from scholarships.gov.in/public/schemeGuidelines/Prematric_SC.pdf
+# and read in full on 2026-08-26. Section 4, "CONDITIONS OF ELIGIBILITY", supplies every
+# clause below verbatim.
+#
+# THIRD VERTICAL. This folder is the platform claim made concrete for the third time:
+# entrepreneur, welfare, and now student, with ZERO engine change. A vertical is a
+# corpus folder plus an intake section. Nothing in engine/ was touched to add it.
+#
+# It is also the same ministry as our problem statement. SIH26092 belongs to the Ministry
+# of Social Justice & Empowerment, and so does this scheme, which is worth saying out loud
+# if a judge asks why a student corpus belongs in an entrepreneur pitch.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# The Aadhaar condition, section 4(iv). It requires the student to "furnish proof of
+# possession of Aadhaar or undergo Aadhaar Authentication". Haqdaar does not hold or
+# transmit Aadhaar numbers, so encoding a clause that would ask for one is against the
+# project's own rule. The condition is real and a caseworker will apply it.
+# Section 4(vi), that a repeated class is not funded a second time. It is about the
+# student's scholarship history, and the profile schema has no such field.
+# The disability allowance under IEDSS, section 6(iii). It is a different scheme's money.
+
+scheme_id: pre-matric-sc
+name: Pre-Matric Scholarship for Scheduled Caste Students
+authority: "Ministry of Social Justice & Empowerment, Government of India"
+benefit: "Scholarship of Rs. 225 per month for day scholars and Rs. 525 per month for hostellers, for 10 months, plus an annual books and ad hoc grant"
+source_url: "https://scholarships.gov.in/public/schemeGuidelines/Prematric_SC.pdf"
+portal_url: "https://scholarships.gov.in/"
+filing_office: "your school, which forwards the application on the National Scholarship Portal"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
+verify_note: >-
+  Clause text transcribed verbatim from the scheme guidelines PDF on scholarships.gov.in,
+  read in full on 2026-08-26. The guidelines state no end date, so no validity window is
+  encoded. The Aadhaar condition and the repeated-class condition are sourced but
+  deliberately not encoded; see the header. Rates are quoted from section 6.
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: PREMAT-C1
+        clause_text: "Student should belong to Scheduled Caste."
+        rule_type: enumerated_category
+        profile_field: applicant.social_category
+        bound:
+          values: [SC]
+        verifiable_from: [caste_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 4(i), read 2026-08-26. The guidelines do not name the
+          proof document; a caste certificate reflects standard practice and the school
+          may accept others.
+
+      - clause_id: PREMAT-C2
+        clause_text: >-
+          His/ her Parent/Guardian's income should not exceed Rs. 2.50 lakh per annum.
+        rule_type: income_threshold
+        profile_field: household.annual_income
+        bound:
+          max_value: 250000
+          currency: INR
+          period: ANNUAL
+        verifiable_from: [income_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 4(II), read 2026-08-26, and corroborated by section 5
+          which repeats the figure as "Rs. 2,50,000/- (Rupees two lakh fifty thousand
+          only) per annum". Mapped to household.annual_income: the guidelines say
+          parent/guardian income, which for a school student is the household's, and
+          section 5 defines whose income counts in detail.
+
+      - clause_id: PREMAT-C3
+        clause_text: >-
+          To support parents of SC children for education of their wards studying in
+          classes IX and X so that the incidence of drop-out, especially in the
+          transition from the elementary to the secondary stage is minimized.
+        rule_type: numeric_bound
+        profile_field: student.class_level
+        bound:
+          min: 9
+          max: 10
+        verifiable_from: [school_id_card, bonafide_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 2(a), read 2026-08-26. The classes are stated in the
+          scheme's title and objectives rather than in the numbered eligibility
+          conditions, which is why the objective sentence is quoted here. Section 4
+          takes the class range as given.
+
+      - clause_id: PREMAT-C4
+        clause_text: >-
+          She/ he should be a regular, full time student studying in a Government School
+          or in a School recognized by Govt. or a Central/State Board of Secondary
+          Education.
+        rule_type: enumerated_category
+        profile_field: student.school_recognised
+        bound:
+          values: ["true"]
+        verifiable_from: [bonafide_certificate]
+        verification_status: VERIFIED
+        verify_note: "Verbatim from section 4(v), read 2026-08-26."
+
+  # An exclusion rather than an eligibility test: holding another centrally funded
+  # pre-matric scholarship disqualifies. Note the carve-out inside the same sentence for
+  # the National Means-cum-Merit scholarship, which is why the verbatim text is kept
+  # whole rather than trimmed to the first clause.
+  - group_id: exclusions
+    satisfy: ALL
+    clauses:
+      - clause_id: PREMAT-X1
+        clause_text: >-
+          He / she should not be getting any other Centrally-funded Pre Matric
+          Scholarship. However benefit of National Means-cum-Merit scholarship scheme of
+          D/o School Education, Ministry of Human Resource Development can be availed by
+          the beneficiaries of Pre-Matric Scholarship Scheme for SC students.
+        rule_type: exclusion
+        profile_field: student.other_central_prematric_scholarship
+        bound:
+          values: ["true"]
+        verifiable_from: [self_declaration]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 4(iii), read 2026-08-26, INCLUDING the National
+          Means-cum-Merit carve-out. Same shape as the PM-KISAN Class IV exception: the
+          evaluator cannot express "excluded unless it is NMMS", so the exception is
+          carried in the intake question wording. Do not shorten either.

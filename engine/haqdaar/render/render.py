@@ -33,6 +33,7 @@ from haqdaar.corpus.schema import (
     GroupKind,
     IncomeBound,
     NumericBound,
+    RuleType,
     Scheme,
     VerificationStatus,
 )
@@ -614,9 +615,24 @@ def _not_eligible_reason(
     if bound_text is None or clause is None or clause.profile_field is None:
         return []
 
+    # A yes/no clause gets a sentence built for it. Feeding a boolean through the
+    # range-shaped template produced "The rule says true. Your admission secured is
+    # false.", which is not a sentence and appeared on the one card whose headline
+    # promises "here is exactly why".
+    boolean_bound = isinstance(clause.bound, CategoryBound) and {
+        v.lower() for v in clause.bound.values
+    } <= {"true", "false"}
+    key = "not_eligible.reason"
+    if boolean_bound:
+        key = (
+            "not_eligible.reason_excluded"
+            if clause.rule_type is RuleType.EXCLUSION
+            else "not_eligible.reason_required"
+        )
+
     lines = [
         _fill(
-            "not_eligible.reason",
+            key,
             templates,
             {
                 **base,

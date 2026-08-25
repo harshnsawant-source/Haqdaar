@@ -13,6 +13,7 @@ import pytest
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
+from haqdaar.api.app import PERSONAS  # noqa: E402
 from haqdaar.corpus.loader import load_corpus  # noqa: E402
 from haqdaar.profile.intake import load_intake, self_declarable_fields  # noqa: E402
 
@@ -26,7 +27,7 @@ def spec(corpus_dir):
 def client(corpus_dir):
     os.environ["HAQDAAR_CORPUS"] = str(corpus_dir)
     os.environ["HAQDAAR_TODAY"] = "2026-08-22"
-    from haqdaar.api.app import app
+    from haqdaar.api.app import app, PERSONAS
 
     with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
@@ -36,7 +37,10 @@ def test_every_section_declares_its_verticals(spec):
     """No section may drift into "shown everywhere" by omission."""
     for section in spec.sections:
         assert section.verticals, f"{section.section_id} declares no verticals"
-        assert set(section.verticals) <= {"entrepreneur", "welfare"}
+        # Sourced from the engine rather than restated, so adding a vertical does not
+        # need this assertion edited. It exists to catch a TYPO in a verticals list,
+        # which would silently hide a section from every citizen.
+        assert set(section.verticals) <= set(PERSONAS.values()), section.section_id
 
 
 def test_entrepreneur_intake_omits_the_welfare_questions(spec):
@@ -100,11 +104,12 @@ def test_the_endpoint_scopes_by_vertical(client):
     assert {"about-you", "documents"} <= entrepreneur_sections & welfare_sections
 
 
-def test_the_unscoped_endpoint_still_serves_everything(client):
+def test_the_unscoped_endpoint_still_serves_everything(client, spec):
     """No vertical means the whole set — used by tooling, not by the citizen UI."""
     body = client.get("/api/intake").json()
     assert body["vertical"] is None
-    assert len(body["sections"]) == 5
+    # Every section in the file, regardless of vertical.
+    assert len(body["sections"]) == len(spec.sections)
 
 
 def test_an_unknown_vertical_is_refused(client):

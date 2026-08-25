@@ -36,7 +36,7 @@ def client(corpus_dir):
 def test_health(client):
     body = client.get("/api/health").json()
     assert body["ok"] is True
-    assert body["verticals"] == ["entrepreneur", "welfare"]
+    assert body["verticals"] == ["entrepreneur", "student", "welfare"]
 
 
 def test_personas_lists_the_fixtures(client):
@@ -45,8 +45,9 @@ def test_personas_lists_the_fixtures(client):
         "entrepreneur-01",
         "entrepreneur-02",
         "sunita",
+        "student-01",
     }
-    assert {p["vertical"] for p in body} == {"entrepreneur", "welfare"}
+    assert {p["vertical"] for p in body} == {"entrepreneur", "student", "welfare"}
 
 
 def test_payload_matches_the_golden_card(client, corpus_dir, today):

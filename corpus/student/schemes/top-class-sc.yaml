@@ -1,0 +1,156 @@
+# VERIFIED against the official source on 2026-08-26.
+#
+# Source: "Scheme Guidelines of Scheme of Top Class Scholarship for SC Students,
+# Applicable from 2025-26", Ministry of Social Justice & Empowerment, downloaded from
+# socialjustice.gov.in/writereaddata/UploadFile/95131767944207.pdf and read on 2026-08-26.
+# Section 2, "Eligibility", supplies the clauses below verbatim.
+#
+# WHY THIS SCHEME EARNS ITS PLACE
+# -------------------------------
+# It is the cleanest example in the whole corpus of eligibility and award being different
+# questions. A student can satisfy every published condition and still not receive the
+# scholarship, because the number of awards is capped per institution and allocated down a
+# merit list:
+#
+#   "In case the number of eligible students admitted exceeds the number of slots allotted
+#    to the institution, the scholarship will be restricted to the top students in the
+#    inter-se merit list based on the admission criteria for the course"
+#
+# No document a student carries settles that. It is not a bank's credit appraisal and it is
+# not a fifteen-year-old census; it is a queue whose length nobody knows in advance. Three
+# structurally identical refusals across three different domains is a stronger argument for
+# the approval split than any slide about it.
+#
+# The same paragraph also states what happens to the students who miss out: they "shall be
+# eligible for the Post-Matric Scholarship (PMS) administered by this Ministry". PMS-SC is
+# NOT in this corpus, because its official guidelines PDF on both scholarships.gov.in and
+# socialjustice.gov.in is a scanned image with no text layer and we will not transcribe a
+# rule we cannot read. Until it is added, do not claim the fallback on stage.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# Section 2(d) and 2(e), reserving 30% of slots for SC girl students. It allocates slots
+# within the institution's quota rather than deciding who is eligible, and encoding it as
+# an eligibility clause would misread it.
+# Section 2(f), "The benefit of the Scheme will not be provided to more than 2 siblings in
+# a family." Real and sourced, but it depends on the scholarship status of the student's
+# siblings, which no field in the profile schema holds and no document she carries proves.
+# The notified-institutions list, Annexure I. Membership of that list is a fact about the
+# institution, not about the student, and it changes by notification.
+
+scheme_id: top-class-sc
+name: Top Class Scholarship for SC Students
+authority: "Ministry of Social Justice and Empowerment, Government of India"
+benefit: "Full tuition fee and non-refundable charges, capped at Rs. 2.00 lakh per annum per student for private sector institutions, plus an academic allowance of Rs. 86,000 in the first year of study and Rs. 41,000 in every subsequent year"
+source_url: "https://socialjustice.gov.in/writereaddata/UploadFile/95131767944207.pdf"
+portal_url: "https://scholarships.gov.in/"
+filing_office: "the notified institution where you have secured admission"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
+verify_note: >-
+  Clause text transcribed verbatim from the 2025-26 scheme guidelines PDF on
+  socialjustice.gov.in, read 2026-08-26. The guidelines are titled "Applicable from
+  2025-26" and state no end date, so no validity window is encoded; note this differs
+  from VCF-SC, whose title states a closed period. The 30% girl-student reservation, the
+  two-sibling cap and the notified-institutions annexure are sourced but deliberately not
+  encoded; see the header.
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: TOPCL-C1
+        clause_text: >-
+          Those SC students having total annual family income from all sources up to
+          Rs. 8.00 lakh and having secured admission in a full-time prescribed course in
+          any of the notified institutions according to the general selection criteria
+          prescribed by the concerned institution, will be eligible for scholarship under
+          the Scheme.
+        rule_type: enumerated_category
+        profile_field: applicant.social_category
+        bound:
+          values: [SC]
+        verifiable_from: [caste_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 2(a), read 2026-08-26, trimmed only at the sentence's
+          trailing clause about slot allocation, which is a different question and is
+          encoded separately as TOPCL-A1. The caste limb.
+
+      - clause_id: TOPCL-C2
+        clause_text: >-
+          Those SC students having total annual family income from all sources up to
+          Rs. 8.00 lakh and having secured admission in a full-time prescribed course in
+          any of the notified institutions according to the general selection criteria
+          prescribed by the concerned institution, will be eligible for scholarship under
+          the Scheme.
+        rule_type: income_threshold
+        profile_field: household.annual_income
+        bound:
+          max_value: 800000
+          currency: INR
+          period: ANNUAL
+        verifiable_from: [income_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 2(a), read 2026-08-26. The income limb. The same section
+          specifies the acceptable income proof in detail: self-employed parents need "a
+          certificate issued by revenue officer not below the rank of Tehsildar", employed
+          parents one "from their employer". That distinction is not encoded, so an income
+          certificate is accepted generically here.
+
+      - clause_id: TOPCL-C3
+        clause_text: >-
+          Those SC students having total annual family income from all sources up to
+          Rs. 8.00 lakh and having secured admission in a full-time prescribed course in
+          any of the notified institutions according to the general selection criteria
+          prescribed by the concerned institution, will be eligible for scholarship under
+          the Scheme.
+        rule_type: enumerated_category
+        profile_field: student.admission_secured
+        bound:
+          values: ["true"]
+        verifiable_from: [admission_letter]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 2(a), read 2026-08-26. The admission limb. Whether the
+          institution is on the notified list is a fact about the institution, not the
+          student, and is deliberately not encoded; see the header.
+
+      - clause_id: TOPCL-C4
+        clause_text: >-
+          Fresh scholarship will be awarded only to 1st year students. Students of
+          2nd/3rd/4th year will not be eligible for selection for fresh scholarship.
+        rule_type: numeric_bound
+        profile_field: student.year_of_study
+        bound:
+          min: 1
+          max: 1
+        verifiable_from: [admission_letter, bonafide_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 2(c), read 2026-08-26. This governs a FRESH award only;
+          the guidelines separately continue an existing scholarship into later years
+          "till the completion of the course", which is a different question this corpus
+          does not answer.
+
+  # The refusal. A capped number of awards, allocated down a merit list the student cannot
+  # see, decided by the institution. Eligibility is settled; the award is not.
+  - group_id: slot-allocation
+    kind: APPROVAL
+    satisfy: ALL
+    clauses:
+      - clause_id: TOPCL-A1
+        clause_text: >-
+          In case the number of eligible students admitted exceeds the number of slots
+          allotted to the institution, the scholarship will be restricted to the top
+          students in the inter-se merit list based on the admission criteria for the
+          course.
+        rule_type: discretionary
+        decided_by: "the institution, against the slots allotted to it"
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 2(b), read 2026-08-26. The guidelines confirm the decider
+          elsewhere: the institution is to "select eligible SC students on the basis of
+          merit as per the entrance examination" against "slots assigned to it". No
+          citizen-held document settles it, which is why verifiable_from is empty.

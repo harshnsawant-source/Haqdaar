@@ -1,0 +1,42 @@
+{
+  "profile_id": "student-01",
+  "description": "Demo persona for the student vertical, authored 2026-08-26. An SC student in class 10 whose family income is well under the Pre-Matric ceiling, at a government school. A persona is demo fiction and is fine to author; scheme rules are not, and none are invented here. She is deliberately in class 10 rather than in higher education: that makes her ELIGIBLE for Pre-Matric and NOT_ELIGIBLE for Top Class on a clean, quotable numeric bound, so the vertical shows a positive match and a precise refusal without needing two personas. She declares she has NOT secured college admission, which is what rules Top Class out. That exercises the intake asymmetry on real corpus: a declaration can rule a scheme OUT even where it could never rule one IN, so she is told why rather than being sent to fetch a college admission letter she has no reason to have.",
+  "fields": {
+    "applicant.social_category": {
+      "value": "SC",
+      "document_id": "caste_certificate",
+      "source_field": "category",
+      "confidence": 1.0
+    },
+    "household.annual_income": {
+      "value": 180000,
+      "document_id": "income_certificate",
+      "source_field": "annual_income",
+      "confidence": 1.0
+    },
+    "student.class_level": {
+      "value": 10,
+      "document_id": "bonafide_certificate",
+      "source_field": "class",
+      "confidence": 1.0
+    },
+    "student.school_recognised": {
+      "value": "true",
+      "document_id": "bonafide_certificate",
+      "source_field": "school_recognition",
+      "confidence": 1.0
+    },
+    "student.other_central_prematric_scholarship": {
+      "value": "false",
+      "document_id": "self_declaration",
+      "source_field": "other_scholarship",
+      "confidence": 1.0
+    },
+    "student.admission_secured": {
+      "value": "false",
+      "document_id": "self_declaration",
+      "source_field": "admission_secured",
+      "confidence": 1.0
+    }
+  }
+}

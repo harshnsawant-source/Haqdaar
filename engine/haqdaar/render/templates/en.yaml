@@ -26,6 +26,10 @@ eligible.next_step: "Apply at {filing_office}."
 # --- NOT_ELIGIBLE -----------------------------------------------------------
 not_eligible.headline: "Not this one, and here is exactly why."
 not_eligible.reason: "The rule says {bound_text}. Your {field_label} is {value}."
+# A clause that is simply required or forbidden, rather than a range or a set. Reads as
+# a sentence, which "The rule says yes. Your having secured admission is no." does not.
+not_eligible.reason_required: "This one requires {field_label}. You told me {value}."
+not_eligible.reason_excluded: "This one rules out {field_label}. You told me {value}."
 not_eligible.becomes_eligible: "You become eligible in {year}."
 
 # --- BLOCKED_ON_DOCUMENT ----------------------------------------------------

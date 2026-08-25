@@ -19,7 +19,41 @@ const WHO = {
   'entrepreneur-01': 'First-time SC woman entrepreneur',
   'entrepreneur-02': 'First-time entrepreneur, no caste certificate',
   sunita: 'Sunita — 60, widow, small farmer',
+  'student-01': 'SC student in class 10',
 };
+
+/*
+ * Verticals are data, not code, in the engine. They are data here too: this file lists
+ * how to LABEL a vertical, never which ones exist. The set comes from the API, so a
+ * fourth corpus folder needs no change to this component.
+ *
+ * ORDER is a pitch decision. Entrepreneur leads because it is the problem statement we
+ * answer; the others follow as the "same engine, new corpus" reveal.
+ */
+const VERTICAL_ORDER = ['entrepreneur', 'welfare', 'student'];
+
+const VERTICAL_LABELS = {
+  entrepreneur: { group: 'Entrepreneur schemes', door: 'Money to start a business' },
+  welfare: { group: 'Welfare schemes', door: 'Pensions and welfare' },
+  student: { group: 'Student schemes', door: 'Help with studying' },
+};
+
+function verticalsOf(personas) {
+  const present = [...new Set(personas.map((p) => p.vertical))];
+  const known = VERTICAL_ORDER.filter((v) => present.includes(v));
+  // Anything the API serves that this file has not been told about still appears,
+  // rather than silently vanishing from the UI.
+  return [...known, ...present.filter((v) => !VERTICAL_ORDER.includes(v)).sort()];
+}
+
+function labelFor(vertical) {
+  return (
+    VERTICAL_LABELS[vertical] || {
+      group: vertical,
+      door: vertical,
+    }
+  );
+}
 
 /*
  * Order results by what the citizen can do with them: entitlements she has, then
@@ -173,20 +207,16 @@ export default function App() {
           <p className="tagline">{s.tellUsHint}</p>
           <p className="tagline">{s.whichDomain}</p>
           <div className="front-door">
-            <button
-              type="button"
-              className="primary"
-              onClick={() => setIntakeVertical('welfare')}
-            >
-              {s.domainWelfare}
-            </button>
-            <button
-              type="button"
-              className="primary"
-              onClick={() => setIntakeVertical('entrepreneur')}
-            >
-              {s.domainEntrepreneur}
-            </button>
+            {verticalsOf(personas).map((vertical) => (
+              <button
+                type="button"
+                className="primary"
+                key={vertical}
+                onClick={() => setIntakeVertical(vertical)}
+              >
+                {labelFor(vertical).door}
+              </button>
+            ))}
           </div>
 
           <div className="secondary-block">
@@ -195,10 +225,10 @@ export default function App() {
 
           {/* Grouped by vertical because the flip between them IS the closing move:
               the same engine answering a different domain. */}
-          {['entrepreneur', 'welfare'].map((vertical) => (
+          {verticalsOf(personas).map((vertical) => (
             <section className="vertical-group" key={vertical}>
               <h3>
-                {vertical === 'welfare' ? s.verticalWelfare : s.verticalEntrepreneur}
+                {labelFor(vertical).group}
                 <span className="vertical-hint">{s.verticalHint}</span>
               </h3>
               <div className="persona-list">

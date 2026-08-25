@@ -21,7 +21,9 @@ from __future__ import annotations
 #: acronym-aware default below.
 _EN: dict[str, str] = {
     "aadhaar": "Aadhaar",
+    "admission_letter": "admission letter",
     "age_proof": "age proof",
+    "bonafide_certificate": "bonafide student certificate",
     "bank_passbook": "bank passbook",
     "bpl_ration_card": "BPL ration card",
     "caste_certificate": "caste certificate",
@@ -33,11 +35,35 @@ _EN: dict[str, str] = {
     "land_record_7_12": "7/12 land record",
     "pension_order": "pension order",
     "project_report": "project report",
+    "school_id_card": "school ID card",
     "self_declaration": "self-declaration",
 }
 
 #: Tokens that are acronyms and stay upper case wherever they appear.
 _ACRONYMS = frozenset({"bpl", "sc", "st", "obc", "pan", "ifsc", "itr", "secc", "id"})
+
+
+#: Field paths whose last segment does not make a readable phrase on its own.
+#: Splitting `student.admission_secured` on underscores produced "Your admission
+#: secured is false", which is not a sentence. Anything absent falls through to the
+#: underscore split, which is fine for `applicant.age` and `household.annual_income`.
+_FIELD_EN: dict[str, str] = {
+    "applicant.constitutional_post": "having held a constitutional post",
+    "applicant.government_employee": "being a government employee",
+    "applicant.monthly_pension": "monthly pension",
+    "applicant.paid_income_tax": "having paid income tax last year",
+    "applicant.registered_professional": "being a registered practising professional",
+    "applicant.social_category": "social category",
+    "household.annual_income": "annual family income",
+    "household.bpl": "being on the BPL list",
+    "household.institutional_landholder": "the land being held by an institution",
+    "household.landholding_hectares": "cultivable land held",
+    "student.admission_secured": "having secured admission to a full time course",
+    "student.other_central_prematric_scholarship": (
+        "receiving another centrally funded pre-matric scholarship"
+    ),
+    "student.school_recognised": "studying full time at a recognised school",
+}
 
 
 def field_label(profile_field: str, language: str = "en") -> str:
@@ -46,6 +72,9 @@ def field_label(profile_field: str, language: str = "en") -> str:
     `applicant.social_category` reads as "social category". The namespace is dropped
     because it is ours, not hers — she does not think of herself as an `applicant.`
     """
+    known = _FIELD_EN.get(profile_field)
+    if known is not None:
+        return known
     return profile_field.rsplit(".", 1)[-1].replace("_", " ")
 
 
@@ -62,6 +91,10 @@ def value_label(value: object, language: str = "en") -> str:
     """
     if isinstance(value, bool):
         return "yes" if value else "no"
+    # The corpus writes booleans as the strings "true"/"false", because a CategoryBound
+    # compares as strings. A citizen should still read yes and no.
+    if isinstance(value, str) and value.lower() in {"true", "false"}:
+        return "yes" if value.lower() == "true" else "no"
     if isinstance(value, (int, float)):
         return str(value)
 
