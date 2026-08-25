@@ -88,6 +88,13 @@ staleness.banner: >-
   on it.
 staleness.amended: "The source records a change on {last_amended}, after I read it."
 
+# --- PROVENANCE, shown on every card ----------------------------------------
+# Deliberately NOT worded as "verified": a PROVISIONAL scheme has been checked against
+# its source too, it just did not settle every clause. This says what we actually did.
+# Suppressed when T5 fires, because staleness.banner already carries the same date with
+# a warning attached, and saying it twice reads as a bug.
+source.checked: "Checked against the official source on {retrieved_on}."
+
 # --- PROVISIONAL corpus warning --------------------------------------------
 provisional.banner: >-
   This rule has not yet been verified against the official source. It is not safe to

@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from haqdaar.action.fill import FilledForm, Receipt
 from haqdaar.corpus.schema import Scheme, VerificationStatus
 from haqdaar.eligibility.aggregate import UnlockOption
+from haqdaar.eligibility.compare import ComparedScheme
 from haqdaar.eligibility.verdict import Evaluation, Status
 from haqdaar.guard.gate import GateResult
 from haqdaar.render.labels import document_label, field_label
@@ -62,12 +63,55 @@ class CardPayload(BaseModel):
     has_approval_split: bool = False
     portal_url: str | None = None
     filing_office: str | None = None
+    #: Where these rules came from and when we last read them. Present on every card,
+    #: not only stale ones: "last verified" is the claim the proof beat rests on, and a
+    #: citizen should be able to see it without the answer having to go wrong first.
+    source_url: str | None = None
+    authority: str | None = None
+    retrieved_on: str | None = None
+    last_amended: str | None = None
     #: Scheme-interaction results, computed by resolve_interactions. Pass-through: the
     #: UI groups stacking schemes so two halves of one payment are never shown as two
     #: independent benefits (01-DEMO-CORPUS.md s2, IGNWPS + SGNAY).
     stack_group_id: str | None = None
     claimable: bool = True
     subsumed_by_scheme: str | None = None
+
+
+class CompareResponse(BaseModel):
+    """A comparison table. Structure only, and deliberately no "best fit".
+
+    Picking a winner would need facts nobody here holds: what each benefit is worth to
+    this person, how long each office takes, whether she can travel to the filing
+    office. See eligibility/compare.py for the full reasoning.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    vertical: str
+    #: None when no persona was supplied: a plain fact table, not an evaluated one.
+    persona_id: str | None = None
+    schemes: list[ComparedScheme] = Field(default_factory=list)
+    stacked_groups: list[list[str]] = Field(default_factory=list)
+
+
+class NeedPayload(BaseModel):
+    """One need-based door, already resolved to the vertical that can answer it."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    need_id: str
+    label: str
+    vertical: str
+
+
+class NeedsResponse(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    language: str
+    #: The vertical filter that was applied, or None when every need is returned.
+    vertical: str | None = None
+    needs: list[NeedPayload] = Field(default_factory=list)
 
 
 class UnlockPayload(BaseModel):
@@ -308,6 +352,10 @@ def to_payload(result: GateResult, scheme: Scheme, card: RenderedCard) -> CardPa
         banners=list(card.banners),
         window_lines=list(card.window_lines),
         window_state=verdict.window.state.value if verdict.window else None,
+        source_url=scheme.source_url,
+        authority=scheme.authority,
+        retrieved_on=scheme.retrieved_on.isoformat(),
+        last_amended=scheme.last_amended.isoformat() if scheme.last_amended else None,
         citations=[
             Citation(
                 clause_id=p.clause_id,

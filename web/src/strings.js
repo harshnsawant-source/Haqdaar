@@ -18,6 +18,9 @@ export const LANGUAGES = ['en'];
 const en = {
   appName: 'Haqdaar',
   tagline: 'Proof, not answers.',
+  // The hero line. Says the problem before it says the product, which is why it lands:
+  // nobody has ever felt bad about not knowing a scheme's name until it is put like this.
+  hero: "You shouldn't need to know the name of a government scheme to benefit from it.",
   tellUs: 'Tell us about your situation',
   tellUsHint:
     'A few questions. Answer what you can — anything you skip simply stays unknown.',

@@ -60,6 +60,7 @@ approval.refusal: "[NEEDS HUMAN TRANSLATION] That is decided by {decider}, and n
 approval.rule: "[NEEDS HUMAN TRANSLATION] The condition: {clause_text}"
 staleness.banner: "[NEEDS HUMAN TRANSLATION] This rule was last checked on {retrieved_on}. Confirm it is current before you rely on it."
 staleness.amended: "[NEEDS HUMAN TRANSLATION] The source records a change on {last_amended}, after I read it."
+source.checked: "[NEEDS HUMAN TRANSLATION] Checked against the official source on {retrieved_on}."
 provisional.banner: "[NEEDS HUMAN TRANSLATION] This rule has not yet been verified against the official source. It is not safe to act on."
 intake.declared_banner: "[NEEDS HUMAN TRANSLATION] This is based on what you told me. I have not seen your documents, so anything that needs a certificate is still marked as needing one."
 action.headline: "[NEEDS HUMAN TRANSLATION] I have filled what your documents can prove for {scheme_name}."

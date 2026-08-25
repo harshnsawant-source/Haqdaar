@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Card } from './Card.jsx';
 import { Intake } from './Intake.jsx';
 import { Upload } from './Upload.jsx';
-import { fetchEvaluation, fetchPersonas, purgeSession } from './api.js';
+import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession } from './api.js';
 import { t } from './strings.js';
 
 const s = t('en');
@@ -77,6 +77,7 @@ function orderCards(cards) {
 
 export default function App() {
   const [personas, setPersonas] = useState([]);
+  const [needs, setNeeds] = useState([]);
   const [selected, setSelected] = useState(null);
   const [draftQuery, setDraftQuery] = useState('');
   const [query, setQuery] = useState('');
@@ -92,6 +93,9 @@ export default function App() {
     fetchPersonas()
       .then(({ data, stored, storedAt }) => {
         setPersonas(data || []);
+    fetchNeeds()
+      .then(({ data }) => setNeeds(data || []))
+      .catch(() => setNeeds([]));
         // If even the persona list is unavailable, say so. An empty screen with no
         // explanation is the worst of both worlds.
         if (!data) setOffline({ stored: false });
@@ -203,18 +207,27 @@ export default function App() {
         </>
       ) : !selected ? (
         <>
+          <p className="hero">{s.hero}</p>
           <h2>{s.tellUs}</h2>
           <p className="tagline">{s.tellUsHint}</p>
           <p className="tagline">{s.whichDomain}</p>
+
+          {/* Need-based entry. The engine returns the vertical each need routes to, so
+              this never has to know the taxonomy. Falls back to the domain buttons if
+              /api/needs is unreachable, which is what happens offline on a cold cache. */}
           <div className="front-door">
-            {verticalsOf(personas).map((vertical) => (
+            {(needs.length ? needs : verticalsOf(personas).map((v) => ({
+              need_id: v,
+              vertical: v,
+              label: labelFor(v).door,
+            }))).map((need) => (
               <button
                 type="button"
                 className="primary"
-                key={vertical}
-                onClick={() => setIntakeVertical(vertical)}
+                key={need.need_id}
+                onClick={() => setIntakeVertical(need.vertical)}
               >
-                {labelFor(vertical).door}
+                {need.label}
               </button>
             ))}
           </div>

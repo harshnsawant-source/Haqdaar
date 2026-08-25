@@ -150,6 +150,15 @@ button:disabled { opacity: 0.55; cursor: default; }
              letter-spacing: 0.07em; color: var(--blocked); }
 .unlock p { margin: 0; font-weight: 600; }
 
+.hero {
+  font-size: 1.22rem;
+  line-height: 1.35;
+  font-weight: 650;
+  color: var(--ink);
+  margin: 4px 0 18px;
+  max-width: 34ch;
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--line);

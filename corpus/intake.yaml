@@ -30,6 +30,62 @@
 
 version: 1
 
+# NEED-BASED ENTRY. The front door in the citizen's own words rather than ours.
+#
+# She does not arrive thinking "I need the welfare vertical". She arrives thinking "my
+# husband died and there is no money coming in". Each need routes to the vertical whose
+# corpus can answer it, so this is a routing table with human words on it, not a second
+# taxonomy to keep in sync.
+#
+# A need names NO schemes. Naming one before the evaluator has seen a single fact would
+# be exactly the guess this project refuses, and it is how a "recommendation" quietly
+# becomes a promise.
+#
+# Adding a need is a content change. Adding a vertical it points at is a corpus folder.
+# Neither is a code change.
+needs:
+  - need_id: start-a-business
+    vertical: entrepreneur
+    label:
+      en: "I want to start or grow a business"
+      mr: "[NEEDS HUMAN TRANSLATION] I want to start or grow a business"
+
+  - need_id: business-capital
+    vertical: entrepreneur
+    label:
+      en: "I need money or a loan for my work"
+      mr: "[NEEDS HUMAN TRANSLATION] I need money or a loan for my work"
+
+  - need_id: widowed
+    vertical: welfare
+    label:
+      en: "My husband has died and I have no income"
+      mr: "[NEEDS HUMAN TRANSLATION] My husband has died and I have no income"
+
+  - need_id: farm-support
+    vertical: welfare
+    label:
+      en: "I farm my own land and need support"
+      mr: "[NEEDS HUMAN TRANSLATION] I farm my own land and need support"
+
+  - need_id: old-age-or-health
+    vertical: welfare
+    label:
+      en: "I am older, or I need help with medical costs"
+      mr: "[NEEDS HUMAN TRANSLATION] I am older, or I need help with medical costs"
+
+  - need_id: school-fees
+    vertical: student
+    label:
+      en: "I am at school and my family cannot afford the costs"
+      mr: "[NEEDS HUMAN TRANSLATION] I am at school and my family cannot afford the costs"
+
+  - need_id: college-fees
+    vertical: student
+    label:
+      en: "I have a college place and need help paying for it"
+      mr: "[NEEDS HUMAN TRANSLATION] I have a college place and need help paying for it"
+
 sections:
   # `verticals` says which domains a section belongs to. Shared sections list both.
   # Declared here rather than split in Python or JSX so the question set stays data.

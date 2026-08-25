@@ -566,7 +566,19 @@ def _render_banners(
     clause_texts: set[str],
 ) -> list[str]:
     banners: list[str] = []
-    for finding in result.findings_for(TriggerId.T5_STALE_RULE):
+    stale = result.findings_for(TriggerId.T5_STALE_RULE)
+    if not stale:
+        # Provenance on every card. When T5 fires it carries the same date with a
+        # warning attached, so this would only repeat it.
+        banners.append(
+            _fill(
+                "source.checked",
+                templates,
+                {**base, "retrieved_on": scheme.retrieved_on.isoformat()},
+                clause_texts,
+            )
+        )
+    for finding in stale:
         banners.append(
             _fill(
                 "staleness.banner",

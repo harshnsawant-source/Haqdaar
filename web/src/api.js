@@ -122,3 +122,25 @@ export async function purgeSession() {
   }
   return results;
 }
+
+/*
+ * The need-based front door. Each need already carries the vertical that can answer it,
+ * so the UI routes on `need.vertical` and never has to know the taxonomy.
+ *
+ * Goes through `get` like everything else, so a cached answer carries its offline stamp.
+ */
+export function fetchNeeds(language = 'en') {
+  const params = new URLSearchParams({ language });
+  return get(`/api/needs?${params.toString()}`);
+}
+
+/*
+ * Two to four schemes side by side. `personaId` is optional: with it each column carries
+ * that person's real status, without it the table is plain facts. There is no best fit
+ * and there will not be one — see engine/haqdaar/eligibility/compare.py.
+ */
+export function fetchComparison(vertical, schemeIds, personaId) {
+  const params = new URLSearchParams({ vertical, scheme_ids: schemeIds.join(',') });
+  if (personaId) params.set('persona_id', personaId);
+  return get(`/api/compare?${params.toString()}`);
+}

@@ -83,9 +83,29 @@ class IntakeSection(_Frozen):
         return vertical is None or not self.verticals or vertical in self.verticals
 
 
+class IntakeNeed(_Frozen):
+    """A door into the product phrased as a problem, not as a domain.
+
+    A citizen does not think "I need the welfare vertical". She thinks "my husband
+    died and I have no income". Each need names the vertical whose corpus can answer
+    it, so this is a routing table with human words on it, not a second taxonomy.
+
+    It deliberately carries NO scheme ids. Promising a specific scheme before the
+    evaluator has seen a single fact would be the guess this whole project refuses.
+    """
+
+    need_id: str
+    label: dict[str, str]
+    vertical: str
+
+
 class IntakeSpec(_Frozen):
     version: int
     sections: list[IntakeSection] = Field(min_length=1)
+    needs: list[IntakeNeed] = Field(default_factory=list)
+
+    def needs_for(self, vertical: str | None = None) -> list[IntakeNeed]:
+        return [n for n in self.needs if vertical is None or n.vertical == vertical]
 
     def sections_for(self, vertical: str | None = None) -> list[IntakeSection]:
         """Only the sections that belong to this domain.

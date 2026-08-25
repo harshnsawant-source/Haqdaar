@@ -42,6 +42,7 @@ from haqdaar.corpus.forms import load_form_for
 from haqdaar.corpus.loader import load_corpus
 from haqdaar.corpus.schema import Scheme
 from haqdaar.eligibility.aggregate import best_unlock
+from haqdaar.eligibility.compare import ComparisonError, compare
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
 from haqdaar.guard.gate import gate, gate_all
 from haqdaar.profile.extract import ExtractionMode, build_profile, extract_document
@@ -76,7 +77,10 @@ from haqdaar.api.schemas import (
     IntakeQuestionPayload,
     IntakeRequest,
     IntakeResponse,
+    CompareResponse,
     IntakeSectionPayload,
+    NeedPayload,
+    NeedsResponse,
     PersonaSummary,
     to_action,
     to_payload,
@@ -246,6 +250,103 @@ def intake_form(vertical: str | None = None, language: str = "en") -> IntakeForm
                 ],
             )
             for section in spec.sections_for(vertical)
+        ],
+    )
+
+
+@app.get("/api/compare", response_model=CompareResponse)
+def compare_schemes(
+    vertical: str,
+    scheme_ids: str,
+    persona_id: str | None = None,
+) -> CompareResponse:
+    """Two to four schemes side by side, as facts.
+
+    `scheme_ids` is a comma-separated list. With `persona_id` each column also carries
+    that person's real status and the columns are ordered by what she can act on;
+    without it the table is the same facts with no verdict attached, which is what
+    browsing before answering anything should show.
+
+    There is no "best fit" and there will not be one. See eligibility/compare.py.
+    """
+    if vertical not in set(PERSONAS.values()):
+        raise HTTPException(status_code=404, detail=f"unknown vertical {vertical}")
+
+    wanted = [s.strip() for s in scheme_ids.split(",") if s.strip()]
+    schemes = _load_vertical(vertical)
+    by_id = {s.scheme_id: s for s in schemes}
+
+    unknown = [s for s in wanted if s not in by_id]
+    if unknown:
+        raise HTTPException(
+            status_code=404,
+            detail=f"unknown scheme(s) in {vertical}: {sorted(unknown)}",
+        )
+
+    picked = [by_id[s] for s in wanted]
+
+    verdicts = None
+    if persona_id is not None:
+        persona_vertical, profile = _load_persona(persona_id)
+        if persona_vertical != vertical:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    f"persona {persona_id} belongs to {persona_vertical}, not "
+                    f"{vertical} — a verdict from one corpus cannot label another"
+                ),
+            )
+        gated = gate_all(
+            evaluate_corpus(schemes, profile), schemes, today=_today()
+        )
+        verdicts = [
+            r.verdict for r in gated if r.verdict.scheme_id in {s.scheme_id for s in picked}
+        ]
+
+    try:
+        result = compare(picked, verdicts)
+    except ComparisonError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+    return CompareResponse(
+        vertical=vertical,
+        persona_id=persona_id,
+        schemes=list(result.schemes),
+        stacked_groups=[list(g) for g in result.stacked_groups],
+    )
+
+
+@app.get("/api/needs", response_model=NeedsResponse)
+def needs(vertical: str | None = None, language: str = "en") -> NeedsResponse:
+    """The front door in the citizen's own words, resolved to a vertical.
+
+    Deliberately returns no scheme ids. A need is a routing hint, and naming a scheme
+    before the evaluator has seen a fact would turn a question into a promise.
+    """
+    verticals = set(PERSONAS.values())
+    if vertical is not None and vertical not in verticals:
+        raise HTTPException(status_code=404, detail=f"unknown vertical {vertical}")
+
+    spec = _intake_spec()
+    unknown = sorted({n.vertical for n in spec.needs} - verticals)
+    if unknown:
+        # A need pointing at a corpus that does not exist is a dead door. Fail loudly
+        # here rather than serving a button that leads nowhere.
+        raise HTTPException(
+            status_code=500,
+            detail=f"intake.yaml declares needs for unknown vertical(s): {unknown}",
+        )
+
+    return NeedsResponse(
+        language=language,
+        vertical=vertical,
+        needs=[
+            NeedPayload(
+                need_id=n.need_id,
+                label=_text(n.label, language),
+                vertical=n.vertical,
+            )
+            for n in spec.needs_for(vertical)
         ],
     )
 
