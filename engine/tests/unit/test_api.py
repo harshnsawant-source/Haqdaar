@@ -181,7 +181,7 @@ def test_every_card_declares_whether_its_rules_were_verified(client):
 
     A verified scheme must not carry the banner, or it stops meaning anything.
     """
-    verified = {"stand-up-india", "nsfdc-term-loan"}
+    verified = {"stand-up-india", "nsfdc-term-loan", "vcf-sc"}
     body = client.get(
         "/api/evaluate", params={"persona_id": "entrepreneur-01"}
     ).json()

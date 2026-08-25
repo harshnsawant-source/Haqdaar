@@ -1,34 +1,57 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official source on 2026-08-26.
 #
-# Transcribed from 01-DEMO-CORPUS.md s3, which cites the official Revised FAQ PDF at
-# pmkisan.gov.in but is our own team document. PROVISIONAL until a human opens the PDF.
+# Source: "Revised PM-KISAN Operational Guidelines (English)", the Department of
+# Agriculture and Farmers Welfare's own document, downloaded from
+# pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf and read
+# in full on 2026-08-26. Sections 2, 3 and 4 supply every clause below verbatim.
 #
-# REVEAL VERTICAL. This is Sunita's POSITIVE match — the cleanest rule set in the
-# welfare corpus and the mirror of Stand-Up India in the entrepreneur arc. She holds
-# cultivable land in her own name (7/12 extract) and meets none of the exclusions.
+# REVEAL VERTICAL. This is Sunita's POSITIVE match, and the cleanest rule set in the
+# corpus. She holds cultivable land in her own name (7/12 extract) and meets none of
+# the exclusions.
 #
-# The six exclusions are encoded as `exclusion` clauses, so a TRUE match DISQUALIFIES.
-# Each is evidenced by self-declaration, which is how the real form collects them; the
-# fixture records what she declares, and an undeclared exclusion would resolve UNKNOWN
-# and block rather than quietly passing.
+# THE CLASS IV EXCEPTION IS NOW CARRIED, AND IT MATTERS
+# -----------------------------------------------------
+# The provisional version flagged that clauses X3 and X4 excluded government employees
+# and pensioners WITHOUT the official exception for Multi Tasking Staff / Class IV /
+# Group D employees, and warned that this would wrongly disqualify them. Reading the
+# source confirms the exception is real and is written inside the exclusion sentences
+# themselves, so the verbatim clause_text now carries it and the citizen reads it.
+#
+# The evaluator still cannot model "excluded UNLESS Class IV", so the exception is
+# handled where the fact is actually collected: the intake questions in corpus/intake.yaml
+# now ask the precise question rather than the broad one. Section 4.2 of the guidelines
+# is what makes that legitimate: "State / UT Governments can certify the eligibility of
+# the beneficiaries based on self declaration by the beneficiaries."
+#
+# NO LAND-SIZE LIMIT. The guidelines define the beneficiary family by land OWNERSHIP,
+# not by area. The widely repeated "2 hectare" cap is NOT in this document; it was
+# dropped when the scheme was universalised. The numeric bound below encodes "owns
+# cultivable land" as a positive holding and nothing more.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# The 01.02.2019 land-ownership cut-off date and the succession/transfer rules in
+# sections 3.3, 3.4 and 5. They are real and sourced but concern WHEN ownership was
+# recorded, and the profile schema has no date-of-acquisition field.
+# The NRI exclusion, section 4.1(c). It applies only to "new beneficiaries being
+# uploaded on the PM-KISAN Portal" and the profile schema has no residency field.
 
 scheme_id: pm-kisan
 name: PM-KISAN
-authority: "[VERIFY AT SOURCE] Ministry of Agriculture and Farmers Welfare"
-benefit: >-
-  [VERIFY AT SOURCE] Rs 6,000 per year, paid in three instalments of Rs 2,000
-source_url: "https://pmkisan.gov.in/Documents/RevisedFAQ.pdf"
+authority: "Department of Agriculture and Farmers Welfare, Ministry of Agriculture and Farmers Welfare"
+benefit: "Rs.6000/- per year is released by the Central Government online directly into the bank accounts of the eligible farmers under Direct Benefit Transfer mode"
+source_url: "https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf"
 portal_url: "https://pmkisan.gov.in/"
-filing_office: >-
-  [VERIFY AT SOURCE] the village Patwari or Talathi, or New Farmer Registration on the
-  portal
-retrieved_on: 2026-08-21
-verification_status: PROVISIONAL
+filing_office: "the village revenue official, or New Farmer Registration on the PM-KISAN portal"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
 verify_note: >-
-  Open the Revised FAQ PDF and transcribe the eligibility line and all six exclusion
-  categories verbatim. Confirm the Multi-Tasking Staff / Class IV / Group D exception
-  to the government-employee and pensioner exclusions — it is NOT encoded here, and
-  encoding an exclusion without its exception would wrongly disqualify people.
+  Clause text transcribed verbatim from the Revised PM-KISAN Operational Guidelines
+  (English) PDF on pmkisan.gov.in, read in full on 2026-08-26. The guidelines state no
+  end date for the scheme, so no validity window is encoded. The 01.02.2019 ownership
+  cut-off and the NRI exclusion are sourced but deliberately not encoded; see the
+  header. `filing_office` describes the routes the guidelines' registration section
+  implies rather than quoting a single sentence.
 
 clause_groups:
   - group_id: landholding
@@ -36,95 +59,104 @@ clause_groups:
     clauses:
       - clause_id: PMKISAN-C1
         clause_text: >-
-          [VERIFY AT SOURCE] All landholding farmers' families which have cultivable
-          landholding in their names.
+          A landholder farmer's family is defined as "a family comprising of husband,
+          wife and minor children who owns cultivable land as per land records of the
+          concerned State/UT".
         rule_type: numeric_bound
         profile_field: household.landholding_hectares
         bound:
           min: 0.01
         verifiable_from: [land_record_7_12]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm the verbatim wording. Note the rule says "in their names" — the land
-          must be held by the applicant, which the 7/12 extract evidences.
+          Verbatim from section 3 of the Revised Operational Guidelines, read
+          2026-08-26. The rule is about ownership of cultivable land, not its area, so
+          the bound is a positive holding rather than a ceiling. Confirmed against the
+          document that no 2-hectare limit appears anywhere in it.
 
   - group_id: exclusions
     satisfy: ALL
     clauses:
       - clause_id: PMKISAN-X1
-        clause_text: "[VERIFY AT SOURCE] Institutional landholders are excluded."
+        clause_text: "All Institutional Land holders"
         rule_type: exclusion
         profile_field: household.institutional_landholder
         bound:
           values: ["true"]
         verifiable_from: [self_declaration]
-        verification_status: PROVISIONAL
-        verify_note: "Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from section 4.1(a), read 2026-08-26."
 
       - clause_id: PMKISAN-X2
         clause_text: >-
-          [VERIFY AT SOURCE] Former or present holders of constitutional posts,
-          ministers, members of legislatures, mayors and district panchayat chairpersons
-          are excluded.
+          Former and present holders of constitutional posts. Former and present
+          Ministers / State Ministers and former / present Members of Lok Sabha / Rajya
+          Sabha / State Legislative Assemblies / State Legislative Councils, former and
+          present Mayors of Municipal Corporations, former and present Chairpersons of
+          District Panchayats.
         rule_type: exclusion
         profile_field: applicant.constitutional_post
         bound:
           values: ["true"]
         verifiable_from: [self_declaration]
-        verification_status: PROVISIONAL
-        verify_note: "Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from section 4.1(b)(i) and (ii), read 2026-08-26. Two sub-clauses are
+          joined here because the intake collects them as one declaration.
 
       - clause_id: PMKISAN-X3
         clause_text: >-
-          [VERIFY AT SOURCE] Serving or retired officers and employees of Central or
-          State Government ministries and offices are excluded.
+          All serving or retired officers and employees of Central / State Government
+          Ministries / Offices / Departments and their field units, Central or State
+          PSEs and Attached offices / Autonomous Institutions under Government as well
+          as regular employees of the Local Bodies (Excluding Multi Tasking Staff /
+          Class IV / Group D employees)
         rule_type: exclusion
         profile_field: applicant.government_employee
         bound:
           values: ["true"]
         verifiable_from: [self_declaration]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          INCOMPLETE AS ENCODED. The official rule excepts Multi-Tasking Staff, Class
-          IV and Group D employees. That exception is not represented here, so this
-          clause would wrongly disqualify them. Encode the exception before any demo
-          that could involve such an applicant.
+          Verbatim from section 4.1(b)(iii), read 2026-08-26, INCLUDING the Multi
+          Tasking Staff / Class IV / Group D exception the provisional version was
+          missing. The evaluator cannot express "excluded unless Class IV", so the
+          exception lives in the intake question, which now asks the narrower question.
+          Section 4.2 sanctions self-declaration as the basis for exclusion.
 
       - clause_id: PMKISAN-X4
         clause_text: >-
-          [VERIFY AT SOURCE] Superannuated or retired pensioners with a monthly pension
-          of Rs 10,000 or more are excluded.
+          All superannuated / retired pensioners whose monthly pension is Rs.10,000/- or
+          more (Excluding Multi Tasking Staff / Class IV / Group D employees)
         rule_type: exclusion
         profile_field: applicant.monthly_pension
         bound:
           min: 10000
         verifiable_from: [self_declaration, pension_order]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Transcribe verbatim. The same Class IV / Group D exception applies and is not
-          encoded here.
+          Verbatim from section 4.1(b)(iv), read 2026-08-26. Same Class IV exception,
+          handled the same way; see X3.
 
       - clause_id: PMKISAN-X5
-        clause_text: >-
-          [VERIFY AT SOURCE] Anyone who paid income tax in the last assessment year is
-          excluded.
+        clause_text: "All Persons who paid Income Tax in last assessment year."
         rule_type: exclusion
         profile_field: applicant.paid_income_tax
         bound:
           values: ["true"]
         verifiable_from: [self_declaration]
-        verification_status: PROVISIONAL
-        verify_note: "Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from section 4.1(b)(v), read 2026-08-26."
 
       - clause_id: PMKISAN-X6
         clause_text: >-
-          [VERIFY AT SOURCE] Practising professionals — doctors, engineers, lawyers,
-          chartered accountants and architects registered with professional bodies —
-          are excluded.
+          Professionals like Doctors, Engineers, Lawyers, Chartered Accountants, and
+          Architects registered with Professional bodies and carrying out profession by
+          undertaking practices.
         rule_type: exclusion
         profile_field: applicant.registered_professional
         bound:
           values: ["true"]
         verifiable_from: [self_declaration]
-        verification_status: PROVISIONAL
-        verify_note: "Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from section 4.1(b)(vi), read 2026-08-26."

@@ -21,7 +21,7 @@ def test_day_one_corpus_loads(schemes_dir: Path):
 #: government page. The tripwire below names them one by one on purpose: adding a
 #: scheme here is a deliberate act that says a human read the source, and a scheme
 #: cannot drift into the verified set by accident.
-VERIFIED_SCHEMES = {"stand-up-india", "nsfdc-term-loan"}
+VERIFIED_SCHEMES = {"stand-up-india", "nsfdc-term-loan", "vcf-sc"}
 
 
 def test_strict_mode_yields_only_the_schemes_we_have_actually_read(schemes_dir: Path):

@@ -46,10 +46,10 @@ unverifiable.next_step: "[NEEDS HUMAN TRANSLATION] Ask at {office} and quote tha
 unverifiable.promise: "[NEEDS HUMAN TRANSLATION] If they confirm it, come back and I will complete your application."
 unverifiable.outside_corpus: "[NEEDS HUMAN TRANSLATION] That is outside what I have rules for. I only answer where I can show you the official clause."
 # --- SCHEME WINDOW (T6) -----------------------------------------------------
-window.lapsed_headline: "[NEEDS HUMAN TRANSLATION] This scheme is closed. Do not spend a day on it."
-window.lapsed_reason: "[NEEDS HUMAN TRANSLATION] Its sanctioned period ended on {valid_until}."
-window.lapsed_source: "[NEEDS HUMAN TRANSLATION] The official page says: {validity_text}"
-window.lapsed_proof_kept: "[NEEDS HUMAN TRANSLATION] I have still checked you against its published rules below, because a successor scheme normally carries them forward."
+window.lapsed_headline: "[NEEDS HUMAN TRANSLATION] Stop. The period this scheme was sanctioned for has ended."
+window.lapsed_reason: "[NEEDS HUMAN TRANSLATION] The rules I have run until {valid_until}."
+window.lapsed_source: "[NEEDS HUMAN TRANSLATION] The official document says: {validity_text}"
+window.lapsed_proof_kept: "[NEEDS HUMAN TRANSLATION] I have still checked you against its published rules below. Confirm at the office whether a successor has taken its place before you spend a day on this."
 window.not_yet_open_headline: "[NEEDS HUMAN TRANSLATION] This scheme has not opened yet."
 window.not_yet_open_reason: "[NEEDS HUMAN TRANSLATION] It opens on {valid_from}."
 

@@ -1,34 +1,56 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official source on 2026-08-26.
 #
-# Transcribed from 01-DEMO-CORPUS.md s5, which cites a PIB release. Our own team
-# document, not the official page, so PROVISIONAL until a human opens the source.
+# Source: Press Information Bureau, Government of India, release PRID 2222493, "Update
+# on Ayushman Vay Vandana Card", posted 03 FEB 2026, reporting a written reply by the
+# Union Minister of State for Health and Family Welfare in the Rajya Sabha. Read on
+# 2026-08-26.
 #
-# REVEAL VERTICAL. This scheme earns its place by being a hard age boundary and a
-# recent rule change: Sunita is 60 and the rule is 70+, so the engine states the exact
-# clause, the exact bound, and the year she becomes eligible. Proving the engine reads
-# rules rather than pattern-matching "senior citizen" and "widow" is nearly as strong
-# on stage as a positive match.
+# REVEAL VERTICAL. This scheme earns its place by being a hard age boundary and a recent
+# rule change: Sunita is 60 and the rule is 70+, so the engine states the exact clause,
+# the exact bound, and the year she becomes eligible. Proving the engine reads rules
+# rather than pattern-matching "senior citizen" and "widow" is nearly as strong on stage
+# as a positive match.
 #
-# The 2024 launch also drives T5: last_amended is after retrieved_on would flag it, and
-# a rule this recent is exactly the kind a static corpus gets wrong.
+# WHAT VERIFICATION CHANGED
+# -------------------------
+# The provisional note asked whether there is "genuinely no income or SECC test". There
+# is not, and the source says so in three words: "irrespective of their socio-economic
+# status". That phrase is now in the clause text, so the citizen reads the reason the
+# scheme does not means-test her rather than taking our word for it.
+#
+# T5 NO LONGER FIRES ON THIS SCHEME, AND THAT IS CORRECT. The provisional file expected
+# the October 2024 expansion to trip the staleness trigger, because `last_amended` was
+# later than a `retrieved_on` of 2026-08-21. We have now read the source, so
+# `retrieved_on` is 2026-08-26 and the amendment precedes it: our transcription already
+# reflects the change. T5 is silent because there is nothing stale, which is exactly
+# what the trigger is supposed to mean. If a demo needs a live T5 example, use a scheme
+# whose source records a change we have not yet read; do not fake one here.
+#
+# LAST_AMENDED IS MONTH-PRECISE ONLY. The release says "In October 2024", with no day.
+# The 1st is our convention for an unspecified day in a stated month, not the source's
+# claim, and nothing in the engine depends on the day.
+#
+# DELIBERATELY ABSENT: how a person aged 70 or over who is ALREADY covered under standard
+# AB-PMJAY is treated. The release does not address it and neither does any other page we
+# read. It stays unanswered rather than guessed, and the engine must not improvise it on
+# stage.
 
 scheme_id: avvc
 name: Ayushman Vay Vandana Card
-authority: "[VERIFY AT SOURCE] National Health Authority, under AB PM-JAY"
-benefit: >-
-  [VERIFY AT SOURCE] Health cover of Rs 5 lakh per family per year for secondary and
-  tertiary care hospitalisation
+authority: "National Health Authority, Ministry of Health and Family Welfare"
+benefit: "health coverage of Rs. 5 lakh per family per year for secondary and tertiary care hospitalization"
 source_url: "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2222493&reg=3&lang=2"
-retrieved_on: 2026-08-21
+retrieved_on: 2026-08-26
 last_amended: 2024-10-01
 portal_url: "https://beneficiary.nha.gov.in/"
-verification_status: PROVISIONAL
+verification_status: VERIFIED
 verify_note: >-
-  Open the PIB release and transcribe the eligibility line verbatim. Confirm: (a) the
-  exact age wording and that there is genuinely no income or SECC test, (b) the precise
-  launch/amendment date now recorded as last_amended, and (c) how a 70+ person already
-  covered under standard PM-JAY is treated — unresolved in 01-DEMO-CORPUS.md s5, and
-  the engine must not guess it on stage.
+  Clause text transcribed verbatim from PIB release PRID 2222493, posted 03 FEB 2026 and
+  read 2026-08-26. The release states no end date, so no validity window is encoded. It
+  is a Rajya Sabha reply reporting the scheme rather than a scheme guidelines document;
+  if a fuller NHA guideline becomes readable, re-check the age wording against it. The
+  treatment of a 70+ person already covered under standard PM-JAY is not addressed by
+  this source and is deliberately not encoded.
 
 clause_groups:
   - group_id: age
@@ -36,14 +58,17 @@ clause_groups:
     clauses:
       - clause_id: AVVC-C1
         clause_text: >-
-          [VERIFY AT SOURCE] All senior citizens aged 70 years and above, irrespective
-          of their socio-economic status.
+          In October 2024, the scheme was expanded to cover 6 crore senior citizens of
+          age 70 years and above belonging to 4.5 crore families irrespective of their
+          socio-economic status, through Ayushman Vay Vandana card.
         rule_type: numeric_bound
         profile_field: applicant.age
         bound:
           min: 70
         verifiable_from: [aadhaar, age_proof]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm the verbatim wording and that no income or SECC condition attaches.
-          The absence of a means test is the whole point of this scheme.
+          Verbatim from PIB PRID 2222493, read 2026-08-26. "irrespective of their
+          socio-economic status" is the confirmation the provisional version asked for:
+          there is no income test and no SECC test on this scheme, and the absence of a
+          means test is the whole point of it.

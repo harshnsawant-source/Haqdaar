@@ -1,44 +1,71 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official source on 2026-08-26.
 #
-# Named in PROJECT-BRIEF-ADDENDUM.md s3 ("Venture Capital Fund for SC") and nowhere
-# else in this repo. That single mention is the entire sourced basis for this file.
+# Source: the Ministry of Social Justice and Empowerment's own operational guidelines,
+# "Scheme of 'Venture Capital Fund for Scheduled Castes' — OPERATIONAL GUIDELINES FOR
+# FINANCIAL ASSISTANCE TO SCHEDULED CASTE ENTREPRENEURS (01.04.2021 to 31.03.2026)",
+# published at socialjustice.gov.in and read in full on 2026-08-26.
 #
-# WHAT IS ENCODED, AND WHY ONLY THIS MUCH
-# ---------------------------------------
-# Two clauses, and both are things the scheme's own name and form make structurally
-# certain rather than criteria anyone has transcribed:
+# READ THIS BEFORE DEMOING THE SCHEME
+# -----------------------------------
+# The guidelines' own title states the period they cover: 01.04.2021 to 31.03.2026.
+# That period ended. The engine reports the window as LAPSED, which is the honest
+# reading: we cannot tell a citizen to apply under rules whose stated period is over.
 #
-#   VCFSC-C1  the beneficiary is a Scheduled Caste entrepreneur — this is in the name
-#             of the fund itself
-#   VCFSC-C2  the investment is the fund's decision — every venture capital fund
-#             decides what it invests in, and that decision is nobody's document
+# This is NOT the same as the fund being wound up. The same document says the fund's
+# duration is "14 years from date of Final Closing with extension of 2 additional years
+# upon approval of GOI i.e. till 31st Mar'39 and Extendable up 31st Mar'41." The fund
+# lives on; the guidelines period for this assistance does not. Whether a successor set
+# of guidelines exists is something no page we could find states, so nothing is encoded
+# about one. The rendered wording says the sanctioned period has ended and to confirm
+# before applying, which is exactly the state of our knowledge.
 #
-# DELIBERATELY ABSENT: turnover thresholds, company-form requirements, minimum or
-# maximum investment size, promoter-stake rules, sector restrictions. Real funds have
-# such conditions and this one certainly does. Nobody on this team has read them, so
-# they are not here. Inventing a plausible turnover floor would be exactly the failure
-# this project exists to prevent, and a judge who knows the scheme would catch it.
+# AN EARLIER, SUPERSEDED VERSION EXISTS AND DISAGREES. The 2017-18 revision gives the
+# investment size as "Rs. 20 lakhs to Rs. 15 Crore". The 2021-26 guidelines encoded here
+# say "Rs. 10 lakhs to Rs. 15 Crore". We use the later document. This is worth knowing
+# because secondary summaries quote both figures interchangeably.
 #
-# Until someone opens the official page this scheme can only ever tell a citizen
-# "you are the right kind of applicant; the investment decision is not mine to make".
-# That is thin, and it is true.
+# DELIBERATELY ABSENT
+# -------------------
+# The 51% shareholding test. Real, sourced, and central, but the schema cannot express
+# it: the rule is defined over a COMPANY rather than a person, and its duration limb is
+# conditional on the assistance amount (6 months at or below Rs 50 lakh, 12 months
+# above). Encoding either limb unconditionally would show a citizen the wrong rule, and
+# quoting a company-shareholding rule beside an individual's profile would misrepresent
+# what was actually checked. Absent rather than approximated.
+#
+# The sector restriction ("manufacturing, services and allied sector, including start-
+# ups and units being incubated in the technology business incubators"). The profile
+# schema has no sector field.
+#
+# The women-entrepreneur line ("At least 30% of the beneficiaries assisted under the
+# fund should preferably be women entrepreneurs"). This is a target for the FUND, not a
+# test any applicant passes or fails. Encoding it as an eligibility clause would be a
+# straightforward misreading of the source.
 
 scheme_id: vcf-sc
 name: Venture Capital Fund for Scheduled Castes
-authority: >-
-  [VERIFY AT SOURCE] Ministry of Social Justice and Empowerment
-benefit: >-
-  [VERIFY AT SOURCE] Equity or quasi-equity investment in enterprises promoted by
-  Scheduled Caste entrepreneurs
-source_url: "https://socialjustice.gov.in/"
-retrieved_on: 2026-08-21
-verification_status: PROVISIONAL
+authority: "Department of Social Justice and Empowerment, Ministry of Social Justice and Empowerment"
+benefit: "Concessional finance of Rs. 10 lakhs to Rs. 15 Crore to Scheduled Caste entrepreneurs"
+source_url: "https://www.socialjustice.gov.in/public/ckeditor/upload/56961654673488.pdf"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
 verify_note: >-
-  Nobody has opened an official page for this fund. Confirm: (a) the correct
-  administering body and current source URL, (b) the verbatim eligibility conditions,
-  (c) EVERY condition deliberately omitted here — turnover, company form, investment
-  size, promoter stake, sector — and (d) whether a caste certificate is the accepted
-  proof of the SC criterion. Do not demo this scheme until that is done.
+  Clause text transcribed verbatim from the 2021-26 operational guidelines PDF on
+  socialjustice.gov.in, read in full on 2026-08-26. The 51% shareholding test, the
+  sector restriction and the 30% women target are all sourced but deliberately not
+  encoded; see the header for why each one is absent. IFCI Venture Capital Funds Ltd is
+  named in the guidelines as the Asset Management Company.
+
+# From the guidelines' own title. See the header: this is the period the RULES cover,
+# and it is not the same as the fund's life, which runs to 2039.
+valid_from: 2021-04-01
+valid_until: 2026-03-31
+validity_text: >-
+  OPERATIONAL GUIDELINES FOR FINANCIAL ASSISTANCE TO SCHEDULED CASTE ENTREPRENEURS
+  (01.04.2021 to 31.03.2026)
+
+portal_url: "https://www.ifciltd.com/"
+filing_office: "IFCI Venture Capital Funds Ltd, the fund's Asset Management Company"
 
 clause_groups:
   - group_id: eligibility
@@ -46,32 +73,52 @@ clause_groups:
     clauses:
       - clause_id: VCFSC-C1
         clause_text: >-
-          [VERIFY AT SOURCE] The enterprise is promoted by an entrepreneur belonging to
-          a Scheduled Caste.
+          Documentary proofs of being SC will have to be submitted by the Entrepreneur
+          at the time of submitting the proposals.
         rule_type: enumerated_category
         profile_field: applicant.social_category
         bound:
           values: [SC]
         verifiable_from: [caste_certificate]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Transcribe the verbatim wording and confirm the accepted proof. The SC
-          criterion is taken from the name of the fund; everything about HOW it is
-          evidenced is unverified.
+          Verbatim from the 2021-26 operational guidelines, read 2026-08-26. This is the
+          one sentence in the eligibility section that applies to the entrepreneur as a
+          person and is unconditional, which is why it carries the SC test here. The
+          company-level 51% shareholding rule is a separate criterion and is not encoded;
+          see the header.
 
-  # The refusal. Structurally identical to NSFDC's sanction clause: no document the
-  # applicant carries determines what a fund chooses to invest in.
+      - clause_id: VCFSC-C2
+        clause_text: "Investment Size Rs. 10 lakhs to Rs. 15 Crore."
+        rule_type: numeric_bound
+        profile_field: enterprise.loan_amount_sought
+        bound:
+          min: 1000000
+          max: 150000000
+        verifiable_from: [project_report]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from the scheme-details table of the 2021-26 operational guidelines,
+          read 2026-08-26. It sits under "Scheme details" rather than under "Eligibility
+          Criteria", so it bounds what the fund will invest rather than describing who
+          may apply; it is encoded here because a proposal outside the range is not
+          something this fund can finance. The superseded 2017-18 revision said Rs 20
+          lakhs, so check which document any third-party summary is quoting.
+
+  # The refusal, on sourced wording. No document an entrepreneur carries determines what
+  # an investment committee decides.
   - group_id: investment-decision
     kind: APPROVAL
     satisfy: ALL
     clauses:
-      - clause_id: VCFSC-C2
+      - clause_id: VCFSC-C3
         clause_text: >-
-          [VERIFY AT SOURCE] Investment is subject to the appraisal and decision of the
-          fund.
+          The detailed proposal prepared by the AMC shall be considered by the
+          Investment Committee for sanction in case of eligible proposals.
         rule_type: discretionary
-        decided_by: "the fund's investment committee"
-        verification_status: PROVISIONAL
+        decided_by: "the fund's Investment Committee"
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm the verbatim wording and who actually decides — the fund, its
-          manager, or a committee.
+          Verbatim from the 2021-26 operational guidelines, read 2026-08-26. The same
+          document states "The quantum of assistance shall be decided by this committee",
+          which confirms the committee rather than the AMC is the decider.

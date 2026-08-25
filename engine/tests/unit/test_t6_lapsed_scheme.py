@@ -204,7 +204,7 @@ def test_the_closed_door_leads_the_card():
 
     assert card.window_lines
     assert card.text().splitlines()[0] == card.window_lines[0]
-    assert "closed" in card.window_lines[0].lower()
+    assert "has ended" in card.window_lines[0].lower()
 
 
 def test_the_lapse_quotes_the_source_that_states_it():

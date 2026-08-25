@@ -1,34 +1,46 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official source on 2026-08-26.
 #
-# Transcribed from 01-DEMO-CORPUS.md s2, which cites the Maharashtra SJSA page and the
-# NSAP portal but is our own team document. PROVISIONAL until a human opens the source.
+# Source: the Maharashtra Social Justice and Special Assistance Department's own scheme
+# page, sjsa.maharashtra.gov.in/en/scheme/indira-gandhi-national-widow-pension-scheme/,
+# read on 2026-08-26. The page states the whole rule in one sentence, which is why all
+# three clauses below quote the same sentence: the decomposition into machine-readable
+# limbs is ours, the words are the state government's.
 #
-# REVEAL VERTICAL. This is the persona scheme: Sunita is a 60-year-old widow. It is
-# also half of the STACKING pair — in Maharashtra the Rs 1,500 a widow receives is not
-# IGNWPS *plus* SGNAY, it is IGNWPS topped up through SGNAY to reach Rs 1,500. Listing
-# them as two independent Rs 1,500 benefits would be wrong, and a judge who knows
-# Maharashtra would catch it. See stacks_with below.
+# REVEAL VERTICAL. This is the persona scheme: Sunita is a 60-year-old widow.
+#
+# THE STACKING RULE IS NOW OFFICIALLY SOURCED
+# -------------------------------------------
+# The provisional version asserted the stacking relationship from our own team doc. The
+# official page states it outright:
+#
+#   "She is eligible to receive Rs 300/- per month from Central Government under this
+#    scheme. She also receives Rs 1200/- per month under State sponsored Sanjay Gandhi
+#    Niradhar Anudan Yojana, so total financial assistance of Rs. 1500/- is provided."
+#
+# So the Rs 1,500 a Maharashtra widow receives is Rs 300 central plus Rs 1,200 state,
+# not two independent Rs 1,500 benefits. `stacks_with` is what stops the engine counting
+# it twice, and this sentence is the proof to put on the appendix slide if a judge asks
+# whether we understand the domain.
+#
+# THE AGE 80 QUESTION IS UNRESOLVED AND DOES NOT NEED TO BE. The page gives 40 to 79
+# and says nothing about what happens at 80. The bound is explicit and verbatim, so the
+# clause is verified; what a widow moves to at 80 is a different scheme's rule and is
+# simply not in this corpus.
 
 scheme_id: ignwps
 name: Indira Gandhi National Widow Pension Scheme
-authority: >-
-  [VERIFY AT SOURCE] National Social Assistance Programme, Ministry of Rural
-  Development, delivered through the state
-benefit: >-
-  [VERIFY AT SOURCE] Rs 1,500 per month in Maharashtra, made up of a central
-  contribution topped up by the state through Sanjay Gandhi Niradhar Anudan Yojana
+authority: "National Social Assistance Programme, delivered in Maharashtra through the Social Justice and Special Assistance Department"
+benefit: "Under this scheme, Rs. 1500 per month is given to each beneficiary."
 source_url: "https://sjsa.maharashtra.gov.in/en/scheme/indira-gandhi-national-widow-pension-scheme/"
 portal_url: "https://nsap.nic.in/"
-filing_office: >-
-  [VERIFY AT SOURCE] the Collector or Tehsildar Office
-retrieved_on: 2026-08-21
-verification_status: PROVISIONAL
+filing_office: "the Collector's Office / Tehsildar's Office, Sanjay Gandhi Niradhar Anudan Yojana Branch / Talathi Office"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
 verify_note: >-
-  Open the Maharashtra SJSA page and the NSAP portal. Confirm: (a) verbatim eligibility
-  wording, (b) the exact central/state split and whether the total is still Rs 1,500,
-  (c) the document list — the SJSA page did not print one (01-DEMO-CORPUS.md s2), and
-  (d) what happens at age 80, where a widow is said to move to a different pension
-  track. Do not guess the 80 boundary on stage.
+  Clause text transcribed verbatim from the Maharashtra SJSA scheme page, read
+  2026-08-26. The page states no end date, so no validity window is encoded. It also
+  prints no document list, so the `verifiable_from` entries below reflect standard
+  practice rather than the source and are flagged as such on each clause.
 
 stacks_with: [sgnay]
 
@@ -37,38 +49,48 @@ clause_groups:
     satisfy: ALL
     clauses:
       - clause_id: IGNWPS-C1
-        clause_text: "[VERIFY AT SOURCE] The applicant is a widow, all categories."
+        clause_text: >-
+          A widow in age group of 40 to 79 years whose family falls under Below Poverty
+          Line is eligible under this Scheme.
         rule_type: enumerated_category
         profile_field: applicant.marital_status
         bound:
           values: [WIDOW]
         verifiable_from: [husband_death_certificate]
-        verification_status: PROVISIONAL
-        verify_note: "Confirm verbatim wording and the accepted proof of widowhood."
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from the SJSA page, read 2026-08-26. The widowhood limb of the
+          sentence. The page names no proof document; a death certificate reflects
+          standard practice and the office may accept others.
 
       - clause_id: IGNWPS-C2
-        clause_text: "[VERIFY AT SOURCE] Age 40 to 79 years."
+        clause_text: >-
+          A widow in age group of 40 to 79 years whose family falls under Below Poverty
+          Line is eligible under this Scheme.
         rule_type: numeric_bound
         profile_field: applicant.age
         bound:
           min: 40
           max: 79
         verifiable_from: [aadhaar, age_proof]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm the verbatim bounds. The upper bound of 79 matters: at 80 the
-          applicant is said to move to a different track, and that transition is
-          unverified.
+          Verbatim from the SJSA page, read 2026-08-26. The age limb. Both bounds are
+          stated explicitly on the page, so 79 is the source's number and not ours.
 
       - clause_id: IGNWPS-C3
-        clause_text: "[VERIFY AT SOURCE] The family is Below Poverty Line (BPL)."
+        clause_text: >-
+          A widow in age group of 40 to 79 years whose family falls under Below Poverty
+          Line is eligible under this Scheme.
         rule_type: enumerated_category
         profile_field: household.bpl
         bound:
           values: ["true"]
         verifiable_from: [bpl_ration_card]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          Confirm how BPL status is evidenced — a ration card, a list entry, or a
-          certificate. This clause is the "one document away" beat, so the document
-          named here must be the one a citizen can actually obtain.
+          Verbatim from the SJSA page, read 2026-08-26. The BPL limb, and note it is an
+          AND here: unlike SGNAY, this scheme offers no income-ceiling alternative. The
+          page names no proof document, so the BPL ration card reflects standard
+          practice. This clause carries the "one document away" beat, so if the office
+          in fact accepts a different proof, this is the line to correct first.

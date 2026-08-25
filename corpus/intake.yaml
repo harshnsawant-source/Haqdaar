@@ -153,7 +153,17 @@ sections:
           mr: "[NEEDS HUMAN TRANSLATION] How much do you need to borrow, in rupees?"
 
   # These are the questions a real form collects on the applicant's own account, which
-  # is why a declaration settles them. Every one is a PM-KISAN exclusion.
+  # is why a declaration settles them. Every one is a PM-KISAN exclusion, and section
+  # 4.2 of the scheme's Operational Guidelines is what authorises settling them this
+  # way: "State / UT Governments can certify the eligibility of the beneficiaries based
+  # on self declaration by the beneficiaries."
+  #
+  # DO NOT SIMPLIFY THE GOVERNMENT-EMPLOYEE OR PENSION PROMPTS. Both official exclusions
+  # end with "(Excluding Multi Tasking Staff / Class IV / Group D employees)". The
+  # evaluator cannot express "excluded unless Class IV", so the exception is carried in
+  # the question wording instead. Shortening either prompt back to the obvious phrasing
+  # silently disqualifies the lowest-paid government workers in the country, which is
+  # the exact opposite of what this scheme and this project are for.
   - section_id: declarations
     verticals: [welfare]
     title:
@@ -171,8 +181,8 @@ sections:
         profile_field: applicant.government_employee
         type: boolean
         prompt:
-          en: "Are you, or were you, a government employee?"
-          mr: "[NEEDS HUMAN TRANSLATION] Are you, or were you, a government employee?"
+          en: "Are you, or were you, a government employee, other than Multi Tasking Staff, Class IV or Group D?"
+          mr: "[NEEDS HUMAN TRANSLATION] Are you, or were you, a government employee, other than Multi Tasking Staff, Class IV or Group D?"
 
       - question_id: constitutional_post
         profile_field: applicant.constitutional_post
@@ -201,8 +211,8 @@ sections:
         min: 0
         max: 10000000
         prompt:
-          en: "What pension do you receive each month, in rupees?"
-          mr: "[NEEDS HUMAN TRANSLATION] What pension do you receive each month, in rupees?"
+          en: "Pension from service other than Multi Tasking Staff, Class IV or Group D: how much do you receive each month, in rupees?"
+          mr: "[NEEDS HUMAN TRANSLATION] Pension from service other than Multi Tasking Staff, Class IV or Group D: how much do you receive each month, in rupees?"
 
   # Which papers she actually has. A fact is attributed to one of these when the corpus
   # accepts it as proof for that clause; otherwise the fact stands only as her word.

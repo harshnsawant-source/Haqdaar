@@ -153,7 +153,9 @@ def test_reveal_refusal_pmjay_secc_2011(welfare_schemes_dir, sunita_profile, tod
         "shown me can prove it."
     )
     # The rule it cannot settle is quoted verbatim from the corpus.
-    assert card.lines[2].startswith("The rule I cannot settle: [VERIFY AT SOURCE]")
+    # Verbatim from PIB PRID 1738169 since the 2026-08-26 verification; the
+    # criteria now reach the citizen with their official D-numbers attached.
+    assert card.lines[2].startswith("The rule I cannot settle: D1:")
     assert "kucha walls" in card.lines[2]
     assert card.approval_lines == []
 

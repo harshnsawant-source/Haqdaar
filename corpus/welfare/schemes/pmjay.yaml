@@ -1,97 +1,112 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# VERIFIED against the official source on 2026-08-26.
 #
-# Transcribed from 01-DEMO-CORPUS.md s4, which quotes nha.gov.in but is our own team
-# document. Nobody has opened the official page from this machine, so every clause is
-# PROVISIONAL until a human does. The wording below is close to the published criteria
-# and is marked accordingly; do not treat the quotes as verified.
+# Source: Press Information Bureau, Government of India, release PRID 1738169,
+# "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)", which carries the
+# "Detailed list of criteria for eligibility under AB-PMJAY as per SECC 2011". Read on
+# 2026-08-26. nha.gov.in and pmjay.gov.in both serve a script shell or reject automated
+# reads, so PIB is the readable official carrier of the same list.
 #
 # This scheme exists for the REVEAL VERTICAL: it is the "same engine, new corpus" beat
-# and the cleanest structural refusal we have. Its whole point is that the deprivation
-# criteria are keyed to SECC 2011, a fourteen-year-old dataset no citizen can look up.
-# That makes every clause here permanently UNKNOWN — not a bug, the demo.
+# and the cleanest structural refusal we have. Every criterion is keyed to SECC 2011, a
+# fifteen-year-old survey no citizen can look up, so every clause is permanently
+# UNKNOWN. Not a bug. The demo.
 #
-# NOTE D6 IS ABSENT. The published list runs D1..D5 then D7. That gap is in the source,
-# not a transcription slip; do not "fix" it by inventing a D6.
+# D3 WAS WRONG AND IS NOW FIXED
+# -----------------------------
+# The provisional version had D3 as "Households with no adult male member between ages
+# 16 to 59". The official wording is "Female headed households with no adult male
+# member between age 16 to 59". The missing two words matter more than they look: with
+# them, D3 describes Sunita almost exactly, which makes the refusal sharper rather than
+# weaker. She plausibly meets it. Plausibly is not provably, and the engine still
+# refuses. Anyone rehearsing the refusal beat should quote the corrected wording.
 #
-# The urban occupational categories and the automatic-inclusion list are NOT encoded.
-# They are real, but Sunita is rural and encoding rules nobody has verified to pad the
-# corpus is the failure mode this project exists to avoid.
+# D6 IS GENUINELY ABSENT. The published list runs D1..D5 then D7, confirmed against the
+# source on 2026-08-26. The gap is the government's, not a transcription slip. Do not
+# "fix" it by inventing a D6.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# The eleven urban occupational criteria and the five automatic-inclusion categories
+# ("Households without shelter", "Destitute/ living on alms", "Manual scavenger
+# families", "Primitive tribal groups", "Legally released bonded labour"). All are
+# sourced and were read, but Sunita is rural and every one of them is keyed to the same
+# SECC 2011 record, so encoding them would add six more permanently-UNKNOWN clauses and
+# change no verdict. They are listed here so the omission is a decision on the record
+# rather than an oversight.
 
 scheme_id: pmjay
 name: Ayushman Bharat PM-JAY
-authority: "[VERIFY AT SOURCE] National Health Authority"
-benefit: >-
-  [VERIFY AT SOURCE] Health cover of Rs 5 lakh per family per year for secondary and
-  tertiary care hospitalisation
-source_url: "https://nha.gov.in/PM-JAY"
-retrieved_on: 2026-08-21
-verification_status: PROVISIONAL
+authority: "National Health Authority, Ministry of Health and Family Welfare"
+benefit: "health assurance of up to Rs.5 Lakh per family per year for secondary and tertiary healthcare hospitalizations"
+source_url: "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1738169"
+retrieved_on: 2026-08-26
+verification_status: VERIFIED
 verify_note: >-
-  Open https://nha.gov.in/PM-JAY and transcribe the rural deprivation criteria
-  verbatim. Confirm: (a) the exact D1-D7 wording, (b) that D6 is genuinely absent from
-  the published list, (c) how a 70+ person already covered under standard PM-JAY is
-  treated (unresolved in 01-DEMO-CORPUS.md s5), and (d) whether any criterion can be
-  evidenced by a document the citizen holds — we believe none can.
+  Every clause transcribed verbatim from PIB release PRID 1738169, read 2026-08-26. The
+  release states no end date for the scheme, so no validity window is encoded. It also
+  states "There is no cap on family size, or age or gender", which is why no age or
+  household-size clause appears. The urban and automatic-inclusion criteria were read
+  and deliberately omitted; see the header.
 
 clause_groups:
-  # ANY: a family qualifies on at least one deprivation criterion. Every member is
-  # keyed to SECC 2011, so verifiable_from is empty throughout and the group can only
-  # ever resolve UNKNOWN. T1 fires; status is UNVERIFIABLE. This is the reveal refusal.
+  # ANY: a family qualifies on at least one deprivation criterion. Every member is keyed
+  # to SECC 2011, so verifiable_from is empty throughout and the group can only ever
+  # resolve UNKNOWN. T1 fires; status is UNVERIFIABLE. This is the reveal refusal.
   - group_id: rural-deprivation
     satisfy: ANY
     clauses:
       - clause_id: PMJAY-D1
-        clause_text: >-
-          [VERIFY AT SOURCE] "Only one room with kucha walls and kucha roof"
+        clause_text: "D1: Only one room with kucha walls and kucha roof"
         rule_type: external_dataset
-        verification_status: PROVISIONAL
-        verify_note: "SECC 2011 deprivation criterion D1. Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from PIB PRID 1738169, read 2026-08-26."
         note: "Keyed to the SECC 2011 household survey; no citizen document proves it."
 
       - clause_id: PMJAY-D2
-        clause_text: >-
-          [VERIFY AT SOURCE] "No adult member between ages 16 to 59"
+        clause_text: "D2: No adult member between age 16 to 59"
         rule_type: external_dataset
-        verification_status: PROVISIONAL
-        verify_note: "SECC 2011 deprivation criterion D2. Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from PIB PRID 1738169, read 2026-08-26."
 
       - clause_id: PMJAY-D3
         clause_text: >-
-          [VERIFY AT SOURCE] "Households with no adult male member between ages 16 to
-          59"
+          D3: Female headed households with no adult male member between age 16 to 59
         rule_type: external_dataset
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          SECC 2011 deprivation criterion D3. Transcribe verbatim. THIS IS THE
-          ON-STAGE REVEAL REFUSAL — Sunita plausibly meets it, and that is exactly
-          why the engine must refuse rather than infer.
+          Verbatim from PIB PRID 1738169, read 2026-08-26. THIS IS THE ON-STAGE REVEAL
+          REFUSAL. The provisional version dropped "Female headed"; the corrected
+          wording is what must be quoted in the deck and rehearsed.
         note: >-
-          Sunita is a widow living alone, so she plausibly satisfies this. Plausibly
-          is not provably: the criterion is settled by her SECC 2011 record, which she
-          cannot obtain. The engine must not turn a likely yes into a stated yes.
+          Sunita is a widow living alone, so she is a female-headed household with no
+          adult male member and plausibly satisfies this outright. Plausibly is not
+          provably: the criterion is settled by her SECC 2011 record, which she cannot
+          obtain and neither can we. The engine must not turn a likely yes into a
+          stated yes, and the fact that this one so nearly fits is exactly what makes
+          the refusal worth showing.
 
       - clause_id: PMJAY-D4
-        clause_text: >-
-          [VERIFY AT SOURCE] "Disabled member and no able-bodied adult member"
+        clause_text: "D4: Disabled member and no able-bodied adult member"
         rule_type: external_dataset
-        verification_status: PROVISIONAL
-        verify_note: "SECC 2011 deprivation criterion D4. Transcribe verbatim."
+        verification_status: VERIFIED
+        verify_note: "Verbatim from PIB PRID 1738169, read 2026-08-26."
 
       - clause_id: PMJAY-D5
-        clause_text: '[VERIFY AT SOURCE] "SC/ST households"'
+        clause_text: "D5: SC/ST households"
         rule_type: external_dataset
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          SECC 2011 deprivation criterion D5. Transcribe verbatim. Note this is the
-          SECC household classification, NOT the caste certificate the citizen holds —
-          do not be tempted to wire a caste certificate to it.
+          Verbatim from PIB PRID 1738169, read 2026-08-26. This is the SECC household
+          classification, NOT the caste certificate the citizen holds. Do not be
+          tempted to wire a caste certificate to it: the two answer different questions
+          and conflating them would manufacture a proof we do not have.
 
       - clause_id: PMJAY-D7
         clause_text: >-
-          [VERIFY AT SOURCE] "Landless households deriving a major part of their
-          income from manual casual labour"
+          D7: Landless households deriving major part of their income from manual
+          casual labour
         rule_type: external_dataset
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          SECC 2011 deprivation criterion D7. Transcribe verbatim. D6 is absent from
-          the published list; that gap is in the source.
+          Verbatim from PIB PRID 1738169, read 2026-08-26. D6 is absent from the
+          published list; confirmed against the source, the gap is the government's.

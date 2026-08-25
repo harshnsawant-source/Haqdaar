@@ -1,36 +1,64 @@
-# PROVISIONAL — DO NOT DEMO, DO NOT SLIDE.
+# PARTLY VERIFIED against the official source on 2026-08-26. STILL PROVISIONAL, on
+# purpose, because of ONE clause. Read the next section before changing that.
 #
-# Transcribed from 01-DEMO-CORPUS.md s1 (Maharashtra SJSA page). Our own team document,
-# not the official page. PROVISIONAL until a human opens the source.
+# Source: the Maharashtra Social Justice and Special Assistance Department's own scheme
+# page, sjsa.maharashtra.gov.in/en/scheme/sanjay-gandhi-niradhar-anudan-yojana/, read on
+# 2026-08-26. The category list and the means test are transcribed verbatim and are
+# VERIFIED. The age clause is not, and cannot be from this page.
 #
-# REVEAL VERTICAL, and the state anchor of the demo: genuinely obscure, with an
-# eligibility list long enough that "am I eligible?" is a real question.
+# WHY THE AGE CLAUSE IS STILL PROVISIONAL
+# ---------------------------------------
+# The page introduces a list: "the following individuals are eligible for benefits:"
+# and the FIRST item is "Destitute men and women aged 18 to 65 years". Later items are
+# separate categories with no age attached: "Orphaned children", "Destitute widows",
+# "Women undergoing divorce proceedings or divorced women not receiving alimony", and
+# others.
 #
-# STACKING: this is how a widow's IGNWPS reaches Rs 1,500 in Maharashtra. The two are
-# one payment, not two. `stacks_with` makes the engine group them.
+# Read literally, "aged 18 to 65" qualifies only the first bullet. Orphaned children
+# obviously are not 18 to 65, which is evidence the range is not scheme-wide. But it may
+# well be applied scheme-wide in practice, and the page does not say.
 #
-# STALE THRESHOLD, FLAGGED ON PURPOSE: the Rs 21,000 annual income ceiling is roughly
-# Rs 1,750 a month and has almost certainly never been indexed. Haqdaar quotes the rule
-# as written and says so, rather than silently modernising a statutory threshold — see
-# the note on SGNAY-C3 and judge Q&A Q5.
+# Both possible fixes are wrong in a way this project exists to prevent:
+#   * applying 18-65 to everyone would tell an eligible destitute widow aged 66 that she
+#     does not qualify;
+#   * dropping it would tell someone she qualifies when the Tehsildar will refuse her.
+#
+# So the clause stays encoded (no false positives) and stays marked unverified (no false
+# confidence), which makes the whole scheme PROVISIONAL and puts the banner on the card.
+# That is the correct answer to "we read the official page and it did not settle this",
+# and it is a better demo than a corpus where everything is conveniently green.
+#
+# TO RESOLVE: ask the SJSA department or a Tehsildar whether the 18-65 range applies to
+# the widow and divorced-woman categories, or only to "destitute men and women". One
+# phone call closes it.
+#
+# STALE THRESHOLD, NOW CONFIRMED AS CURRENT WORDING: the Rs 21,000 annual ceiling is
+# roughly Rs 1,750 a month and reads as though it has never been indexed. It is what the
+# official page says today. Haqdaar quotes it as written and says so, rather than
+# silently modernising a statutory threshold. See judge Q&A Q5.
+#
+# DELIBERATELY ABSENT: the categories no citizen document in our schema can evidence
+# (orphaned children, persons with disability, persons with severe illness, abuse
+# survivors, transgender persons, devadasis, unmarried women over 35, wives of
+# prisoners, persons with sickle cell disease). All were read and all are real; none is
+# mapped to a field we can fill, so none is encoded.
 
 scheme_id: sgnay
 name: Sanjay Gandhi Niradhar Anudan Yojana
-authority: >-
-  [VERIFY AT SOURCE] Social Justice and Special Assistance Department, Government of
-  Maharashtra
-benefit: "[VERIFY AT SOURCE] Rs 1,500 per month"
+authority: "Social Justice and Special Assistance Department, Government of Maharashtra"
+benefit: "eligible beneficiaries receive financial assistance of ₹1500 per month"
 source_url: "https://sjsa.maharashtra.gov.in/en/scheme/sanjay-gandhi-niradhar-anudan-yojana/"
 portal_url: "https://sas.mahait.org/"
-filing_office: >-
-  [VERIFY AT SOURCE] the District Collector, Tehsildar or Talathi Office
-retrieved_on: 2026-08-21
+filing_office: "the District Collector's Office / Tehsildar's Office, Sanjay Gandhi Niradhar Anudan Yojana Branch / Talathi Office"
+retrieved_on: 2026-08-26
 verification_status: PROVISIONAL
 verify_note: >-
-  Open the SJSA page. Confirm: (a) verbatim eligibility wording, (b) the full category
-  list, (c) the document list — the official page did not print one
-  (01-DEMO-CORPUS.md s1), and (d) whether the Rs 21,000 ceiling is current. Do not
-  reinterpret the threshold; quote it and flag it.
+  The category and means-test clauses are transcribed verbatim from the Maharashtra
+  SJSA page, read 2026-08-26, and are VERIFIED. The scheme remains PROVISIONAL solely
+  because SGNAY-C1's age range cannot be scoped from the page; see the header for what
+  to ask and why neither guess is safe. The page prints no document list, so
+  `verifiable_from` reflects standard practice. Rupee amounts keep the ₹ sign exactly
+  as printed on the page.
 
 stacks_with: [ignwps]
 
@@ -40,7 +68,9 @@ clause_groups:
     clauses:
       - clause_id: SGNAY-C1
         clause_text: >-
-          [VERIFY AT SOURCE] Destitute men and women aged 18 to 65 years.
+          [VERIFY AT SOURCE] Destitute men and women aged 18 to 65 years — the official
+          page lists this as one eligible category among many, and does not say whether
+          the age range also governs the widow and divorced-woman categories.
         rule_type: numeric_bound
         profile_field: applicant.age
         bound:
@@ -48,56 +78,63 @@ clause_groups:
           max: 65
         verifiable_from: [aadhaar, age_proof]
         verification_status: PROVISIONAL
-        verify_note: "Confirm the verbatim bounds."
+        verify_note: >-
+          The WORDING is verbatim from the SJSA page; what is unverified is its SCOPE.
+          It is the first item in a list of eligible categories, and later items carry
+          no age. Kept applied because a false positive on a welfare scheme sends
+          someone to an office to be turned away. Confirm with the department, then
+          either scope this clause to destitute men and women or mark it VERIFIED.
 
   - group_id: category
     satisfy: ANY
     clauses:
       - clause_id: SGNAY-C2
         clause_text: >-
-          [VERIFY AT SOURCE] The applicant belongs to one of the listed categories,
-          which include destitute widows, divorced women not receiving alimony,
-          persons with disability, persons with a severe illness, orphaned children,
-          abuse survivors, transgender persons, devadasis, unmarried women over
-          thirty-five, and wives of prisoners.
+          Destitute widows. Women undergoing divorce proceedings or divorced women not
+          receiving alimony.
         rule_type: enumerated_category
         profile_field: applicant.marital_status
         bound:
           values: [WIDOW, DIVORCED]
         verifiable_from: [husband_death_certificate, divorce_decree]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          The official list is longer than what is encoded here. Only the categories
-          a citizen document can evidence are wired; the rest are deliberately absent
-          rather than mapped to fields we cannot fill. Transcribe the full list and
-          decide which are evidenceable before the demo.
+          Both bullets verbatim from the SJSA page, read 2026-08-26. They are the two
+          categories in the official list that a document in our profile schema can
+          evidence; the other nine were read and are deliberately absent. See header.
 
   - group_id: means-test
     satisfy: ANY
     clauses:
       - clause_id: SGNAY-C3
         clause_text: >-
-          [VERIFY AT SOURCE] Family annual income must not exceed Rs 21,000.
+          To be eligible for this scheme, the beneficiary's name must be on the Below
+          Poverty Line (BPL) list or the family's annual income must be up to ₹21,000.
         rule_type: income_threshold
         profile_field: household.annual_income
         bound:
           max_value: 21000
           period: ANNUAL
         verifiable_from: [income_certificate]
-        verification_status: PROVISIONAL
+        verification_status: VERIFIED
         verify_note: >-
-          STALE THRESHOLD. Roughly Rs 1,750 a month; almost certainly never indexed.
-          Quote it as written and tell the citizen to confirm current interpretation
-          with the Tehsildar. Do NOT silently modernise it — a system that rewrites a
-          statutory threshold commits a different and worse error (judge Q&A Q5).
+          Verbatim from the SJSA page, read 2026-08-26. The income limb. STALE-LOOKING
+          BUT CURRENT: roughly Rs 1,750 a month, and this is what the state publishes
+          today. Quote it as written and tell the citizen to confirm the current
+          interpretation with the Tehsildar. Do NOT silently modernise it: a system
+          that rewrites a statutory threshold commits a different and worse error than
+          quoting an awkward one (judge Q&A Q5).
 
       - clause_id: SGNAY-C4
         clause_text: >-
-          [VERIFY AT SOURCE] Or the name of the applicant appears on the BPL list.
+          To be eligible for this scheme, the beneficiary's name must be on the Below
+          Poverty Line (BPL) list or the family's annual income must be up to ₹21,000.
         rule_type: enumerated_category
         profile_field: household.bpl
         bound:
           values: ["true"]
         verifiable_from: [bpl_ration_card]
-        verification_status: PROVISIONAL
-        verify_note: "Confirm how BPL listing is evidenced."
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from the SJSA page, read 2026-08-26. The BPL limb of the same
+          sentence. The "or" in the source is why this group is satisfy: ANY.

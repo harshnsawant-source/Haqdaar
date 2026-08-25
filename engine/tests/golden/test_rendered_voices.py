@@ -60,11 +60,13 @@ def test_voice_lapsed_scheme_leads_with_the_closure(
     """
     card = cards(schemes_dir, entrepreneur_profile, today)["stand-up-india"]
     assert card.status is Status.ELIGIBLE
-    assert card.window_lines[0] == "This scheme is closed. Do not spend a day on it."
-    assert "Its sanctioned period ended on 2025-03-31." in card.window_lines
+    assert card.window_lines[0] == (
+        "Stop. The period this scheme was sanctioned for has ended."
+    )
+    assert "The rules I have run until 2025-03-31." in card.window_lines
     assert any("15th Finance Commission" in line for line in card.window_lines)
     # The closure is read before the entitlement, not after it.
-    assert card.text().startswith("This scheme is closed.")
+    assert card.text().startswith("Stop. The period")
 
 
 def test_voice_blocked_on_document(schemes_dir, entrepreneur_02_profile, today):
@@ -101,7 +103,9 @@ def test_voice_unverifiable_names_every_criterion_it_cannot_settle(
         "This scheme's rule depends on records I cannot check, and nothing you have "
         "shown me can prove it."
     )
-    assert card.lines[2].startswith("The rule I cannot settle: [VERIFY AT SOURCE]")
+    # Verbatim from PIB PRID 1738169 since the 2026-08-26 verification; the
+    # criteria now reach the citizen with their official D-numbers attached.
+    assert card.lines[2].startswith("The rule I cannot settle: D1:")
     # Quoting one of six without saying so would imply it is the only one.
     assert card.lines[3] == (
         "The same records settle 5 further criteria in this scheme, and I cannot check "
@@ -147,7 +151,7 @@ def test_each_card_declares_whether_its_rules_were_verified(
     means nothing and citizens learn to ignore it. Until 2026-08-26 every scheme was
     provisional and this test simply asserted the banner everywhere.
     """
-    verified = {"stand-up-india", "nsfdc-term-loan"}
+    verified = {"stand-up-india", "nsfdc-term-loan", "vcf-sc"}
     for scheme_id, card in cards(schemes_dir, entrepreneur_profile, today).items():
         says_unverified = any("not yet been verified" in b for b in card.banners)
         assert says_unverified is (scheme_id not in verified), scheme_id

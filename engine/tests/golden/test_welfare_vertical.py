@@ -124,7 +124,8 @@ def test_the_stale_threshold_is_quoted_not_reinterpreted(
     clause = next(
         p for p in results["sgnay"].verdict.predicates if p.clause_id == "SGNAY-C3"
     )
-    assert "Rs 21,000" in clause.clause_text
+    # The rupee sign is what the state prints; quoting it verbatim is the point.
+    assert "₹21,000" in clause.clause_text
     assert clause.evaluation is Evaluation.UNKNOWN  # she has no income certificate
     assert clause.evidence is None
 
@@ -146,15 +147,65 @@ def test_the_refusal_and_the_not_eligible_beats_still_hold(
     ]
 
 
-def test_every_welfare_scheme_is_still_provisional(welfare_schemes_dir):
-    """Standing rule. The reveal vertical gets no exemption."""
+#: SGNAY is the one welfare scheme still PROVISIONAL, and deliberately so. Its official
+#: page lists "Destitute men and women aged 18 to 65 years" as the FIRST of many
+#: eligible categories, and never says whether that age range also governs the widow and
+#: divorced-woman categories further down the list. Applying it to everyone would refuse
+#: an eligible 66-year-old widow; dropping it would send an ineligible one to the office.
+#: Neither guess is safe, so the clause stays applied AND stays marked unverified.
+STILL_PROVISIONAL = {"sgnay"}
+
+
+def test_each_welfare_scheme_declares_what_we_actually_read(welfare_schemes_dir):
+    """The standing rule, now asserted in both directions.
+
+    Until 2026-08-26 every welfare scheme was PROVISIONAL and this test just asserted
+    that. Four are now transcribed verbatim from official sources. The dangerous state
+    is a scheme marked VERIFIED that still carries a paraphrase nobody checked, so a
+    verified scheme must carry NO [VERIFY AT SOURCE] marker anywhere and an unverified
+    one must carry it on every clause it has not read.
+    """
     schemes = load_corpus(welfare_schemes_dir)
     assert len(schemes) == 5
+
     for scheme in schemes:
-        assert scheme.verification_status.value == "PROVISIONAL"
-        for clause in scheme.clauses():
-            assert "[VERIFY AT SOURCE]" in clause.clause_text
-    assert load_corpus(welfare_schemes_dir, strict=True) == []
+        provisional = scheme.scheme_id in STILL_PROVISIONAL
+        expected = "PROVISIONAL" if provisional else "VERIFIED"
+        assert scheme.verification_status.value == expected, scheme.scheme_id
+        if not provisional:
+            for clause in scheme.clauses():
+                assert "[VERIFY AT SOURCE]" not in clause.clause_text, clause.clause_id
+
+    assert {s.scheme_id for s in load_corpus(welfare_schemes_dir, strict=True)} == {
+        s.scheme_id for s in schemes if s.scheme_id not in STILL_PROVISIONAL
+    }
+
+
+def test_a_partly_verified_scheme_still_marks_the_clause_it_could_not_settle(
+    welfare_schemes_dir,
+):
+    """SGNAY specifically: the ambiguity must stay visible, not get quietly resolved.
+
+    If someone later marks SGNAY-C1 VERIFIED without changing its wording, that means
+    they decided the age scope by assertion rather than by asking the department. This
+    test is here to make that a deliberate act with a failing test attached.
+    """
+    from haqdaar.corpus.schema import VerificationStatus
+
+    sgnay = next(
+        s for s in load_corpus(welfare_schemes_dir) if s.scheme_id == "sgnay"
+    )
+    by_id = {c.clause_id: c for c in sgnay.clauses()}
+
+    age = by_id["SGNAY-C1"]
+    assert age.verification_status is VerificationStatus.PROVISIONAL
+    assert "[VERIFY AT SOURCE]" in age.clause_text
+
+    # Everything else on the scheme WAS settled from the page.
+    for clause_id, clause in by_id.items():
+        if clause_id == "SGNAY-C1":
+            continue
+        assert clause.verification_status is VerificationStatus.VERIFIED, clause_id
 
 
 def test_no_welfare_card_hedges(welfare_schemes_dir, sunita_profile, today):
