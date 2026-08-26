@@ -457,6 +457,16 @@ settings changed. Every push to `main` then redeploys.
 The CLI route works too if you prefer it: `npx vercel` from the repo root, then
 `npx vercel --prod`.
 
+## Do not set `installCommand` in vercel.json
+
+It overrides the WHOLE dependency install step, pip included, not just npm. Setting it
+to skip a non-existent root `package.json` meant `requirements.txt` was never installed
+and the function died with `ModuleNotFoundError: No module named 'fastapi'`. That single
+line cost three failed deploys.
+
+npm is already handled inside `buildCommand`, which runs `npm ci` in `web/`. Leave
+`installCommand` absent and let Vercel install the Python dependencies itself.
+
 ## If the function fails to boot
 
 Check the function logs for an import error first. The two things that break it are the
