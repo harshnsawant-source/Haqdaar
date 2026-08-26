@@ -5,7 +5,7 @@
   "installCommand": "echo no root node package",
   "functions": {
     "api/index.py": {
-      "includeFiles": "**",
+      "excludeFiles": "{engine/tests/**,web/node_modules/**,design/**,docs/**,.git/**}",
       "maxDuration": 30
     }
   },
