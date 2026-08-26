@@ -1,0 +1,176 @@
+==============================================================================
+REAL COPY, STRAIGHT FROM THE ENGINE
+Generated 2026-08-26. Paste these EXACT sentences into Stitch.
+
+Do not let it rewrite them. Every quoted rule below is verbatim government
+text with a source and a read-date behind it. Invented rule text is the one
+failure this product cannot survive, because quoting the real rule IS the
+product. If Stitch produces prettier wording, reject it.
+==============================================================================
+
+
+##############################################################################
+# WELFARE VERTICAL   (demo person: sunita)
+##############################################################################
+
+[ AMBER 'ONE DOCUMENT AWAY' BOX ]
+  Bring your BPL ration card and this unlocks 2 more schemes.
+
+------------------------------------------------------------------------------
+CARD  Ayushman Vay Vandana Card
+STATE NOT_ELIGIBLE
+       Not this one, and here is exactly why.
+       The rule says 70 and above. Your age is 60.
+       You become eligible in 2036.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  Indira Gandhi National Widow Pension Scheme
+STATE BLOCKED_ON_DOCUMENT
+       You are one document away.
+       Bring your BPL ration card and this unlocks 2 more schemes.
+       The rule this settles: A widow in age group of 40 to 79 years whose family falls under Below Poverty Line is eligible under this Scheme.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  PM-KISAN
+STATE ELIGIBLE
+       You are eligible for PM-KISAN.
+       Here is the rule that entitles you:
+       A landholder farmer's family is defined as "a family comprising of husband, wife and minor children who owns cultivable land as per land records of the concerned State/UT".
+       Proven from your 7/12 land record.
+       All Institutional Land holders
+       Proven from your self-declaration.
+       Former and present holders of constitutional posts. Former and present Ministers / State Ministers and former / present Members of Lok Sabha / Rajya Sabha / State Legislative Assemblies / State Legislative Councils, former and present Mayors of Municipal Corporations, former and present Chairpersons of District Panchayats.
+       Proven from your self-declaration.
+       All serving or retired officers and employees of Central / State Government Ministries / Offices / Departments and their field units, Central or State PSEs and Attached offices / Autonomous Institutions under Government as well as regular employees of the Local Bodies (Excluding Multi Tasking Staff / Class IV / Group D employees)
+       Proven from your self-declaration.
+       All superannuated / retired pensioners whose monthly pension is Rs.10,000/- or more (Excluding Multi Tasking Staff / Class IV / Group D employees)
+       Proven from your self-declaration.
+       All Persons who paid Income Tax in last assessment year.
+       Proven from your self-declaration.
+       Professionals like Doctors, Engineers, Lawyers, Chartered Accountants, and Architects registered with Professional bodies and carrying out profession by undertaking practices.
+       Proven from your self-declaration.
+       Source: https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf
+       Apply at the village revenue official, or New Farmer Registration on the PM-KISAN portal.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  Ayushman Bharat PM-JAY
+STATE UNVERIFIABLE
+       I cannot confirm this one, and I will not guess.
+       This scheme's rule depends on records I cannot check, and nothing you have shown me can prove it.
+       The rule I cannot settle: D1: Only one room with kucha walls and kucha roof
+       The same records settle 5 further criteria in this scheme, and I cannot check any of them.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  Sanjay Gandhi Niradhar Anudan Yojana
+STATE BLOCKED_ON_DOCUMENT
+       You are one document away.
+       Bring your BPL ration card and this unlocks 2 more schemes.
+       The rule this settles: To be eligible for this scheme, the beneficiary's name must be on the Below Poverty Line (BPL) list or the family's annual income must be up to ₹21,000.
+      [small muted footer] Checked against the official source on 2026-08-26.
+      [small muted footer] This rule has not yet been verified against the official source. It is not safe to act on.
+
+
+##############################################################################
+# ENTREPRENEUR VERTICAL   (demo person: entrepreneur-01)
+##############################################################################
+
+------------------------------------------------------------------------------
+CARD  NSFDC Term Loan
+STATE ELIGIBLE
+       You are eligible for NSFDC Term Loan.
+       Here is the rule that entitles you:
+       The beneficiary(ies) must belong to the Scheduled Caste (SC) community.
+       Proven from your caste certificate.
+       The annual family income of applicants must not exceed Rs 5.00 lakh (applicable to both rural and urban areas, effective from January 7, 2026).
+       Proven from your income certificate.
+       Source: https://nsfdc.nic.in/eligibility-requirements
+       Apply at the nearest State Channelising Agency or Channelising Agency office.
+      [SEPARATE DASHED INDIGO BOX] Whether it is approved is not mine to promise.
+      [SEPARATE DASHED INDIGO BOX] That is decided by the concerned State Channelising Agency or Channelising Agency, and no document you hold determines it.
+      [SEPARATE DASHED INDIGO BOX] The condition: verification of eligibility criteria shall be the sole responsibility of the concerned SCAs/CAs
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  Stand-Up India
+STATE ELIGIBLE   <-- CLOSED SCHEME
+      These lines go ABOVE all other content. Card greyed. NO action button.
+      > Stop. The period this scheme was sanctioned for has ended.
+      > The rules I have run until 2025-03-31.
+      > The official document says: the SUPI Scheme is upto 31.03.2025, in line with the 15th Finance Commission
+      > I have still checked you against its published rules below. Confirm at the office whether a successor has taken its place before you spend a day on this.
+       You are eligible for Stand-Up India.
+       Here is the rule that entitles you:
+       SC/ST and/or woman entrepreneurs, above 18 years of age.
+       Proven from your caste certificate.
+       SC/ST and/or woman entrepreneurs, above 18 years of age.
+       Proven from your Aadhaar.
+       SC/ST and/or woman entrepreneurs, above 18 years of age.
+       Proven from your Aadhaar.
+       Loans under the scheme is available for only green field project. Green field signifies, in this context, the first time venture of the beneficiary in the manufacturing, services, agri-allied activities or the trading sector.
+       Proven from your project report.
+       Composite loan (inclusive of term loan and working capital) between 10 lakh and upto 100 lakh.
+       Proven from your project report.
+       Source: https://www.standupmitra.in/Home/SUISchemes
+       Apply at any Scheduled Commercial Bank branch.
+      [SEPARATE DASHED INDIGO BOX] Whether it is approved is not mine to promise.
+      [SEPARATE DASHED INDIGO BOX] The condition: Borrower should not be in default to any bank/financial institution.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  Venture Capital Fund for Scheduled Castes
+STATE ELIGIBLE   <-- CLOSED SCHEME
+      These lines go ABOVE all other content. Card greyed. NO action button.
+      > Stop. The period this scheme was sanctioned for has ended.
+      > The rules I have run until 2026-03-31.
+      > The official document says: OPERATIONAL GUIDELINES FOR FINANCIAL ASSISTANCE TO SCHEDULED CASTE ENTREPRENEURS (01.04.2021 to 31.03.2026)
+      > I have still checked you against its published rules below. Confirm at the office whether a successor has taken its place before you spend a day on this.
+       You are eligible for Venture Capital Fund for Scheduled Castes.
+       Here is the rule that entitles you:
+       Documentary proofs of being SC will have to be submitted by the Entrepreneur at the time of submitting the proposals.
+       Proven from your caste certificate.
+       Investment Size Rs. 10 lakhs to Rs. 15 Crore.
+       Proven from your project report.
+       Source: https://www.socialjustice.gov.in/public/ckeditor/upload/56961654673488.pdf
+       Apply at IFCI Venture Capital Funds Ltd, the fund's Asset Management Company.
+      [SEPARATE DASHED INDIGO BOX] Whether it is approved is not mine to promise.
+      [SEPARATE DASHED INDIGO BOX] That is decided by the fund's Investment Committee, and no document you hold determines it.
+      [SEPARATE DASHED INDIGO BOX] The condition: The detailed proposal prepared by the AMC shall be considered by the Investment Committee for sanction in case of eligible proposals.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+
+##############################################################################
+# STUDENT VERTICAL   (demo person: student-01)
+##############################################################################
+
+------------------------------------------------------------------------------
+CARD  Pre-Matric Scholarship for Scheduled Caste Students
+STATE ELIGIBLE
+       You are eligible for Pre-Matric Scholarship for Scheduled Caste Students.
+       Here is the rule that entitles you:
+       Student should belong to Scheduled Caste.
+       Proven from your caste certificate.
+       His/ her Parent/Guardian's income should not exceed Rs. 2.50 lakh per annum.
+       Proven from your income certificate.
+       To support parents of SC children for education of their wards studying in classes IX and X so that the incidence of drop-out, especially in the transition from the elementary to the secondary stage is minimized.
+       Proven from your bonafide student certificate.
+       She/ he should be a regular, full time student studying in a Government School or in a School recognized by Govt. or a Central/State Board of Secondary Education.
+       Proven from your bonafide student certificate.
+       He / she should not be getting any other Centrally-funded Pre Matric Scholarship. However benefit of National Means-cum-Merit scholarship scheme of D/o School Education, Ministry of Human Resource Development can be availed by the beneficiaries of Pre-Matric Scholarship Scheme for SC students.
+       Proven from your self-declaration.
+       Source: https://scholarships.gov.in/public/schemeGuidelines/Prematric_SC.pdf
+       Apply at your school, which forwards the application on the National Scholarship Portal.
+      [small muted footer] Checked against the official source on 2026-08-26.
+
+------------------------------------------------------------------------------
+CARD  Top Class Scholarship for SC Students
+STATE NOT_ELIGIBLE
+       Not this one, and here is exactly why.
+       This one requires having secured admission to a full time course. You told me no.
+      [SEPARATE DASHED INDIGO BOX] Whether it is approved is not mine to promise.
+      [SEPARATE DASHED INDIGO BOX] That is decided by the institution, against the slots allotted to it, and no document you hold determines it.
+      [SEPARATE DASHED INDIGO BOX] The condition: In case the number of eligible students admitted exceeds the number of slots allotted to the institution, the scholarship will be restricted to the top students in the inter-se merit list based on the admission criteria for the course.
+      [small muted footer] Checked against the official source on 2026-08-26.
