@@ -2,10 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "cd web && npm ci && npm run build",
   "outputDirectory": "web/dist",
-  "installCommand": "echo skip",
+  "installCommand": "echo no root node package",
   "functions": {
     "api/index.py": {
-      "includeFiles": "{corpus/**,engine/haqdaar/**}",
+      "includeFiles": "**",
       "maxDuration": 30
     }
   },

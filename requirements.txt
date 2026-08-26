@@ -1,17 +1,24 @@
-# Runtime dependencies for the Vercel Python function. Pinned to what the local
-# .venv actually runs, so a deploy cannot quietly install a different engine than
-# the one the 377 tests passed against.
+# Runtime dependencies for the Vercel Python function.
 #
-# Pillow is here because uploads.py uses it to validate magic bytes and to refuse
-# decompression bombs, which is security-critical and must not be optional.
+# MINIMUMS, NOT EXACT PINS, and that is deliberate. These were first pinned to the
+# local .venv, which runs Python 3.14; Vercel's runtime is older, so those exact
+# wheels may not resolve and the build fails before the function ever boots.
 #
-# pytesseract is NOT here on purpose. Vercel has no tesseract binary, and ocr.py
-# checks `shutil.which("tesseract")` before importing it, so live OCR reports itself
-# unavailable instead of crashing. The deployed build does guided intake, free-text
-# reading and the whole verdict pipeline; document upload says it cannot read.
-fastapi==0.141.1
-pydantic==2.13.4
-PyYAML==6.0.3
-pillow==12.3.0
-python-multipart==0.0.32
-starlette==1.6.0
+# Loosening is safe here because none of these decide anything. Eligibility is decided
+# by our own code in engine/haqdaar/eligibility, which is version-pinned by being in
+# this repo. FastAPI and pydantic only carry the request in and the response out.
+#
+# starlette is NOT pinned: FastAPI declares its own compatible range and pinning a
+# version outside that range is a resolution failure for no benefit.
+#
+# uvicorn is absent because Vercel provides the server.
+#
+# pytesseract is absent on purpose. There is no tesseract binary on Vercel, and
+# profile/ocr.py checks shutil.which before importing it, so live OCR reports itself
+# unavailable instead of crashing. Pillow IS required and not optional: uploads.py
+# uses it for magic-byte validation and to refuse decompression bombs.
+fastapi>=0.110
+pydantic>=2.6
+PyYAML>=6.0
+pillow>=10.0
+python-multipart>=0.0.9
