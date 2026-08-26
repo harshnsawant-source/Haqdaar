@@ -423,3 +423,43 @@ Same person, same answers, before and after the documents are actually read:
 Nothing about the engine changes between the two columns. Only what she could
 evidence does. **"Proven from your X" appears only where X was actually read** — a test
 asserts an intake card can never claim it.
+
+---
+
+# Deploying to Vercel
+
+The repo is wired for it: `vercel.json`, `requirements.txt`, and `api/index.py`, which
+puts the engine on the import path and points `HAQDAAR_CORPUS` at the bundled corpus.
+The PWA is built from `web/` and served as static files; `/api/*` is rewritten to one
+Python serverless function running the same FastAPI app as locally.
+
+## One thing does not work when deployed
+
+**Live OCR.** There is no tesseract binary on Vercel. `profile/ocr.py` checks
+`shutil.which("tesseract")` before importing pytesseract, so document upload reports
+itself unavailable rather than failing, and the UI already has the message for it.
+
+Everything else runs: guided intake, free-text reading, the evaluator, the Guard and all
+six triggers, three languages, comparison, and the simulated action layer.
+
+## The hosted build does not replace the local demo
+
+The pitch is that this runs on a Panchayat laptop with no network. A URL cannot show
+that, and on stage a hosted site makes hall wifi a single point of failure for the whole
+demo. Deploy it so judges can try it afterwards and so the QR on the closing slide goes
+somewhere. **Demo from localhost.**
+
+## How to deploy
+
+Import the GitHub repo at vercel.com/new. Vercel reads `vercel.json` and needs no
+settings changed. Every push to `main` then redeploys.
+
+The CLI route works too if you prefer it: `npx vercel` from the repo root, then
+`npx vercel --prod`.
+
+## If the function fails to boot
+
+Check the function logs for an import error first. The two things that break it are the
+corpus not being bundled (`includeFiles` in `vercel.json`) and a dependency missing from
+`requirements.txt`, which is pinned to what the local `.venv` runs so a deploy cannot
+quietly install a different engine than the one the tests passed against.

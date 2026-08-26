@@ -1,0 +1,17 @@
+# Runtime dependencies for the Vercel Python function. Pinned to what the local
+# .venv actually runs, so a deploy cannot quietly install a different engine than
+# the one the 377 tests passed against.
+#
+# Pillow is here because uploads.py uses it to validate magic bytes and to refuse
+# decompression bombs, which is security-critical and must not be optional.
+#
+# pytesseract is NOT here on purpose. Vercel has no tesseract binary, and ocr.py
+# checks `shutil.which("tesseract")` before importing it, so live OCR reports itself
+# unavailable instead of crashing. The deployed build does guided intake, free-text
+# reading and the whole verdict pipeline; document upload says it cannot read.
+fastapi==0.141.1
+pydantic==2.13.4
+PyYAML==6.0.3
+pillow==12.3.0
+python-multipart==0.0.32
+starlette==1.6.0
