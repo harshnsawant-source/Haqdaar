@@ -18,10 +18,13 @@ const s = t('en');
  * know what any of them mean.
  */
 
-export function Intake({ vertical, onResult, onCancel }) {
+export function Intake({ vertical, onResult, onCancel, prefill = null }) {
   const [form, setForm] = useState(null);
-  const [answers, setAnswers] = useState({});
-  const [documents, setDocuments] = useState([]);
+  // Seeded from a remembered session when there is one, so she is not retyping what
+  // she already told this device. Still fully editable — a remembered answer is a
+  // draft, never a fact she is stuck with.
+  const [answers, setAnswers] = useState(prefill?.answers || {});
+  const [documents, setDocuments] = useState(prefill?.documents || []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
@@ -48,7 +51,10 @@ export function Intake({ vertical, onResult, onCancel }) {
     submitIntake(vertical, answers, documents)
       .then(({ data, detail }) => {
         if (!data) setError(detail || s.intakeUnavailable);
-        else onResult(data);
+        // The answers travel back with the result so App can keep them on this
+        // device. Intake does not write to storage itself: one component owning the
+        // purge gestures and the writes is what keeps them from drifting apart.
+        else onResult(data, { vertical, answers, documents });
       })
       .catch((e) => setError(e.message))
       .finally(() => setBusy(false));

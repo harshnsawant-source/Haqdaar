@@ -70,8 +70,14 @@ const en = {
   stackedWith: 'Paid together',
   stackedNote:
     'These are two parts of one payment, not two separate benefits. The engine groups them so the totals are never counted twice.',
+  // Remembered answers. Deliberately says WHERE they are, not just that they exist:
+  // "saved" without "on this device" is exactly what makes people assume an account.
+  resumeTitle: 'You answered some of this before',
+  resumeHint: 'Kept on this device only, never sent anywhere. Last answered',
+  resumeGo: 'Carry on from there',
+  resumeForget: 'Start fresh instead',
   finishSession: 'Finish and clear',
-  finishHint: 'Clears this person’s results from this device before the next visitor.',
+  finishHint: 'Clears this person’s answers and results from this device before the next visitor.',
   purged: 'Cleared. Nothing from that session is left on this device.',
   uploadHeading: 'Upload a document',
   documentType: 'Which document is this?',

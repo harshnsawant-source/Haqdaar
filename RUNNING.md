@@ -310,10 +310,28 @@ The service worker caches verdicts so the app works offline. On a shared laptop 
 means the next person could otherwise reload and read the previous person's schemes,
 documents and gaps.
 
-- **"Finish and clear"** purges cached verdicts and extracted fields. Use it between
-  citizens. The app shell and persona list survive, so the device still works offline.
+- **"Finish and clear"** purges cached verdicts, extracted fields AND her saved intake
+  answers. Use it between citizens. The app shell and persona list survive, so the
+  device still works offline.
 - Switching to a different person purges automatically — you do not have to remember.
 - What is never purged, because it is nobody's data: the app shell, the persona list.
+
+### Remembered answers, and why they are not an account
+
+The app keeps her intake answers in `localStorage` so she is not retyping them next
+time. There is no login and no server-side profile, deliberately:
+
+- A signup form is one more wall between someone and an entitlement she is not
+  claiming, and the people it turns away are the ones the scheme was written for.
+- The data is caste, income, widowhood, landholding, BPL status. Attaching that to an
+  account means running a server holding the most sensitive facts about the most
+  vulnerable people in the country, as a permanent breach target. We hold none of it.
+
+**Only the ANSWERS are stored, never a verdict.** A remembered verdict goes stale the
+day a scheme lapses or a threshold moves, and would quietly become a wrong answer with
+nothing to flag it. Answers do not go stale, so they get replayed through the engine
+and it decides again every time. `web/src/remember.js` is the whole of it, and both
+purge gestures above call its `forget()`.
 
 ## What the upload path does and does not do
 

@@ -4,6 +4,7 @@ import { Card } from './Card.jsx';
 import { Intake } from './Intake.jsx';
 import { Upload } from './Upload.jsx';
 import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession } from './api.js';
+import { forget, recall, remember, savedAtLabel } from './remember.js';
 import { t } from './strings.js';
 
 const s = t('en');
@@ -87,14 +88,21 @@ export default function App() {
   const [offline, setOffline] = useState(null);
   const [purged, setPurged] = useState(false);
   const [intakeVertical, setIntakeVertical] = useState(null);
+  // Read once. `recall` is defensive — a private window throws on access and a
+  // half-written record is treated as absent — so this is always either a usable
+  // session or null, never a partial one.
+  const [saved, setSaved] = useState(() => recall());
   const [declaredBanner, setDeclaredBanner] = useState(null);
 
   useEffect(() => {
     fetchPersonas()
       .then(({ data, stored, storedAt }) => {
         setPersonas(data || []);
+    // `data` is the whole response envelope; the array is on `.needs`. Setting the
+    // envelope here made `needs.length` undefined, so the front door silently fell
+    // back to the domain buttons and nobody would have noticed without opening it.
     fetchNeeds()
-      .then(({ data }) => setNeeds(data || []))
+      .then(({ data }) => setNeeds(data?.needs || []))
       .catch(() => setNeeds([]));
         // If even the persona list is unavailable, say so. An empty screen with no
         // explanation is the worst of both worlds.
@@ -134,6 +142,11 @@ export default function App() {
    */
   async function finish() {
     await purgeSession();
+    // Her answers go with the cached verdicts. A remembered answer that survived
+    // "Finish and clear" on a shared phone would be a privacy hole in the one
+    // product that cannot afford one.
+    forget();
+    setSaved(null);
     setSelected(null);
     setResult(null);
     setOffline(null);
@@ -148,6 +161,10 @@ export default function App() {
     setPurged(false);
     setIntakeVertical(null);
     setDeclaredBanner(null);
+    // Switching to a different person purges automatically, answers included, so
+    // nobody has to remember to do it.
+    forget();
+    setSaved(null);
     // Clear the previous person before loading the next one.
     purgeSession().finally(() => {
       setSelected(personaId);
@@ -194,7 +211,8 @@ export default function App() {
           <Intake
             vertical={intakeVertical}
             onCancel={() => setIntakeVertical(null)}
-            onResult={(data) => {
+            prefill={saved && saved.vertical === intakeVertical ? saved : null}
+            onResult={(data, given) => {
               // Intake returns the same card shape as every other entry point, so the
               // results list below is unchanged — the profile changed, not the engine.
               setResult(data);
@@ -202,12 +220,48 @@ export default function App() {
               setSelected(`intake:${intakeVertical}`);
               setIntakeVertical(null);
               setStatus('done');
+              // Keep the ANSWERS, never the verdict. A stored verdict goes stale the
+              // day a scheme lapses or a threshold moves, and would quietly become a
+              // wrong answer with nothing to flag it. Answers just get replayed.
+              if (given && remember({ ...given, language: 'en' })) setSaved(recall());
             }}
           />
         </>
       ) : !selected ? (
         <>
           <p className="hero">{s.hero}</p>
+
+          {/* The resume card. It says "on this device" out loud, because "saved"
+              alone is exactly what makes people assume there is an account behind
+              it, and there is not. Clearing is one tap and sits right beside it. */}
+          {saved && (
+            <div className="resume">
+              <h2>{s.resumeTitle}</h2>
+              <p className="why">
+                {s.resumeHint}
+                {savedAtLabel(saved.savedAt) ? ` ${savedAtLabel(saved.savedAt)}.` : '.'}
+              </p>
+              <div className="row">
+                <button
+                  type="button"
+                  className="primary"
+                  onClick={() => setIntakeVertical(saved.vertical)}
+                >
+                  {s.resumeGo}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    forget();
+                    setSaved(null);
+                  }}
+                >
+                  {s.resumeForget}
+                </button>
+              </div>
+            </div>
+          )}
+
           <h2>{s.tellUs}</h2>
           <p className="tagline">{s.tellUsHint}</p>
           <p className="tagline">{s.whichDomain}</p>

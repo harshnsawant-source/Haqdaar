@@ -150,6 +150,19 @@ button:disabled { opacity: 0.55; cursor: default; }
              letter-spacing: 0.07em; color: var(--blocked); }
 .unlock p { margin: 0; font-weight: 600; }
 
+.resume {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: var(--pad);
+  margin: 0 0 18px;
+  display: grid;
+  gap: 8px;
+}
+.resume h2 { margin: 0; font-size: 0.95rem; }
+.resume .why { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+.resume .row { display: grid; gap: 8px; margin-top: 4px; }
+
 .hero {
   font-size: 1.22rem;
   line-height: 1.35;
