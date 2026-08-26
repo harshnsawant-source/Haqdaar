@@ -214,3 +214,19 @@ def test_every_intake_string_is_translated_into_every_language(corpus_dir):
             assert any("ऀ" <= ch <= "ॿ" for ch in mapping[lang]), (
                 f"{name} {lang} contains no Devanagari — is it untranslated English?"
             )
+
+
+def test_the_widows_missing_document_is_named_as_her_husbands():
+    """Reported from the deployed site: "Bring your death certificate."
+
+    The id has always been `husband_death_certificate`; the LABEL dropped the owner, so
+    all three languages told a grieving woman to produce a death certificate for
+    herself. The frames are possessive ("Bring your {document}", "तुमचा {document}
+    आणा", "अपना {document} लाइए"), which is what turned a merely terse label into a
+    sentence about the wrong person.
+    """
+    from haqdaar.render.labels import document_label
+
+    assert "husband" in document_label("husband_death_certificate", "en")
+    assert "पती" in document_label("husband_death_certificate", "mr")
+    assert "पति" in document_label("husband_death_certificate", "hi")

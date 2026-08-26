@@ -149,3 +149,25 @@ Source: `corpus/intake.yaml`
 **Scheme rules themselves are never translated.** Every quoted clause stays in the
 language the government published it in, because a translated legal clause is no
 longer the clause. The surrounding sentence is translated; the quote is not.
+
+## Highest priority: the possessive frame around the death certificate
+
+This is the single most-shown sentence in the product, and it is the one a widow reads
+first. It was wrong in English too until 2026-08-26 (it said "Bring your death
+certificate", as if the certificate were hers), and fixing the label has left a
+grammar question in both Indian languages that a native speaker has to settle.
+
+The frame supplies the possessive and the slot now supplies a genitive noun phrase:
+
+| | frame | renders as |
+|---|---|---|
+| mr | `तुमचा {document} आणा` | तुमचा पतीचा मृत्यू दाखला आणा |
+| hi | `अपना {document} लाइए` | अपना पति का मृत्यु प्रमाणपत्र लाइए |
+
+Both read as though the determiner should be oblique — `तुमच्या पतीचा` and `अपने पति
+का`. If that is right, the fix is NOT to edit the label: it is to give this document its
+own sentence key, because changing `तुमचा` to `तुमच्या` in the shared frame would break
+every other document, which are all direct-case ("तुमचा आधार आणा" is correct).
+
+Please answer just this: is the rendered sentence acceptable as it stands, or does it
+need its own frame?
