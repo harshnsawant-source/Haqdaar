@@ -1,0 +1,305 @@
+================================================================================
+HAQDAAR - PITCH DECK
+Re-pointed for SIH26092 (AI-Driven Scheme Matching for Marginalized Entrepreneurs)
+Written 2026-08-26. Read this, mark it up, then we build slides.
+================================================================================
+
+FORMAT      16:9. 11 slides + 5 appendix. 3 minutes.
+DESIGN RULE One idea per slide. If a slide has to be READ, it has already failed.
+            Under 20 words visible per slide. You carry the content, the slide
+            carries the image.
+
+TIMING      Hook + problem     slides 1-3     0:35
+            Live demo          slides 4-9     1:40
+            Reveal + close     slides 10-11   0:45
+
+The demo is more than half the runtime. Protect it. Every second on architecture
+is a second stolen from judges watching bureaucracy get completed.
+
+--------------------------------------------------------------------------------
+WHAT CHANGED FROM THE OLD OUTLINE, AND WHY
+--------------------------------------------------------------------------------
+
+The previous version was written before the fused SIH26092 decision and before
+the corpus was verified. Five things changed:
+
+1. The ENTREPRENEUR now leads. Sunita moves to the reveal.
+2. Slide 2's statistic is gone. It was a disability-aid survey number that fits a
+   welfare pitch, not this one. Replaced with a finding of our own that we can
+   prove live on stage, which is stronger than any borrowed statistic.
+3. NEW SLIDE 8, the closed door. This is the best material in the deck and it did
+   not exist before, because the finding did not exist before.
+4. The reveal is welfare AND student, not the legal vertical that was never built.
+5. Slide 9's action beat files into NSFDC, not Stand-Up India, because Stand-Up
+   India is one of the two schemes that turned out to be closed.
+
+--------------------------------------------------------------------------------
+SLIDE 1 - TITLE
+--------------------------------------------------------------------------------
+HEADLINE   Haqdaar
+SUB        Know what you're owed. Get it.
+
+VISUAL     Full bleed. An empty government office counter, seen from the
+           applicant's side. Worn ledge, a grille, a stack of forms, one plastic
+           chair, afternoon light. Nobody in frame.
+           Logo bottom-left, team name bottom-right, tiny. No other text.
+
+SAY (5s)   "Haqdaar means the rightful claimant. That is the whole idea."
+
+NOTE       We deliberately did not generate a photograph of a person. Our entire
+           pitch is that we do not fabricate. An AI-generated poor person in the
+           opening slide of that pitch is a question we would rather not be asked.
+
+--------------------------------------------------------------------------------
+SLIDE 2 - THE PROBLEM, AS A NUMBER
+--------------------------------------------------------------------------------
+HEADLINE   Two of the three flagship schemes we encoded had already closed.
+
+VISUAL     The figure 2 of 3 enormous, filling the slide. Beneath it, small:
+           "Stand-Up India, sanctioned period ended 31.03.2025.
+            Venture Capital Fund for SC, guidelines expired 31.03.2026.
+            Both still listed as live by scheme directories today."
+
+SAY (15s)  "We set out to build a scheme matcher. The first thing we found was
+           that we could not trust the schemes. Two of our three flagship
+           entrepreneur schemes had already closed, and everyone is still
+           recommending them. That is the actual problem. Not that people cannot
+           find schemes. That nobody is checking whether the answer is true."
+
+NOTE       This is OUR finding, from reading the Department of Financial Services
+           and Ministry of Social Justice pages ourselves. You can open both on
+           stage. That is worth more than a survey statistic somebody could
+           dispute, and it sets up every slide that follows.
+
+           If you want a national statistic as well, it must be one a teammate has
+           actually read at the source. Do not put an unverified number on screen
+           in a pitch about not making things up. [VERIFY AT SOURCE]
+
+--------------------------------------------------------------------------------
+SLIDE 3 - WHY THEY DON'T CLAIM
+--------------------------------------------------------------------------------
+HEADLINE   Four walls between an entrepreneur and the capital meant for her
+
+VISUAL     Four icons in a row, one line each:
+             Doesn't know it exists
+             Can't tell if she qualifies
+             Wrong language
+             Paperwork defeats her
+           Grey out the first, annotate: "myScheme solved this one."
+
+SAY (15s)  "Government already built myScheme to solve the first wall. Three walls
+           are still standing. Haqdaar is built for those three."
+
+NOTE       This is your myScheme defence, placed BEFORE a judge thinks to ask it.
+           Do not cut this slide. It is the cheapest insurance in the deck.
+
+--------------------------------------------------------------------------------
+SLIDE 4 - MEET HER
+--------------------------------------------------------------------------------
+HEADLINE   Meena. 34. First business. SC. Needs 15 lakh.
+
+VISUAL     Portrait left, full height. Three facts right, large type.
+           Bottom line, different weight: "Eligible for schemes she has never
+           heard of, and for one that closed last year."
+
+SAY (10s)  Say her name. Do not say "user" or "citizen" once for the next ninety
+           seconds. Say Meena.
+
+NOTE       Meena is our persona and we authored her, which is fine and normal.
+           The SCHEME RULES are not authored, and that distinction is the whole
+           pitch. If a judge asks, say exactly that.
+
+--------------------------------------------------------------------------------
+SLIDE 5 - SHE JUST SAYS WHAT SHE NEEDS
+--------------------------------------------------------------------------------
+HEADLINE   No form. No login. She says what she needs.
+
+VISUAL     The real front door. Seven plain-language buttons:
+           "I want to start or grow a business", "I need money or a loan for my
+           work", and so on. Then two or three intake questions. Marathi visible.
+
+SAY (15s)  "She does not fill a form and she does not make an account. She taps
+           what sounds like her, answers a few questions, and photographs the
+           papers she already has."
+
+NOTE       THIS IS LIVE PRODUCT, not a screenshot, if the demo is running. Have
+           screenshots as fallback and rehearse the switch.
+           The "no login" is deliberate and a judge may probe it. Answer at A4.
+
+--------------------------------------------------------------------------------
+SLIDE 6 - THE PROOF BEAT
+--------------------------------------------------------------------------------
+HEADLINE   Not "you may qualify." Here is the rule that entitles you.
+
+VISUAL     One card, magnified. NSFDC Term Loan, ELIGIBLE. The verbatim clause
+           highlighted:
+             "The annual family income of applicants must not exceed Rs 5.00 lakh
+              (applicable to both rural and urban areas, effective from January 7,
+              2026)."
+           Live source link visible: nsfdc.nic.in
+           Below it: "Checked against the official source on 2026-08-26."
+
+SAY (20s)  "Every result carries the exact official clause that grants it, linked
+           to the government page it came from, and the date we read it. Note that
+           income ceiling took effect in January this year. A system that scraped
+           its rules last year gets this wrong and never knows."
+
+NOTE       THE MOST IMPORTANT SLIDE IN THE DECK. Give it room. Pause after it.
+
+--------------------------------------------------------------------------------
+SLIDE 7 - THE REFUSAL BEAT
+--------------------------------------------------------------------------------
+HEADLINE   And when it cannot prove something, it refuses.
+
+VISUAL     The approval block in its own colour, separate from the eligibility
+           above it, exactly as the product renders it:
+             "Whether it is approved is not mine to promise."
+             "That is decided by the concerned State Channelising Agency or
+              Channelising Agency, and no document you hold determines it."
+
+SAY (25s)  "Watch. Whether the loan is actually sanctioned is not something any
+           document she carries can settle. So Haqdaar does not promise it. It
+           proves what she is entitled to apply for, and it names who decides the
+           rest. A system that guesses here is not helpful. It is dangerous."
+
+NOTE       Pause after "It is dangerous." This is the line judges remember.
+           If asked, we have three of these in three different domains: a bank's
+           credit appraisal, a channelising agency's verification, and a college's
+           capped merit list. That is appendix A3.
+
+--------------------------------------------------------------------------------
+SLIDE 8 - THE CLOSED DOOR                              [NEW. THE BEST ONE.]
+--------------------------------------------------------------------------------
+HEADLINE   It also refuses to send her somewhere that closed.
+
+VISUAL     The Stand-Up India card, greyed, closure leading:
+             "Stop. The period this scheme was sanctioned for has ended."
+             "The rules I have run until 2025-03-31."
+             "The official document says: the SUPI Scheme is upto 31.03.2025, in
+              line with the 15th Finance Commission"
+           Note there is NO apply button on this card.
+
+SAY (25s)  "She is genuinely eligible for Stand-Up India under its published rules.
+           We still will not send her. The scheme's sanctioned period ended in
+           March last year, and the engine refuses to file into it. Ask any scheme
+           chatbot about Stand-Up India today and see what it tells you."
+
+NOTE       This is the slide that separates you from every RAG chatbot in the room,
+           and it is the one thing no competitor will have thought about. If you
+           only have time for one beat, keep this one.
+
+           Be precise: eligibility and the door being open are DIFFERENT questions.
+           We show both. We never collapse them.
+
+--------------------------------------------------------------------------------
+SLIDE 9 - THE ACTION BEAT
+--------------------------------------------------------------------------------
+HEADLINE   It doesn't advise her. It applies.
+
+VISUAL     Split screen. Left, her profile. Right, the NSFDC form filling itself
+           field by field. Below, the payoff strip:
+             "Application ready. Reference generated."
+           Small honest label ON THE SLIDE:
+             "Filing simulated. Portal integration is post-hackathon."
+
+SAY (25s)  "One tap. It fills the actual application from her documents, lists
+           exactly what is still missing, and issues a reference. It does not fill
+           her Aadhaar number, because we never hold it. Months of not knowing
+           where to start, done in eleven seconds."
+
+NOTE       PUT THE "SIMULATED" LABEL ON THE SLIDE YOURSELF. A judge who spots it
+           uncredited thinks you hid it. A judge who reads it from your own slide
+           thinks you are rigorous. It costs nothing and buys the whole Q&A.
+
+--------------------------------------------------------------------------------
+SLIDE 10 - THE REVEAL
+--------------------------------------------------------------------------------
+HEADLINE   Same engine. Three folders of rules.
+
+VISUAL     Three corpus folders feeding one engine, feeding one UI:
+             entrepreneur  ->  |         |  ->  the same cards
+             welfare       ->  |  engine |
+             student       ->  |         |
+           Under it: "A vertical is a corpus folder. Not a code path."
+
+SAY (25s)  "We swapped the folder. Same engine, same proof, same refusal. Sunita,
+           sixty, a widow with half an acre. A student in class ten. We did not
+           change a line of engine code to serve either of them, and there is a
+           test that fails if we ever do. This is not a scheme app. It is the
+           trust layer underneath one."
+
+NOTE       Have the welfare vertical open and ready. Thirty seconds on Sunita's
+           cards is the emotional gut-punch and the strongest refusal we own
+           (PM-JAY, SECC 2011, records nobody can look up).
+
+--------------------------------------------------------------------------------
+SLIDE 11 - CLOSE
+--------------------------------------------------------------------------------
+HEADLINE   Proof, not answers. It refuses. It acts.
+
+VISUAL     Three phrases stacked, huge, nothing else. Team names and a QR to the
+           demo in 8pt at the bottom.
+
+SAY (8s)   Say the three lines. Stop talking. Do NOT add "thank you for your time"
+           or "any questions". Land it and stand still.
+
+================================================================================
+APPENDIX - NOT PRESENTED. FOR Q&A ONLY.
+================================================================================
+Build these. They are how you answer a hard question in ten seconds instead of
+ninety.
+
+A1  ARCHITECTURE
+    corpus -> evaluator -> Guard -> deterministic renderer -> API -> UI.
+    ZERO generative model calls anywhere in the pipeline. No API keys. The test
+    suite passes with every key stripped from the environment.
+    Eligibility is decided by code, never by a model.
+
+A2  THE CORPUS, ALL TEN, WITH LIVE LINKS
+    entrepreneur   stand-up-india (CLOSED), nsfdc-term-loan, vcf-sc (CLOSED)
+    welfare        pm-kisan, ignwps, sgnay, pmjay, avvc
+    student        pre-matric-sc, top-class-sc
+    9 of 10 transcribed verbatim from official sources, each with its URL and the
+    date we read it. Answers "is your corpus real" by letting them click one.
+
+A3  THE GUARD'S SIX TRIGGERS
+    T1 unsupported predicate   T2 missing but obtainable   T3 no retrieval support
+    T4 citation integrity      T5 stale rule               T6 lapsed scheme
+    351 tests, all green, no network needed.
+
+A4  WHAT WE DID NOT BUILD, AND WHY
+    No login. We hold caste, income and widowhood. Behind an account that becomes
+    a breach target for the most vulnerable people in the country. Everything
+    stays on her device. She never signs up and it works offline.
+    Also out: live portal filing, admin panel, voice, all schemes.
+    Owning your scope is a strength when YOU raise it.
+
+A5  THE STACKING RULE
+    In Maharashtra a widow's Rs 1,500 is Rs 300 central plus Rs 1,200 state, not
+    two separate Rs 1,500 benefits. The state's own page says so. We group them so
+    nothing is ever double-counted. This slide impresses anyone who actually knows
+    welfare administration.
+
+================================================================================
+DECK CHECKLIST
+================================================================================
+[ ] Zero em-dashes anywhere in the deck
+[ ] No screenshot with lorem ipsum or a placeholder name
+[ ] The "simulated" label present on slide 9
+[ ] Marathi visible in at least two screenshots
+[ ] Every number on a slide traceable to a source a teammate has read
+[ ] Rehearsed once against a timer at 3:00
+[ ] Rehearsed once with the live demo dead, on screenshots only
+
+================================================================================
+OPEN, BEFORE THIS CAN BE BUILT
+================================================================================
+1. Is "Meena" the name we want? Ours to choose, change freely.
+2. Slide 2: do we want a national statistic alongside our own finding? Only if a
+   teammate reads it at source. [VERIFY AT SOURCE]
+3. The SIH26092 full description behind SIH Login. Nobody has read it. If it says
+   something we have not accounted for, slides 3 and 10 are what move.
+4. Marathi: 50 template strings are still [NEEDS HUMAN TRANSLATION]. Slide 5 shows
+   Marathi on screen. Either a native speaker fills these, or that screenshot is
+   English and we say so.
+5. Who is building the actual slides, and when.
