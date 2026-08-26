@@ -76,11 +76,29 @@ body {
   background-attachment: fixed;
 }
 
-/* The wash's midpoint is transparent white, which lifts a dark page to grey. Dark
-   mode keeps the tricolour rule and drops the wash. This MUST come after the body
-   rule above: it lost to it on source order when it lived up in the token block. */
+/* Dark mode gets its OWN wash rather than none.
+ *
+ * It was switched off here on the theory that the gradient's white midpoint would
+ * lift a dark page to grey. That was wrong: the midpoint is rgba(255,255,255,0),
+ * fully transparent, so it lifts nothing. The visible effect of switching it off was
+ * simply that anyone on a dark system saw no national colours at all, which is most
+ * people by default.
+ *
+ * The opacity is roughly double the light value because a tint that reads clearly on
+ * warm paper disappears against #0b1220. The rule at the top edge is unchanged.
+ *
+ * This MUST stay below the body rule above: it lost to it on source order when it
+ * lived up in the token block.
+ */
 @media (prefers-color-scheme: dark) {
-  body { background-image: none; }
+  body {
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 153, 51, 0.14) 0%,
+      rgba(255, 255, 255, 0) 45%,
+      rgba(19, 136, 8, 0.14) 100%
+    );
+  }
 }
 
 h1, h2, h3 { font-family: Mukta, Hind, system-ui, sans-serif; }
