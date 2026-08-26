@@ -92,6 +92,40 @@ export default function App() {
   // half-written record is treated as absent — so this is always either a usable
   // session or null, never a partial one.
   const [saved, setSaved] = useState(() => recall());
+
+  /*
+   * Theme. Three states: null follows the operating system, 'light' and 'dark' are
+   * explicit and override it. The explicit case matters more than it sounds: a laptop
+   * set to dark could not show the warm paper look at all, which is the one you would
+   * want on a projector.
+   *
+   * Kept in localStorage rather than in the profile store, because it is a preference
+   * about this device and not a fact about the person, so `forget()` must not clear it.
+   */
+  const [theme, setTheme] = useState(() => {
+    try {
+      return window.localStorage.getItem('haqdaar.theme');
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme) root.setAttribute('data-theme', theme);
+    else root.removeAttribute('data-theme');
+    try {
+      if (theme) window.localStorage.setItem('haqdaar.theme', theme);
+      else window.localStorage.removeItem('haqdaar.theme');
+    } catch {
+      /* private window: the toggle still works for this session */
+    }
+  }, [theme]);
+
+  const systemDark =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  const showingDark = theme ? theme === 'dark' : systemDark;
   const [declaredBanner, setDeclaredBanner] = useState(null);
 
   useEffect(() => {
@@ -191,6 +225,14 @@ export default function App() {
       <header className="masthead">
         <h1>{s.appName}</h1>
         <span className="tagline">{s.tagline}</span>
+        <button
+          type="button"
+          className="theme-toggle"
+          aria-label={showingDark ? s.themeToLight : s.themeToDark}
+          onClick={() => setTheme(showingDark ? 'light' : 'dark')}
+        >
+          {showingDark ? s.themeToLight : s.themeToDark}
+        </button>
       </header>
 
       {error && <div className="banner offline">{error}</div>}

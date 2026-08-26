@@ -38,8 +38,18 @@
   --india-green: #138808;
 }
 
+/* Three theme states, which is what a real toggle needs.
+ *
+ *   no data-theme  -> follow the operating system (the default)
+ *   data-theme=dark  -> dark whatever the system says
+ *   data-theme=light -> light whatever the system says
+ *
+ * The `:not([data-theme="light"])` guard is what lets an explicit light choice win on
+ * a machine set to dark. Without it, someone demoing on a dark laptop cannot get the
+ * warm paper look at all, which is exactly the corner this was found in.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0b1220;
     --surface: #131c2e;
     --ink: #e6edf7;
@@ -54,6 +64,22 @@
     --not-eligible: #94a3b8;
     --unverifiable: #a5b4fc;
   }
+}
+
+:root[data-theme="dark"] {
+    --bg: #0b1220;
+    --surface: #131c2e;
+    --ink: #e6edf7;
+    --ink-soft: #9fb0c9;
+    --line: #24314a;
+    --eligible-bg: #062a20;
+    --blocked-bg: #2a1d05;
+    --not-eligible-bg: #1a2333;
+    --unverifiable-bg: #191a3d;
+    --eligible: #34d399;
+    --blocked: #fbbf24;
+    --not-eligible: #94a3b8;
+    --unverifiable: #a5b4fc;
 }
 
 * { box-sizing: border-box; }
@@ -91,14 +117,23 @@ body {
  * lived up in the token block.
  */
 @media (prefers-color-scheme: dark) {
-  body {
-    background-image: linear-gradient(
-      180deg,
-      rgba(255, 153, 51, 0.14) 0%,
-      rgba(255, 255, 255, 0) 45%,
-      rgba(19, 136, 8, 0.14) 100%
-    );
+  :root:not([data-theme="light"]) body {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 153, 51, 0.14) 0%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(19, 136, 8, 0.14) 100%
+  );
   }
+}
+
+:root[data-theme="dark"] body {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 153, 51, 0.14) 0%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(19, 136, 8, 0.14) 100%
+  );
 }
 
 h1, h2, h3 { font-family: Mukta, Hind, system-ui, sans-serif; }
@@ -137,6 +172,15 @@ header.masthead {
   padding: 8px 0 4px;
 }
 header.masthead h1 { font-size: 1.35rem; margin: 0; letter-spacing: -0.01em; }
+.theme-toggle {
+  margin-left: auto;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  min-height: 34px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+}
+
 header.masthead .tagline { color: var(--ink-soft); font-size: 0.9rem; }
 
 .banner {
