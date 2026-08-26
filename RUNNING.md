@@ -457,6 +457,14 @@ settings changed. Every push to `main` then redeploys.
 The CLI route works too if you prefer it: `npx vercel` from the repo root, then
 `npx vercel --prod`.
 
+## `framework` must be null
+
+`requirements.txt` lists FastAPI, and Vercel's docs say it "detects your framework
+automatically when it finds a matching dependency" and then "routes every request to
+it". That preset would send `/` to the Python function instead of serving the built PWA,
+so the site becomes a FastAPI 404. `"framework": null` says this project is a static
+site that happens to have functions under `/api`.
+
 ## Do not set `installCommand` in vercel.json
 
 It overrides the WHOLE dependency install step, pip included, not just npm. Setting it
