@@ -144,3 +144,19 @@ export function fetchComparison(vertical, schemeIds, personaId) {
   if (personaId) params.set('persona_id', personaId);
   return get(`/api/compare?${params.toString()}`);
 }
+
+/*
+ * Read her own words into answers. Deterministic, engine-side, no model and no key.
+ * Returns what it understood plus the exact phrase behind each answer, so the form can
+ * show its working rather than silently pre-filling.
+ */
+export async function understandText(text, language = 'en') {
+  const response = await fetch('/api/understand', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ text, language }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) return { data: null, detail: body.detail };
+  return { data: body };
+}

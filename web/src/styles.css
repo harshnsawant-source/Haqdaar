@@ -236,6 +236,50 @@ button:disabled { opacity: 0.55; cursor: default; }
    seven dark slabs, which buries the hero line above them. Surface-coloured with a
    left-aligned label is calmer and matches how the rest of the product treats a list
    of equal choices. */
+/* Her own words. Sits above the domain cards because it is the friendlier door, but
+   the domains stay visible so it never looks like typing is the only way in. */
+.describe {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--pad);
+  margin: 0 0 18px;
+  display: grid;
+  gap: 10px;
+}
+.describe h3 { margin: 0; font-size: 0.98rem; }
+.describe textarea {
+  font: inherit;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  resize: vertical;
+  min-height: 76px;
+}
+
+/* What it understood, shown BEFORE the form opens. Each row carries the phrase that
+   produced it: a pre-filled answer with no visible cause is a guess. */
+.understood { display: grid; gap: 10px; }
+.understood h4 {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--eligible);
+}
+.understood ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.understood li {
+  display: grid;
+  gap: 2px;
+  border-left: 3px solid var(--eligible);
+  padding: 6px 0 6px 10px;
+}
+.understood .q { font-size: 0.82rem; color: var(--ink-soft); }
+.understood .a { font-weight: 650; }
+.understood .src { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; }
+
 /* The domain cards. Bigger and first, because a domain is a whole corpus of rules
    rather than one scenario, and it must not read as a short list of situations. */
 /* A question the door already answered. Dimmed and tagged so it reads as settled

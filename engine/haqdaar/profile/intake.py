@@ -108,10 +108,25 @@ class IntakeNeed(_Frozen):
     answers: dict[str, bool | int | float | str] = Field(default_factory=dict)
 
 
+class UnderstandConfig(_Frozen):
+    """Routing vocabulary for free-text reading, declared as content.
+
+    In the corpus rather than in Python so that adding a vertical stays a corpus
+    change. A golden test walks every engine module and fails if one learns a
+    vertical's name, which is how this ended up here rather than in a Python dict.
+    """
+
+    #: vertical -> words that point at it.
+    hints: dict[str, list[str]] = Field(default_factory=dict)
+    #: question_id -> the vertical that answering it implies.
+    routes: dict[str, str] = Field(default_factory=dict)
+
+
 class IntakeSpec(_Frozen):
     version: int
     sections: list[IntakeSection] = Field(min_length=1)
     needs: list[IntakeNeed] = Field(default_factory=list)
+    understand: UnderstandConfig = Field(default_factory=UnderstandConfig)
 
     def needs_for(self, vertical: str | None = None) -> list[IntakeNeed]:
         return [n for n in self.needs if vertical is None or n.vertical == vertical]

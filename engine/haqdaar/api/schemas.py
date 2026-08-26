@@ -95,6 +95,42 @@ class CompareResponse(BaseModel):
     stacked_groups: list[list[str]] = Field(default_factory=list)
 
 
+class UnderstoodPayload(BaseModel):
+    """One fact read from her sentence, with the words that produced it."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    question_id: str
+    #: The prompt she will see for this, so the UI can say what it understood without
+    #: composing a sentence of its own.
+    prompt: str
+    value: bool | int | float | str
+    #: The value as a citizen reads it: "yes" rather than "true", "widow" rather than
+    #: WIDOW, translated. The raw `value` stays for seeding the form.
+    display: str
+    #: The exact substring of her text. Shown to her always: a pre-filled answer with
+    #: no visible cause is indistinguishable from a guess.
+    phrase: str
+
+
+class UnderstandRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(max_length=2000)
+    language: str = "en"
+
+
+class UnderstandResponse(BaseModel):
+    """What her words were read to say. Never a verdict, never a scheme."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    #: None means "we could not tell" and the UI must ask, not guess.
+    vertical: str | None = None
+    answers: dict[str, bool | int | float | str] = Field(default_factory=dict)
+    understood: list[UnderstoodPayload] = Field(default_factory=list)
+
+
 class NeedPayload(BaseModel):
     """One need-based door, already resolved to the vertical that can answer it."""
 

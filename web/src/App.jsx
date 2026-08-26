@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Card } from './Card.jsx';
 import { Intake } from './Intake.jsx';
 import { Upload } from './Upload.jsx';
-import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession } from './api.js';
+import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession, understandText } from './api.js';
 import { forget, recall, remember, savedAtLabel } from './remember.js';
 import { LanguageProvider, useLang } from './lang.jsx';
 import { LANGUAGES, LANGUAGE_NAMES } from './strings.js';
@@ -104,6 +104,12 @@ function AppInner() {
   // What a chosen need already told us. Seeds the form so the machine does not
   // immediately ask her something she has just said.
   const [seed, setSeed] = useState(null);
+  // Free-text reading. `reading` holds what her sentence was understood to say,
+  // shown back to her BEFORE the form opens, because a pre-filled answer she
+  // never saw arrive is indistinguishable from a guess.
+  const [draft, setDraft] = useState('');
+  const [reading, setReading] = useState(null);
+  const [readingBusy, setReadingBusy] = useState(false);
   // Read once. `recall` is defensive — a private window throws on access and a
   // half-written record is treated as absent — so this is always either a usable
   // session or null, never a partial one.
@@ -360,6 +366,73 @@ function AppInner() {
           {/* Need-based entry. The engine returns the vertical each need routes to, so
               this never has to know the taxonomy. Falls back to the domain buttons if
               /api/needs is unreachable, which is what happens offline on a cold cache. */}
+          {/* HER OWN WORDS, read deterministically.
+              No model and no key: this is pattern matching in the engine, so it works
+              offline and cannot invent. It understands less than a model would, which
+              is why everything it reads is shown back with the phrase that produced it
+              and stays editable on the form. */}
+          <div className="describe">
+            <h3>{s.describeTitle}</h3>
+            <textarea
+              rows={3}
+              value={draft}
+              placeholder={s.describePlaceholder}
+              onChange={(e) => {
+                setDraft(e.target.value);
+                setReading(null);
+              }}
+            />
+            <button
+              type="button"
+              className="primary"
+              disabled={readingBusy || !draft.trim()}
+              onClick={() => {
+                setReadingBusy(true);
+                understandText(draft, lang)
+                  .then(({ data }) => setReading(data || { answers: {}, understood: [] }))
+                  .catch(() => setReading({ answers: {}, understood: [] }))
+                  .finally(() => setReadingBusy(false));
+              }}
+            >
+              {readingBusy ? s.describeReading : s.describeGo}
+            </button>
+
+            {reading && (
+              <div className="understood">
+                {reading.understood.length === 0 ? (
+                  <p className="why">{s.understoodNothing}</p>
+                ) : (
+                  <>
+                    <h4>{s.understoodTitle}</h4>
+                    <ul>
+                      {reading.understood.map((u) => (
+                        <li key={u.question_id}>
+                          <span className="q">{u.prompt}</span>
+                          <span className="a">{u.display}</span>
+                          <span className="src">
+                            {s.understoodFrom} “{u.phrase}”
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    {reading.vertical && (
+                      <button
+                        type="button"
+                        className="primary"
+                        onClick={() => {
+                          setSeed(reading.answers);
+                          setIntakeVertical(reading.vertical);
+                        }}
+                      >
+                        {s.understoodGo}
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* DOMAINS FIRST, then situations.
               Seven specific sentences as the only way in read as "these are the seven
               situations we handle", which is both untrue and discouraging. The domain

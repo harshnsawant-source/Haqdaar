@@ -46,6 +46,7 @@ from haqdaar.eligibility.compare import ComparisonError, compare
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
 from haqdaar.guard.gate import gate, gate_all
 from haqdaar.profile.extract import ExtractionMode, build_profile, extract_document
+from haqdaar.profile.understand import understand
 from haqdaar.profile.intake import (
     AnswerRejected,
     build_intake_profile,
@@ -55,7 +56,7 @@ from haqdaar.profile.intake import (
 from haqdaar.profile.ocr import tesseract_available
 from haqdaar.profile.schema import CitizenProfile, load_profile
 from haqdaar.guard.triggers import t3_no_retrieval_support
-from haqdaar.render.labels import document_label, field_label
+from haqdaar.render.labels import document_label, value_label, field_label
 from haqdaar.render.render import load_templates
 from haqdaar.render.render import (
     audit_templates,
@@ -80,6 +81,9 @@ from haqdaar.api.schemas import (
     CompareResponse,
     IntakeSectionPayload,
     NeedPayload,
+    UnderstandRequest,
+    UnderstandResponse,
+    UnderstoodPayload,
     NeedsResponse,
     PersonaSummary,
     to_action,
@@ -356,6 +360,50 @@ def compare_schemes(
         persona_id=persona_id,
         schemes=list(result.schemes),
         stacked_groups=[list(g) for g in result.stacked_groups],
+    )
+
+
+@app.post("/api/understand", response_model=UnderstandResponse)
+def understand_text(request: UnderstandRequest) -> UnderstandResponse:
+    """Read her own words into intake answers. No model, no network, no keys.
+
+    Returns ANSWERS, which are declarations, plus the exact phrase behind each one. It
+    never returns a verdict or a scheme: this is the front of the funnel, and naming an
+    outcome before the evaluator has run is the guess the whole product refuses.
+
+    Anything read that the routed vertical does not actually ask is DROPPED here rather
+    than sent on. "I am a widow with a son in class 8" routes to welfare, and a stray
+    class_level would be rejected by the intake validator as a question that vertical
+    does not ask — a 422 the citizen did nothing to deserve.
+    """
+    spec = _intake_spec()
+    reading = understand(
+        request.text,
+        request.language,
+        hints=spec.understand.hints,
+        routes=spec.understand.routes,
+    )
+
+    prompts = {
+        q.question_id: _text(q.prompt, request.language)
+        for q in spec.questions(reading.vertical)
+    }
+
+    kept = {k: v for k, v in reading.answers.items() if k in prompts}
+    return UnderstandResponse(
+        vertical=reading.vertical,
+        answers=kept,
+        understood=[
+            UnderstoodPayload(
+                question_id=m.question_id,
+                prompt=prompts[m.question_id],
+                value=m.value,
+                display=value_label(m.value, request.language),
+                phrase=m.phrase,
+            )
+            for m in reading.matches
+            if m.question_id in kept
+        ],
     )
 
 

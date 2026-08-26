@@ -103,6 +103,41 @@ needs:
       mr: "मला महाविद्यालयात प्रवेश मिळाला आहे आणि फी भरण्यासाठी मदत हवी आहे"
       hi: "मुझे कॉलेज में दाखिला मिला है और फीस भरने में मदद चाहिए"
 
+# FREE-TEXT READING.
+#
+# She can type her situation instead of picking a door. `understand.py` matches these
+# words deterministically — no model, no network, no keys — and pre-fills the form with
+# what it read, showing her the phrase behind every answer so she can correct it.
+#
+# These live here rather than in Python for the same reason the questions do: a vertical
+# is a corpus folder plus an intake section, and adding a fourth one must not mean
+# editing engine code. A test walks the engine and fails if it learns a vertical's name.
+understand:
+  # Words that point at a corpus, used only when nothing stronger was read. A tie
+  # routes nowhere: sending someone to the wrong corpus wastes their whole session.
+  hints:
+    entrepreneur:
+      [business, loan, shop, enterprise, capital, startup, "start up",
+       व्यवसाय, कर्ज, दुकान, उद्योग, व्यापार]
+    welfare:
+      [pension, widow, "husband died", farm, farmer, land, ration, "old age",
+       medical, hospital, treatment,
+       निवृत्तिवेतन, पेन्शन, विधवा, शेती, शेतकरी, जमीन, रेशन, औषध,
+       पेंशन, खेती, किसान, इलाज]
+    student:
+      [school, college, student, scholarship, study, studying, fees, class, admission,
+       शाळा, महाविद्यालय, विद्यार्थी, शिष्यवृत्ती, शिक्षण, इयत्ता,
+       स्कूल, कॉलेज, छात्र, छात्रवृत्ति, पढ़ाई, कक्षा]
+
+  # An answer she actually stated beats any keyword. A widow is welfare; someone
+  # starting a business is entrepreneur.
+  routes:
+    marital_status: welfare
+    bpl: welfare
+    venture_type: entrepreneur
+    class_level: student
+
+
 sections:
   # `verticals` says which domains a section belongs to. Shared sections list both.
   # Declared here rather than split in Python or JSX so the question set stays data.
