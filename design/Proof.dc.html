@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    a { color: inherit; } a:hover { color: #4f46e5; }
+    blockquote { margin: 8px 0; padding: 8px 10px; border-left: 3px solid #e2e8f0;
+                 background: #f8fafc; border-radius: 6px; font-size: 0.9rem; }
+    blockquote .meta { display: block; margin-top: 6px; font-size: 0.78rem; color: #475569; }
+    .tick { color: #059669; } .qmark { color: #4f46e5; }
+  </style>
+</helmet>
+
+<div style="max-width: 390px; margin: 0 auto; padding: 16px 16px 48px; min-height: 1180px; background: #f8fafc">
+
+  <button style="font: inherit; border: none; background: none; padding: 0; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; min-height: 44px; margin-bottom: 6px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+    All results
+  </button>
+
+  <div style="background: #ecfdf5; border: 1px solid #e2e8f0; border-left: 5px solid #059669; border-radius: 14px; padding: 16px">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px">
+      <h2 style="margin: 0; font-size: 1.02rem; font-weight: 650">NSFDC Term Loan</h2>
+      <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; border: 1px solid currentColor; color: #059669; white-space: nowrap">Eligible</span>
+    </div>
+
+    <p style="margin: 10px 0 6px">You are eligible for NSFDC Term Loan.</p>
+    <p style="margin: 0 0 10px; color: #475569; font-size: 0.92rem">Here is the rule that entitles you:</p>
+
+    <!-- THE PROOF CHAIN. One block per clause. Verbatim text, the document that proved
+         it, and a live link to the government page. This is the whole product. -->
+    <blockquote>
+      <span class="tick" style="font-weight: 700">✓</span>
+      The beneficiary(ies) must belong to the Scheduled Caste (SC) community.
+      <span class="meta">Proven from: caste certificate · <a href="#" style="text-decoration: underline">nsfdc.nic.in</a></span>
+    </blockquote>
+
+    <blockquote>
+      <span class="tick" style="font-weight: 700">✓</span>
+      The annual family income of applicants must not exceed Rs 5.00 lakh (applicable to both rural and urban areas, effective from January 7, 2026).
+      <span class="meta">Proven from: income certificate · <a href="#" style="text-decoration: underline">nsfdc.nic.in</a></span>
+    </blockquote>
+
+    <p style="margin: 14px 0 0; font-size: 0.85rem; color: #475569">
+      Source: <a href="#" style="text-decoration: underline">nsfdc.nic.in/eligibility-requirements</a>
+    </p>
+    <p style="margin: 4px 0 0; font-size: 0.92rem">Apply at the nearest State Channelising Agency or Channelising Agency office.</p>
+
+    <!-- THE APPROVAL SPLIT. Its own block, dashed indigo border, never merged into the
+         eligibility above. She keeps the proof; nobody promises the outcome. -->
+    <section style="margin-top: 14px; border: 1px dashed #4f46e5; background: #eef2ff; border-radius: 14px; padding: 12px">
+      <h3 style="margin: 0 0 6px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: #4f46e5">Whether it is approved</h3>
+      <p style="margin: 0 0 6px">Whether it is approved is not mine to promise.</p>
+      <p style="margin: 0 0 6px; font-size: 0.92rem">That is decided by the concerned State Channelising Agency or Channelising Agency, and no document you hold determines it.</p>
+      <blockquote style="background: #ffffff; border-left-color: #4f46e5">
+        <span class="qmark" style="font-weight: 700">?</span>
+        verification of eligibility criteria shall be the sole responsibility of the concerned SCAs/CAs
+        <span class="meta">No document can settle this · <a href="#" style="text-decoration: underline">nsfdc.nic.in</a></span>
+      </blockquote>
+    </section>
+
+    <div style="margin-top: 12px; border: 1px dashed #059669; border-radius: 14px; padding: 12px; display: grid; gap: 8px">
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+        <button style="font: inherit; border-radius: 10px; border: 1px solid #e2e8f0; background: #ffffff; color: #0f172a; padding: 12px 14px; min-height: 44px; cursor: pointer; font-weight: 600">Fill my application</button>
+        <span style="font-size: 0.66rem; font-weight: 800; letter-spacing: 0.09em; color: #b45309; border: 1px solid #b45309; border-radius: 999px; padding: 3px 8px">SIMULATED</span>
+      </div>
+    </div>
+
+    <div style="font-size: 0.8rem; color: #475569; border: 1px dashed #e2e8f0; border-radius: 8px; padding: 8px 10px; margin-top: 10px">
+      Checked against the official source on 2026-08-26.
+    </div>
+  </div>
+
+  <!-- The provisional banner, for a rule we read but could not fully settle. -->
+  <div style="margin-top: 14px; font-size: 0.8rem; color: #475569; border: 1px dashed #e2e8f0; border-radius: 8px; padding: 8px 10px; background: #ffffff">
+    <strong style="color: #0f172a">On other cards you may see:</strong> "This rule has not yet been verified against the official source. It is not safe to act on." Only one scheme carries it today.
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

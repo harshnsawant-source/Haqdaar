@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    a { color: inherit; } a:hover { color: #4f46e5; }
+    .sw { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+    .chip { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; border: 1px solid #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; color: #475569; }
+    .pill { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+            padding: 4px 9px; border-radius: 999px; border: 1px solid currentColor; }
+    h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: #475569;
+         margin: 0 0 12px; }
+    .panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; }
+  </style>
+</helmet>
+
+<div style="padding: 32px 40px 48px; background: #f8fafc; min-height: 1180px">
+
+  <h1 style="font-size: 1.35rem; margin: 0 0 4px; font-weight: 700">Build reference</h1>
+  <p style="margin: 0 0 28px; color: #475569; max-width: 74ch">
+    Every value here is lifted from <span class="mono">web/src/styles.css</span>. Colour carries meaning
+    in this product, so the palette is not decoration: a citizen learns the four states by colour before
+    she reads the words.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start">
+
+    <div class="panel">
+      <h2>The four verdict states</h2>
+      <div class="sw">
+        <div class="chip" style="background: #ecfdf5; border-left: 5px solid #059669"></div>
+        <div style="flex-grow: 1">
+          <div style="font-weight: 600">ELIGIBLE</div>
+          <div class="mono">#059669 on #ecfdf5</div>
+        </div>
+        <span class="pill" style="color: #059669">Eligible</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background: #fffbeb; border-left: 5px solid #b45309"></div>
+        <div style="flex-grow: 1">
+          <div style="font-weight: 600">BLOCKED_ON_DOCUMENT</div>
+          <div class="mono">#b45309 on #fffbeb</div>
+        </div>
+        <span class="pill" style="color: #b45309">One paper away</span>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background: #f1f5f9; border-left: 5px solid #475569"></div>
+        <div style="flex-grow: 1">
+          <div style="font-weight: 600">NOT_ELIGIBLE</div>
+          <div class="mono">#475569 on #f1f5f9</div>
+        </div>
+        <span class="pill" style="color: #475569">Not this one</span>
+      </div>
+      <div class="sw" style="border-bottom: none">
+        <div class="chip" style="background: #eef2ff; border-left: 5px solid #4f46e5"></div>
+        <div style="flex-grow: 1">
+          <div style="font-weight: 600">UNVERIFIABLE</div>
+          <div class="mono">#4f46e5 on #eef2ff</div>
+        </div>
+        <span class="pill" style="color: #4f46e5">I cannot prove this</span>
+      </div>
+
+      <p style="margin: 16px 0 0; font-size: 0.88rem; color: #475569; border-left: 3px solid #4f46e5; padding-left: 12px">
+        <strong style="color: #0f172a">Indigo is deliberately not red.</strong> A refusal is the system working
+        correctly. Painting it as an error teaches the room to read honesty as breakage.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2>Rules the UI must not break</h2>
+      <ol style="margin: 0; padding-left: 20px; display: grid; gap: 12px; font-size: 0.92rem">
+        <li><strong>The UI never writes a sentence about a verdict.</strong> Every line arrives from the
+          engine in <span class="mono">lines</span>, <span class="mono">approval_lines</span>,
+          <span class="mono">banners</span>, <span class="mono">window_lines</span>. Render them in that order.
+          Composing your own copy here breaks the guarantee the whole product rests on.</li>
+        <li><strong>The approval block never merges into eligibility.</strong> Own border, own colour,
+          always below. "You are entitled to apply" and "they will say yes" are different claims.</li>
+        <li><strong>A closed scheme leads with the closure</strong>, greys its body, and shows no action
+          button. The engine also returns 409 if you call the action endpoint anyway.</li>
+        <li><strong>The SIMULATED banner comes before any filled field</strong> and is never dismissible.</li>
+        <li><strong>Never sort or score.</strong> There is no "best match" and no percentage. The order the
+          engine returns is the order you render.</li>
+        <li><strong>Every card shows when it was checked</strong> and links its government source.</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h2>Tokens</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; font-size: 0.88rem">
+        <div><span class="mono">--bg</span> #f8fafc</div>
+        <div><span class="mono">--surface</span> #ffffff</div>
+        <div><span class="mono">--ink</span> #0f172a</div>
+        <div><span class="mono">--ink-soft</span> #475569</div>
+        <div><span class="mono">--line</span> #e2e8f0</div>
+        <div><span class="mono">--radius</span> 14px</div>
+        <div><span class="mono">--pad</span> 16px</div>
+        <div>buttons 10px radius</div>
+      </div>
+      <p style="margin: 16px 0 0; font-size: 0.88rem; color: #475569">
+        Body 16px/1.55 system-ui. Reading column caps at 640px on every breakpoint. Touch targets never
+        below 44px. Dark mode tokens already exist in the stylesheet under
+        <span class="mono">prefers-color-scheme</span>; keep them working.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2>Banners, in priority order</h2>
+      <div style="display: grid; gap: 10px">
+        <div style="border: 2px solid #b45309; background: #fffbeb; color: #b45309; border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; font-weight: 700">
+          SIMULATED. Nothing has been submitted to any government portal.
+        </div>
+        <div style="border-radius: 14px; padding: 10px 12px; font-size: 0.86rem; border: 1px solid #b45309; color: #b45309; background: #ffffff">
+          Showing stored answers. No internet right now. Last updated 26 Aug 2026, 09:14.
+        </div>
+        <div style="font-size: 0.8rem; color: #475569; border: 1px dashed #e2e8f0; border-radius: 8px; padding: 8px 10px; background: #ffffff">
+          This rule has not yet been verified against the official source. It is not safe to act on.
+        </div>
+        <div style="font-size: 0.8rem; color: #475569; border: 1px dashed #e2e8f0; border-radius: 8px; padding: 8px 10px; background: #ffffff">
+          Checked against the official source on 2026-08-26.
+        </div>
+      </div>
+      <p style="margin: 14px 0 0; font-size: 0.88rem; color: #475569">
+        The last two are mutually exclusive per card, and the engine decides which. Do not show both.
+      </p>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

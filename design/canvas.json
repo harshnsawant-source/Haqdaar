@@ -1,0 +1,43 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Screens" },
+    { "id": "page-2", "name": "Build reference" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 390, "h": 844, "page": "page-1", "title": "Landing" },
+    { "file": "Intake.dc.html", "x": 510, "y": 0, "w": 390, "h": 980, "page": "page-1", "title": "Guided intake" },
+    { "file": "Results.dc.html", "x": 1020, "y": 0, "w": 390, "h": 1560, "page": "page-1", "title": "Results — all five states" },
+    { "file": "Proof.dc.html", "x": 1530, "y": 0, "w": 390, "h": 1180, "page": "page-1", "title": "Proof chain + approval split" },
+    { "file": "Action.dc.html", "x": 2040, "y": 0, "w": 390, "h": 1080, "page": "page-1", "title": "Action beat (simulated)" },
+    { "file": "Compare.dc.html", "x": 0, "y": 1740, "w": 1180, "h": 900, "page": "page-1", "title": "Compare — desktop" },
+    { "file": "Desktop.dc.html", "x": 1300, "y": 1740, "w": 1280, "h": 900, "page": "page-1", "title": "Results — desktop" },
+    { "file": "States.dc.html", "x": 0, "y": 0, "w": 1180, "h": 1180, "page": "page-2", "title": "Build reference" }
+  ],
+  "annotations": [
+    {
+      "id": "flow",
+      "x": 0,
+      "y": -150,
+      "w": 900,
+      "page": "page-1",
+      "text": "Read left to right: landing → intake → results → one scheme in full → the simulated filing.\nDesktop versions sit on the row below. Phone frames are 390 wide because that is the real constraint; desktop buys a context rail, not wider paragraphs."
+    },
+    {
+      "id": "states-note",
+      "x": 1020,
+      "y": -150,
+      "w": 390,
+      "page": "page-1",
+      "text": "This one artboard carries all five card states at once: eligible, one-paper-away, cannot-prove, closed, and a settled no. It is the screen worth building first."
+    },
+    {
+      "id": "ref-note",
+      "x": 0,
+      "y": -130,
+      "w": 900,
+      "page": "page-2",
+      "text": "Tokens are lifted from web/src/styles.css, not invented. The six rules on the right are the ones that, if broken, quietly turn this back into a scheme search app."
+    }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

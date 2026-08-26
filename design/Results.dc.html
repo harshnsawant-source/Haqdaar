@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    a { color: inherit; } a:hover { color: #4f46e5; }
+    .card { background: #ffffff; border: 1px solid #e2e8f0; border-left: 5px solid #e2e8f0;
+            border-radius: 14px; padding: 16px; }
+    .card .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .card .scheme { margin: 0; font-size: 1.02rem; font-weight: 650; }
+    .pill { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+            padding: 4px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid currentColor; }
+    .lines { margin: 10px 0 0; } .lines p { margin: 0 0 6px; }
+    .note { font-size: 0.8rem; color: #475569; border: 1px dashed #e2e8f0; border-radius: 8px;
+            padding: 8px 10px; margin-top: 10px; }
+    .proof { margin-top: 10px; font-size: 0.8rem; color: #475569; text-transform: uppercase;
+             letter-spacing: 0.06em; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .eligible { border-left-color: #059669; background: #ecfdf5; }
+    .eligible .pill { color: #059669; }
+    .blocked { border-left-color: #b45309; background: #fffbeb; }
+    .blocked .pill { color: #b45309; }
+    .noteligible { border-left-color: #475569; background: #f1f5f9; }
+    .noteligible .pill { color: #475569; }
+    .unverifiable { border-left-color: #4f46e5; background: #eef2ff; }
+    .unverifiable .pill { color: #4f46e5; }
+    .shut { border-left-color: #475569; background: #ffffff; }
+    .shut .pill { color: #475569; }
+    .shut .lines, .shut .proof { opacity: 0.6; }
+    .window { border: 1px solid #475569; border-radius: 14px; padding: 10px 12px;
+              margin: 10px 0 4px; background: #ffffff; }
+    .window p { margin: 0 0 6px; font-size: 0.92rem; }
+    .window p:first-child { font-weight: 700; color: #0f172a; }
+    .window p:last-child { margin-bottom: 0; }
+  </style>
+</helmet>
+
+<div style="max-width: 390px; margin: 0 auto; padding: 16px 16px 48px; min-height: 1560px; background: #f8fafc">
+
+  <div style="display: flex; align-items: baseline; gap: 10px; padding: 8px 0 4px">
+    <h1 style="font-size: 1.35rem; margin: 0; letter-spacing: -0.01em; font-weight: 700">Haqdaar</h1>
+    <span style="color: #475569; font-size: 0.9rem">Proof, not answers.</span>
+  </div>
+
+  <!-- Offline is a normal state here, not an error. It says WHEN, because a stored
+       answer whose age you cannot see is worse than no answer. -->
+  <div style="border-radius: 14px; padding: 10px 12px; font-size: 0.86rem; margin: 12px 0;
+              border: 1px solid #b45309; color: #b45309; background: #ffffff">
+    Showing stored answers. No internet right now. Last updated 26 Aug 2026, 09:14.
+  </div>
+
+  <!-- The unlock aggregator: one paper, several schemes. Amber because it is ACTIONABLE. -->
+  <div style="border-radius: 14px; border: 1px solid #b45309; background: #fffbeb; padding: 16px; margin: 14px 0">
+    <h2 style="margin: 0 0 4px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; color: #b45309">One document away</h2>
+    <p style="margin: 0; font-weight: 600">Bring your BPL ration card and this unlocks 2 more schemes.</p>
+  </div>
+
+  <p style="font-size: 0.85rem; color: #475569; margin: 18px 0 10px">
+    Ordered by what you can act on today.
+  </p>
+
+  <div style="display: grid; gap: 12px">
+
+    <!-- 1. ELIGIBLE -->
+    <div class="card eligible">
+      <div class="head">
+        <h2 class="scheme">PM-KISAN</h2>
+        <span class="pill">Eligible</span>
+      </div>
+      <div class="lines">
+        <p>You are eligible for PM-KISAN.</p>
+        <p style="color: #475569; font-size: 0.92rem">Here is the rule that entitles you:</p>
+        <p style="font-size: 0.92rem">A landholder farmer's family is defined as "a family comprising of husband, wife and minor children who owns cultivable land as per land records of the concerned State/UT".</p>
+        <p style="font-size: 0.92rem; color: #475569">Proven from your 7/12 land record.</p>
+      </div>
+      <div class="proof">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M6 9l6 6 6-6"/></svg>
+        Show the rules behind this
+      </div>
+      <div style="margin-top: 12px; border: 1px dashed #059669; border-radius: 14px; padding: 12px; display: grid; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+          <button style="font: inherit; border-radius: 10px; border: 1px solid #e2e8f0; background: #ffffff; color: #0f172a; padding: 12px 14px; min-height: 44px; cursor: pointer; font-weight: 600">Fill my application</button>
+          <span style="font-size: 0.66rem; font-weight: 800; letter-spacing: 0.09em; color: #b45309; border: 1px solid #b45309; border-radius: 999px; padding: 3px 8px">SIMULATED</span>
+        </div>
+      </div>
+      <div class="note">Checked against the official source on 2026-08-26.</div>
+    </div>
+
+    <!-- 2. BLOCKED_ON_DOCUMENT -->
+    <div class="card blocked">
+      <div class="head">
+        <h2 class="scheme">Indira Gandhi National Widow Pension Scheme</h2>
+        <span class="pill">One paper away</span>
+      </div>
+      <div class="lines">
+        <p>You are one document away.</p>
+        <p style="font-weight: 600">Bring your BPL ration card and this unlocks 2 more schemes.</p>
+        <p style="font-size: 0.92rem; color: #475569">The rule this settles: A widow in age group of 40 to 79 years whose family falls under Below Poverty Line is eligible under this Scheme.</p>
+      </div>
+      <div class="proof">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M6 9l6 6 6-6"/></svg>
+        Show the rules behind this
+      </div>
+      <div class="note">Checked against the official source on 2026-08-26.</div>
+    </div>
+
+    <!-- 3. UNVERIFIABLE — indigo, calm. The refusal is the product working. -->
+    <div class="card unverifiable">
+      <div class="head">
+        <h2 class="scheme">Ayushman Bharat PM-JAY</h2>
+        <span class="pill">I cannot prove this</span>
+      </div>
+      <div class="lines">
+        <p>I cannot confirm this one, and I will not guess.</p>
+        <p style="font-size: 0.92rem">This scheme's rule depends on records I cannot check, and nothing you have shown me can prove it.</p>
+        <p style="font-size: 0.92rem; color: #475569">The rule I cannot settle: D3: Female headed households with no adult male member between age 16 to 59</p>
+        <p style="font-size: 0.92rem; color: #475569">The same records settle 5 further criteria in this scheme, and I cannot check any of them.</p>
+        <p style="font-size: 0.92rem">Ask at the Collector's Office and quote that rule.</p>
+      </div>
+      <div class="note">Checked against the official source on 2026-08-26.</div>
+    </div>
+
+    <!-- 4. LAPSED — the closure LEADS, the card is greyed, no action button exists. -->
+    <div class="card shut">
+      <div class="head">
+        <h2 class="scheme">Stand-Up India</h2>
+        <span class="pill">Closed</span>
+      </div>
+      <div class="window">
+        <p>Stop. The period this scheme was sanctioned for has ended.</p>
+        <p>The rules I have run until 2025-03-31.</p>
+        <p style="color: #475569; font-size: 0.88rem">The official document says: the SUPI Scheme is upto 31.03.2025, in line with the 15th Finance Commission</p>
+        <p style="color: #475569; font-size: 0.88rem">I have still checked you against its published rules below. Confirm at the office whether a successor has taken its place before you spend a day on this.</p>
+      </div>
+      <div class="lines">
+        <p style="font-size: 0.92rem">You are eligible for Stand-Up India.</p>
+        <p style="font-size: 0.92rem; color: #475569">SC/ST and/or woman entrepreneurs, above 18 years of age.</p>
+      </div>
+      <div class="note">Checked against the official source on 2026-08-26.</div>
+    </div>
+
+    <!-- 5. NOT_ELIGIBLE — a settled no, with the number and the year. -->
+    <div class="card noteligible">
+      <div class="head">
+        <h2 class="scheme">Ayushman Vay Vandana Card</h2>
+        <span class="pill">Not this one</span>
+      </div>
+      <div class="lines">
+        <p>Not this one, and here is exactly why.</p>
+        <p style="font-size: 0.92rem">The rule says 70 and above. Your age is 60.</p>
+        <p style="font-weight: 600">You become eligible in 2036.</p>
+      </div>
+      <div class="note">Checked against the official source on 2026-08-26.</div>
+    </div>
+
+  </div>
+
+  <button style="font: inherit; margin-top: 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: #ffffff; color: #0f172a; padding: 12px 14px; min-height: 44px; cursor: pointer; width: 100%">
+    Compare two of these
+  </button>
+
+</div>
+</x-dc>
+</body>
+</html>

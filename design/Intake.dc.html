@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    a { color: #0f172a; } a:hover { color: #4f46e5; }
+    .q { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+    .q h3 { margin: 0; font-size: 1rem; font-weight: 600; line-height: 1.35; }
+    .opt { font: inherit; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc;
+           color: #0f172a; padding: 12px 14px; min-height: 44px; cursor: pointer; text-align: left; }
+    .opt.on { border-color: #0f172a; box-shadow: 0 0 0 2px #0f172a inset; font-weight: 600; background: #ffffff; }
+    .num { font: inherit; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0;
+           background: #f8fafc; color: #0f172a; width: 100%; min-height: 44px; }
+    .doc { font: inherit; font-size: 0.9rem; border-radius: 999px; border: 1px solid #e2e8f0;
+           background: #ffffff; color: #0f172a; padding: 8px 14px; min-height: 40px; cursor: pointer; }
+    .doc.on { border-color: #0f172a; background: #0f172a; color: #f8fafc; font-weight: 600; }
+  </style>
+</helmet>
+
+<div style="max-width: 390px; margin: 0 auto; padding: 16px 16px 48px; min-height: 980px; background: #f8fafc">
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 4px 0 12px">
+    <button style="font: inherit; border: none; background: none; padding: 0; cursor: pointer; color: #475569; display: flex; align-items: center; gap: 6px; min-height: 44px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
+      Back
+    </button>
+  </div>
+
+  <!-- Progress is a count, never a percentage. A percentage implies the machine knows
+       how close she is to an answer, which it does not until the evaluator has run. -->
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px">
+    <h2 style="font-size: 1rem; margin: 0">About you</h2>
+    <span style="font-size: 0.78rem; color: #475569; letter-spacing: 0.04em">Section 1 of 3</span>
+  </div>
+  <div style="height: 4px; border-radius: 999px; background: #e2e8f0; margin: 8px 0 16px; overflow: hidden">
+    <div style="width: 33%; height: 100%; background: #0f172a"></div>
+  </div>
+
+  <p style="color: #475569; font-size: 0.9rem; margin: 0 0 16px">
+    Answer what you can. Anything you skip simply stays unknown, and the answer will say so.
+  </p>
+
+  <div style="display: grid; gap: 12px">
+
+    <div class="q">
+      <h3>How old are you?</h3>
+      <input class="num" type="text" value="60" readonly>
+    </div>
+
+    <div class="q">
+      <h3>What is your marital status?</h3>
+      <div style="display: grid; gap: 8px">
+        <button class="opt on">Widowed</button>
+        <button class="opt">Married</button>
+        <button class="opt">Divorced</button>
+        <button class="opt">Unmarried</button>
+      </div>
+    </div>
+
+    <!-- A declaration with a carve-out inside it. The wording is load-bearing: the
+         official exclusion excepts Class IV staff, and the evaluator cannot express
+         "excluded unless Class IV", so the exception lives in the question. -->
+    <div class="q">
+      <h3>Are you, or were you, a government employee, other than Multi Tasking Staff, Class IV or Group D?</h3>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <button class="opt">Yes</button>
+        <button class="opt on">No</button>
+      </div>
+    </div>
+
+    <div class="q">
+      <h3>Which of these do you have with you?</h3>
+      <p style="margin: 0; font-size: 0.85rem; color: #475569">
+        Ticking a paper only tells us what to ask for next. It is never taken as proof of what the paper says.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <button class="doc on">7/12 land record</button>
+        <button class="doc">BPL ration card</button>
+        <button class="doc">income certificate</button>
+        <button class="doc on">Aadhaar</button>
+        <button class="doc">caste certificate</button>
+        <button class="doc">death certificate</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display: grid; gap: 10px; margin-top: 20px">
+    <button style="font: inherit; border-radius: 10px; background: #0f172a; color: #f8fafc; border: 1px solid #0f172a; padding: 12px 14px; min-height: 44px; width: 100%; font-weight: 600; cursor: pointer">
+      Show what I am entitled to
+    </button>
+    <button style="font: inherit; border-radius: 10px; border: 1px solid #e2e8f0; background: #ffffff; color: #0f172a; padding: 12px 14px; min-height: 44px; cursor: pointer">
+      Skip the rest
+    </button>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

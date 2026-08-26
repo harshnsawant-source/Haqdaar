@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; }
+    a { color: inherit; } a:hover { color: #4f46e5; }
+    .card { background: #ffffff; border: 1px solid #e2e8f0; border-left: 5px solid #e2e8f0;
+            border-radius: 14px; padding: 16px; }
+    .card .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .card h3 { margin: 0; font-size: 1.02rem; font-weight: 650; }
+    .pill { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+            padding: 4px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid currentColor; }
+    .eligible { border-left-color: #059669; background: #ecfdf5; } .eligible .pill { color: #059669; }
+    .blocked { border-left-color: #b45309; background: #fffbeb; } .blocked .pill { color: #b45309; }
+    .unverifiable { border-left-color: #4f46e5; background: #eef2ff; } .unverifiable .pill { color: #4f46e5; }
+    .noteligible { border-left-color: #475569; background: #f1f5f9; } .noteligible .pill { color: #475569; }
+    .note { font-size: 0.8rem; color: #475569; border: 1px dashed #e2e8f0; border-radius: 8px;
+            padding: 8px 10px; margin-top: 10px; }
+    .side h4 { margin: 0 0 8px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: #475569; }
+    .fact { display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem;
+            padding: 7px 0; border-bottom: 1px solid #e2e8f0; }
+    .fact:last-child { border-bottom: none; }
+  </style>
+</helmet>
+
+<div style="min-height: 900px; background: #f8fafc">
+
+  <!-- Desktop keeps the SAME 640px reading column for the answers. Wider screens buy a
+       persistent context rail, not wider paragraphs: the cards are the product and they
+       are already sized for reading. -->
+  <div style="border-bottom: 1px solid #e2e8f0; background: #ffffff; padding: 14px 40px;
+              display: flex; align-items: baseline; gap: 14px">
+    <h1 style="font-size: 1.35rem; margin: 0; letter-spacing: -0.01em; font-weight: 700">Haqdaar</h1>
+    <span style="color: #475569; font-size: 0.9rem; flex-grow: 1">Proof, not answers.</span>
+    <span style="font-size: 0.82rem; color: #475569">English · मराठी · हिन्दी</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 300px minmax(0, 640px); gap: 40px;
+              padding: 32px 40px; justify-content: center">
+
+    <!-- Left rail: what she told us, always visible and always editable. On mobile this
+         collapses to a single "Change my answers" link above the results. -->
+    <aside class="side" style="position: sticky; top: 32px; align-self: start; display: grid; gap: 20px">
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px">
+        <h4>What you told us</h4>
+        <div class="fact"><span style="color: #475569">Age</span><span style="font-weight: 600">60</span></div>
+        <div class="fact"><span style="color: #475569">Marital status</span><span style="font-weight: 600">Widowed</span></div>
+        <div class="fact"><span style="color: #475569">Land held</span><span style="font-weight: 600">0.5 hectares</span></div>
+        <div class="fact"><span style="color: #475569">Government employee</span><span style="font-weight: 600">No</span></div>
+        <button style="font: inherit; margin-top: 12px; width: 100%; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; color: #0f172a; padding: 10px 14px; min-height: 44px; cursor: pointer">Change my answers</button>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px">
+        <h4>Papers you have</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <span style="font-size: 0.82rem; border: 1px solid #0f172a; background: #0f172a; color: #f8fafc; border-radius: 999px; padding: 5px 11px">7/12 land record</span>
+          <span style="font-size: 0.82rem; border: 1px solid #0f172a; background: #0f172a; color: #f8fafc; border-radius: 999px; padding: 5px 11px">Aadhaar</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 0.82rem; color: #475569">
+          Ticking a paper only routes the next question. It is never proof of what the paper says.
+        </p>
+      </div>
+
+      <div style="border-radius: 14px; border: 1px solid #b45309; background: #fffbeb; padding: 16px">
+        <h4 style="color: #b45309">One document away</h4>
+        <p style="margin: 0; font-weight: 600; font-size: 0.92rem">Bring your BPL ration card and this unlocks 2 more schemes.</p>
+      </div>
+    </aside>
+
+    <main style="display: grid; gap: 12px; align-content: start">
+      <p style="margin: 0 0 2px; font-size: 0.85rem; color: #475569">
+        5 schemes checked. Ordered by what you can act on today.
+      </p>
+
+      <div class="card eligible">
+        <div class="head"><h3>PM-KISAN</h3><span class="pill">Eligible</span></div>
+        <p style="margin: 10px 0 6px">You are eligible for PM-KISAN.</p>
+        <p style="margin: 0 0 6px; font-size: 0.92rem; color: #475569">Here is the rule that entitles you:</p>
+        <p style="margin: 0 0 6px; font-size: 0.92rem">A landholder farmer's family is defined as "a family comprising of husband, wife and minor children who owns cultivable land as per land records of the concerned State/UT".</p>
+        <p style="margin: 0; font-size: 0.92rem; color: #475569">Proven from your 7/12 land record.</p>
+        <div class="note">Checked against the official source on 2026-08-26.</div>
+      </div>
+
+      <div class="card blocked">
+        <div class="head"><h3>Indira Gandhi National Widow Pension Scheme</h3><span class="pill">One paper away</span></div>
+        <p style="margin: 10px 0 6px">You are one document away.</p>
+        <p style="margin: 0 0 6px; font-weight: 600">Bring your BPL ration card and this unlocks 2 more schemes.</p>
+        <div class="note">Checked against the official source on 2026-08-26.</div>
+      </div>
+
+      <div class="card unverifiable">
+        <div class="head"><h3>Ayushman Bharat PM-JAY</h3><span class="pill">I cannot prove this</span></div>
+        <p style="margin: 10px 0 6px">I cannot confirm this one, and I will not guess.</p>
+        <p style="margin: 0; font-size: 0.92rem">This scheme's rule depends on records I cannot check, and nothing you have shown me can prove it.</p>
+        <div class="note">Checked against the official source on 2026-08-26.</div>
+      </div>
+
+      <div class="card noteligible">
+        <div class="head"><h3>Ayushman Vay Vandana Card</h3><span class="pill">Not this one</span></div>
+        <p style="margin: 10px 0 6px">Not this one, and here is exactly why.</p>
+        <p style="margin: 0 0 6px; font-size: 0.92rem">The rule says 70 and above. Your age is 60.</p>
+        <p style="margin: 0; font-weight: 600">You become eligible in 2036.</p>
+        <div class="note">Checked against the official source on 2026-08-26.</div>
+      </div>
+    </main>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
