@@ -457,7 +457,22 @@ settings changed. Every push to `main` then redeploys.
 The CLI route works too if you prefer it: `npx vercel` from the repo root, then
 `npx vercel --prod`.
 
-## `framework` must be null
+## FastAPI serves the frontend, and that is deliberate
+
+`requirements.txt` lists FastAPI, so Vercel detects the framework and "routes every
+request to it" — every request, `/` and `/index.html` included. `outputDirectory` is
+never consulted, so the built PWA was not served at all and the entire site answered
+with the app's JSON 404. `"framework": null` in vercel.json did not override it.
+
+The fix is to stop having two routers. `api/index.py` mounts `web/dist` LAST, after
+every /api route, so Starlette tries the API first and falls through to the page. There
+is now one router and nothing for a second layer to disagree with.
+
+Do not add a `rewrites` block back. `/api/(.*)` -> `/api/index` handed the function the
+literal path `/api/index`, which is not a route, which is why /api/health 404ed while
+the function was demonstrably alive.
+
+## (superseded) `framework` must be null
 
 `requirements.txt` lists FastAPI, and Vercel's docs say it "detects your framework
 automatically when it finds a matching dependency" and then "routes every request to
