@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { Card } from './Card.jsx';
+import Chakra from './Chakra.jsx';
 import { Intake } from './Intake.jsx';
 import { Upload } from './Upload.jsx';
 import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession, understandText } from './api.js';
@@ -244,7 +245,12 @@ function AppInner() {
 
   return (
     <div className="app">
+      {/* Fixed, behind everything, and outside the content column. It shows through the
+          gaps between cards rather than under their text, so it never competes with the
+          four status colours a citizen actually has to read. */}
+      <Chakra className="chakra-watermark" />
       <header className="masthead">
+        <Chakra className="chakra-mark" />
         <h1>{s.appName}</h1>
         <span className="tagline">{s.tagline}</span>
         {/* Language sits before the theme control because it matters more: someone who

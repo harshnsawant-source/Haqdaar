@@ -36,6 +36,9 @@
      the product. */
   --saffron: #ff9933;
   --india-green: #138808;
+  /* Navy, as on the flag. Decoration only: it appears in the masthead and as a page
+     watermark, never on a card, for the same reason as the other two. */
+  --chakra: #000080;
 }
 
 /* Three theme states, which is what a real toggle needs.
@@ -63,6 +66,7 @@
     --blocked: #fbbf24;
     --not-eligible: #94a3b8;
     --unverifiable: #a5b4fc;
+    --chakra: #8494e0;
   }
 }
 
@@ -80,6 +84,7 @@
     --blocked: #fbbf24;
     --not-eligible: #94a3b8;
     --unverifiable: #a5b4fc;
+    --chakra: #8494e0;
 }
 
 * { box-sizing: border-box; }
@@ -92,12 +97,21 @@ body {
   -webkit-font-smoothing: antialiased;
 
   /* The tricolour wash. Fixed so it does not slide under the cards as the page
-     scrolls, and at 7% so it reads as warmth rather than as a flag. */
+     scrolls.
+     
+     It was 0.07 here and reported as "the tricolour disappears in light mode". It had
+     not disappeared: 7% saffron over #faf8f5 warm paper is simply below the threshold
+     of sight. When the dark wash was fixed earlier it was doubled to 0.14 and this one
+     was not, so light mode kept a value that was never visible on paper stock in the
+     first place.
+     
+     Green carries more weight than saffron at equal alpha, so the two are tuned
+     separately rather than shared. */
   background-image: linear-gradient(
     180deg,
-    rgba(255, 153, 51, 0.07) 0%,
+    rgba(255, 153, 51, 0.16) 0%,
     rgba(255, 255, 255, 0) 45%,
-    rgba(19, 136, 8, 0.07) 100%
+    rgba(19, 136, 8, 0.13) 100%
   );
   background-attachment: fixed;
 }
@@ -156,6 +170,52 @@ body::before {
     var(--india-green) 66.66% 100%
   );
 }
+
+/* The Ashoka Chakra.
+ *
+ * Two placements, one component. The masthead mark is legible and full strength; the
+ * watermark is a wash. Neither goes on or near a card, which is the same rule the
+ * saffron and green follow: the four status colours are the only signal a citizen who
+ * cannot read can use, and decoration must never compete with it.
+ */
+.chakra-mark {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  color: var(--chakra);
+  /* The masthead is baseline-aligned for the wordmark and tagline. An SVG has no
+     baseline worth aligning to, so it centres against the title instead. */
+  align-self: center;
+}
+
+.chakra-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(88vw, 560px);
+  height: auto;
+  color: var(--chakra);
+  opacity: 0.05;
+
+  /* Behind the cards, above the body wash. This depends on nothing between here and
+     <body> creating a stacking context: .app is static with no transform, filter or
+     opacity, and a negative z-index child paints above an ANCESTOR's background but
+     below its siblings, which is exactly the layer wanted. */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* A 5% navy wash vanishes on #0b1220 the same way the old 7% saffron vanished on
+   paper. Same mistake, so it is corrected here at the same time rather than waiting
+   to be reported. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .chakra-watermark { opacity: 0.09; }
+}
+:root[data-theme="dark"] .chakra-watermark { opacity: 0.09; }
+
+/* Deliberately never animated. A spinning national symbol is a novelty, and this sits
+   behind a page where someone is reading whether she qualifies for a pension. */
 
 .app {
   max-width: 640px;
