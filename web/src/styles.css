@@ -236,6 +236,41 @@ button:disabled { opacity: 0.55; cursor: default; }
    seven dark slabs, which buries the hero line above them. Surface-coloured with a
    left-aligned label is calmer and matches how the rest of the product treats a list
    of equal choices. */
+/* The domain cards. Bigger and first, because a domain is a whole corpus of rules
+   rather than one scenario, and it must not read as a short list of situations. */
+/* A question the door already answered. Dimmed and tagged so it reads as settled
+   rather than asked, but left editable in case she came through the wrong door. */
+.question.settled { opacity: 0.75; }
+.question.settled .from-you {
+  margin: 2px 0 8px;
+  font-size: 0.78rem;
+  color: var(--eligible);
+  font-weight: 600;
+}
+
+.domain {
+  text-align: left;
+  width: 100%;
+  padding: 16px;
+  display: grid;
+  gap: 3px;
+  background: var(--surface);
+}
+.domain .door { font-weight: 650; font-size: 1.02rem; }
+.domain .eg { font-size: 0.85rem; color: var(--ink-soft); }
+.domain:hover { border-color: var(--ink); }
+
+.shortcuts { margin-top: 22px; }
+.shortcuts h3 {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.shortcuts .need { padding: 12px 14px; font-size: 0.94rem; }
+
 .need {
   text-align: left;
   width: 100%;

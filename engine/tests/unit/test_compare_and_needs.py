@@ -226,8 +226,11 @@ def test_a_need_never_names_a_scheme(client):
 
     body = client.get("/api/needs").json()
     for need in body["needs"]:
-        assert set(need) == {"need_id", "label", "vertical"}
-        blob = f"{need['need_id']} {need['label']}".lower()
+        assert set(need) == {"need_id", "label", "vertical", "answers"}
+        # `answers` seeds the form with what the need already established. It must
+        # carry FACTS ABOUT HER, never a scheme, or a routing hint quietly becomes a
+        # promise that a particular scheme is coming.
+        blob = f"{need['need_id']} {need['label']} {need['answers']}".lower()
         for scheme_id in scheme_ids:
             assert scheme_id.lower() not in blob
 

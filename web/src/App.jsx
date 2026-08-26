@@ -34,9 +34,21 @@ const WHO = {
 const VERTICAL_ORDER = ['entrepreneur', 'welfare', 'student'];
 
 const VERTICAL_LABELS = {
-  entrepreneur: { group: 'Entrepreneur schemes', door: 'Money to start a business' },
-  welfare: { group: 'Welfare schemes', door: 'Pensions and welfare' },
-  student: { group: 'Student schemes', door: 'Help with studying' },
+  entrepreneur: {
+    group: 'Entrepreneur schemes',
+    door: 'Starting or running a business',
+    eg: 'Loans, capital, subsidies for your own work',
+  },
+  welfare: {
+    group: 'Welfare schemes',
+    door: 'Income, pension and family support',
+    eg: 'Widowhood, old age, farming, health cover',
+  },
+  student: {
+    group: 'Student schemes',
+    door: 'Paying for education',
+    eg: 'School and college scholarships',
+  },
 };
 
 function verticalsOf(personas) {
@@ -89,6 +101,9 @@ function AppInner() {
   const [offline, setOffline] = useState(null);
   const [purged, setPurged] = useState(false);
   const [intakeVertical, setIntakeVertical] = useState(null);
+  // What a chosen need already told us. Seeds the form so the machine does not
+  // immediately ask her something she has just said.
+  const [seed, setSeed] = useState(null);
   // Read once. `recall` is defensive — a private window throws on access and a
   // half-written record is treated as absent — so this is always either a usable
   // session or null, never a partial one.
@@ -270,8 +285,23 @@ function AppInner() {
           <p className="tagline">{s.tellUsHint}</p>
           <Intake
             vertical={intakeVertical}
-            onCancel={() => setIntakeVertical(null)}
-            prefill={saved && saved.vertical === intakeVertical ? saved : null}
+            onCancel={() => {
+              setIntakeVertical(null);
+              setSeed(null);
+            }}
+            seeded={seed}
+            prefill={(() => {
+              const remembered =
+                saved && saved.vertical === intakeVertical ? saved : null;
+              if (!seed) return remembered;
+              // A remembered session wins on any field it already holds: her own
+              // previous answer is better evidence than the door she came through.
+              return {
+                ...remembered,
+                answers: { ...seed, ...(remembered?.answers || {}) },
+                documents: remembered?.documents || [],
+              };
+            })()}
             onResult={(data, given) => {
               // Intake returns the same card shape as every other entry point, so the
               // results list below is unchanged — the profile changed, not the engine.
@@ -279,6 +309,7 @@ function AppInner() {
               setDeclaredBanner(data.declared_banner);
               setSelected(`intake:${intakeVertical}`);
               setIntakeVertical(null);
+              setSeed(null);
               setStatus('done');
               // Keep the ANSWERS, never the verdict. A stored verdict goes stale the
               // day a scheme lapses or a threshold moves, and would quietly become a
@@ -329,22 +360,51 @@ function AppInner() {
           {/* Need-based entry. The engine returns the vertical each need routes to, so
               this never has to know the taxonomy. Falls back to the domain buttons if
               /api/needs is unreachable, which is what happens offline on a cold cache. */}
+          {/* DOMAINS FIRST, then situations.
+              Seven specific sentences as the only way in read as "these are the seven
+              situations we handle", which is both untrue and discouraging. The domain
+              is the honest unit: it is a whole corpus of rules, not a scenario. The
+              sentences stay underneath as a shortcut, because picking one can pre-fill
+              an answer and save her a question. */}
           <div className="front-door">
-            {(needs.length ? needs : verticalsOf(personas).map((v) => ({
-              need_id: v,
-              vertical: v,
-              label: labelFor(v).door,
-            }))).map((need) => (
+            {verticalsOf(personas).map((vertical) => (
               <button
                 type="button"
-                className="need"
-                key={need.need_id}
-                onClick={() => setIntakeVertical(need.vertical)}
+                className="domain"
+                key={vertical}
+                onClick={() => {
+                  setSeed(null);
+                  setIntakeVertical(vertical);
+                }}
               >
-                {need.label}
+                <span className="door">{labelFor(vertical).door}</span>
+                <span className="eg">{labelFor(vertical).eg}</span>
               </button>
             ))}
           </div>
+
+          {needs.length > 0 && (
+            <div className="shortcuts">
+              <h3>{s.orDescribe}</h3>
+              <div className="front-door">
+                {needs.map((need) => (
+                  <button
+                    type="button"
+                    className="need"
+                    key={need.need_id}
+                    onClick={() => {
+                      setSeed(need.answers && Object.keys(need.answers).length
+                        ? need.answers
+                        : null);
+                      setIntakeVertical(need.vertical);
+                    }}
+                  >
+                    {need.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="secondary-block">
           <h2>{s.orPickDemo}</h2>

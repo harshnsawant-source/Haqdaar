@@ -50,6 +50,8 @@ version: 1
 needs:
   - need_id: start-a-business
     vertical: entrepreneur
+    answers:
+      venture_type: GREENFIELD
     label:
       en: "I want to start or grow a business"
       mr: "मला व्यवसाय सुरू करायचा आहे किंवा वाढवायचा आहे"
@@ -64,6 +66,10 @@ needs:
 
   - need_id: widowed
     vertical: welfare
+    # She has just told us she is a widow. Asking again on the next screen is the
+    # machine forgetting, which is the behaviour this product exists to replace.
+    answers:
+      marital_status: WIDOW
     label:
       en: "My husband has died and I have no income"
       mr: "माझे पती वारले आहेत आणि माझ्याकडे उत्पन्न नाही"

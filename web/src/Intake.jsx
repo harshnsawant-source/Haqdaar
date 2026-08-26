@@ -17,8 +17,13 @@ import { useLang } from './lang.jsx';
  * know what any of them mean.
  */
 
-export function Intake({ vertical, onResult, onCancel, prefill = null }) {
+export function Intake({ vertical, onResult, onCancel, prefill = null, seeded = null }) {
   const { s, lang } = useLang();
+  // Questions the door she came through already answered. Shown, but marked as
+  // settled rather than asked: she said "my husband has died", so putting
+  // "what is your marital status?" back in front of her is the machine
+  // forgetting. It stays editable, because she may have picked the wrong door.
+  const seededIds = new Set(Object.keys(seeded || {}));
   const [form, setForm] = useState(null);
   // Seeded from a remembered session when there is one, so she is not retyping what
   // she already told this device. Still fully editable — a remembered answer is a
@@ -70,10 +75,18 @@ export function Intake({ vertical, onResult, onCancel, prefill = null }) {
           <legend>{section.title}</legend>
 
           {section.questions.map((q) => (
-            <div className="question" key={q.question_id}>
+            <div
+              className={
+                seededIds.has(q.question_id) ? 'question settled' : 'question'
+              }
+              key={q.question_id}
+            >
               <p className="prompt" id={`q-${q.question_id}`}>
                 {q.prompt}
               </p>
+              {seededIds.has(q.question_id) && (
+                <p className="from-you">{s.fromWhatYouSaid}</p>
+              )}
 
               {q.type === 'number' && (
                 <input

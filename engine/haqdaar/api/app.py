@@ -221,6 +221,32 @@ def _text(mapping: dict[str, str], language: str) -> str:
     return mapping.get(language) or mapping["en"]
 
 
+def _documents_for(vertical: str | None) -> set[str] | None:
+    """Which papers this vertical's rules can actually accept, from the corpus itself.
+
+    Derived rather than listed, because a hand-maintained per-vertical list drifts the
+    moment a scheme is added and nobody notices. A widow was being asked whether she has
+    a school ID card and an admission letter, which is the machine visibly not knowing
+    what it is doing.
+
+    `self_declaration` is excluded: it is her own word, not a paper she can produce, and
+    offering it here would suggest she can tick her way past a certificate.
+
+    Returns None for no vertical, meaning "no filtering" — the unscoped endpoint is for
+    tooling and should still show everything.
+    """
+    if vertical is None:
+        return None
+    accepted = {
+        document
+        for scheme in _load_vertical(vertical)
+        for group in scheme.clause_groups
+        for clause in group.clauses
+        for document in clause.verifiable_from
+    }
+    return accepted - {"self_declaration"}
+
+
 @app.get("/api/intake", response_model=IntakeFormResponse)
 def intake_form(vertical: str | None = None, language: str = "en") -> IntakeFormResponse:
     """The question set for one domain, as declared in corpus/intake.yaml.
@@ -234,6 +260,7 @@ def intake_form(vertical: str | None = None, language: str = "en") -> IntakeForm
         raise HTTPException(status_code=404, detail=f"unknown vertical {vertical}")
 
     spec = _intake_spec()
+    allowed = _documents_for(vertical)
     return IntakeFormResponse(
         version=spec.version,
         language=language,
@@ -255,8 +282,9 @@ def intake_form(vertical: str | None = None, language: str = "en") -> IntakeForm
                             for o in q.options
                         ],
                         documents=[
-                            IntakeOptionPayload(value=d, label=document_label(d))
+                            IntakeOptionPayload(value=d, label=document_label(d, language))
                             for d in q.documents
+                            if allowed is None or d in allowed
                         ],
                         min=q.min,
                         max=q.max,
@@ -360,6 +388,7 @@ def needs(vertical: str | None = None, language: str = "en") -> NeedsResponse:
                 need_id=n.need_id,
                 label=_text(n.label, language),
                 vertical=n.vertical,
+                answers=dict(n.answers),
             )
             for n in spec.needs_for(vertical)
         ],

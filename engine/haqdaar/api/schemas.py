@@ -103,6 +103,8 @@ class NeedPayload(BaseModel):
     need_id: str
     label: str
     vertical: str
+    #: What this need already establishes, to seed the form. Answers, never evidence.
+    answers: dict[str, bool | int | float | str] = Field(default_factory=dict)
 
 
 class NeedsResponse(BaseModel):

@@ -97,6 +97,15 @@ class IntakeNeed(_Frozen):
     need_id: str
     label: dict[str, str]
     vertical: str
+    #: What picking this need already tells us. "My husband has died" says she is a
+    #: widow, so asking her marital status on the next screen is the machine forgetting
+    #: what she just said, which is exactly the bureaucratic behaviour we are replacing.
+    #:
+    #: These are ANSWERS, not evidence, and they travel the same path as anything she
+    #: types: a declaration can rule a scheme out, and can never rule one in without the
+    #: document the corpus asks for. They also stay editable on the form, because a need
+    #: is a starting point and not a fact she is stuck with.
+    answers: dict[str, bool | int | float | str] = Field(default_factory=dict)
 
 
 class IntakeSpec(_Frozen):
