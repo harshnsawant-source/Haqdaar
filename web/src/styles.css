@@ -10,7 +10,7 @@
  */
 
 :root {
-  --bg: #f8fafc;
+  --bg: #faf8f5;
   --surface: #ffffff;
   --ink: #0f172a;
   --ink-soft: #475569;
@@ -27,6 +27,15 @@
 
   --radius: 14px;
   --pad: 16px;
+
+  /* The national colours. They appear in EXACTLY two places: the rule across the
+     top edge, and a low-opacity wash on the page background. Never on or near a
+     card, because saffron sits beside --blocked and India green beside
+     --eligible, and those four status colours are what a citizen who cannot read
+     learns first. Decoration must not compete with the only accessible signal in
+     the product. */
+  --saffron: #ff9933;
+  --india-green: #138808;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -53,14 +62,53 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16px/1.6 Hind, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+
+  /* The tricolour wash. Fixed so it does not slide under the cards as the page
+     scrolls, and at 7% so it reads as warmth rather than as a flag. */
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 153, 51, 0.07) 0%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(19, 136, 8, 0.07) 100%
+  );
+  background-attachment: fixed;
+}
+
+/* The wash's midpoint is transparent white, which lifts a dark page to grey. Dark
+   mode keeps the tricolour rule and drops the wash. This MUST come after the body
+   rule above: it lost to it on source order when it lived up in the token block. */
+@media (prefers-color-scheme: dark) {
+  body { background-image: none; }
+}
+
+h1, h2, h3 { font-family: Mukta, Hind, system-ui, sans-serif; }
+
+/* The tricolour rule along the top edge. Fixed, above everything, and outside the
+   content column so it costs no signal. `env(safe-area-inset-top)` keeps it clear
+   of a notch when the PWA is installed. */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  z-index: 50;
+  background: linear-gradient(
+    90deg,
+    var(--saffron) 0 33.33%,
+    #ffffff 33.33% 66.66%,
+    var(--india-green) 66.66% 100%
+  );
 }
 
 .app {
   max-width: 640px;
   margin: 0 auto;
   padding: var(--pad);
+  padding-top: calc(var(--pad) + 5px); /* clears the tricolour rule */
   padding-bottom: 48px;
 }
 
@@ -437,3 +485,30 @@ details.ruled-out summary { cursor: pointer; font-size: 0.8rem;
                             text-transform: uppercase; letter-spacing: 0.07em;
                             color: var(--ink-soft); }
 details.ruled-out .tagline { margin: 8px 0 0; }
+
+/* --- Print -----------------------------------------------------------------
+   The action beat ends with her carrying something to an office, so the filled
+   application has to survive a printer. Drop the chrome and the decoration, keep
+   the SIMULATED banner: a printed page that has lost its "this was not filed"
+   warning is the most dangerous artefact this product can produce. */
+@media print {
+  body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #000000;
+  }
+  body::before { display: none !important; }
+  header.masthead,
+  .front-door,
+  .secondary-block,
+  .resume,
+  button { display: none !important; }
+  .app { max-width: 100%; padding: 0; }
+  .card, .application { border: 1px solid #999; break-inside: avoid; }
+  .sim-banner {
+    border: 2px solid #000 !important;
+    color: #000 !important;
+    display: block !important;
+  }
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+}

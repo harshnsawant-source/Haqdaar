@@ -8,6 +8,16 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
+    <!-- Hind and Mukta are drawn for Devanagari and Latin together, so Marathi and
+         Hindi read as first-class rather than bolted onto an English design. Loaded
+         with display=swap and a full system fallback stack, so a dead network (which
+         is the normal case for this product) costs nothing but the typeface. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Mukta:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <title>Haqdaar</title>
   </head>
   <body>
