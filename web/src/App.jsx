@@ -277,7 +277,7 @@ export default function App() {
             }))).map((need) => (
               <button
                 type="button"
-                className="primary"
+                className="need"
                 key={need.need_id}
                 onClick={() => setIntakeVertical(need.vertical)}
               >

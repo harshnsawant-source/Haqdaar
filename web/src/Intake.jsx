@@ -78,7 +78,19 @@ export function Intake({ vertical, onResult, onCancel, prefill = null }) {
               {q.type === 'number' && (
                 <input
                   type="number"
-                  inputMode="numeric"
+                  /*
+                   * step="any" is load-bearing, not tidiness. A number input defaults
+                   * to step=1, so 0.5 fails native validation, the browser blocks the
+                   * submit BEFORE React sees it, and nothing appears on screen: the
+                   * button simply does nothing. Sunita holds half a hectare and
+                   * PM-KISAN's own rule is a floor of 0.01, so the canonical demo was
+                   * unsubmittable. Landholdings are fractional in the real world.
+                   *
+                   * inputMode is decimal for the same reason: a numeric keypad with no
+                   * decimal point on a cheap Android is the same bug wearing a hat.
+                   */
+                  step="any"
+                  inputMode="decimal"
                   min={q.min ?? undefined}
                   max={q.max ?? undefined}
                   aria-labelledby={`q-${q.question_id}`}

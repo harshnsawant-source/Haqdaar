@@ -151,6 +151,22 @@ button.primary {
 }
 button:disabled { opacity: 0.55; cursor: default; }
 
+/* The need buttons. Deliberately NOT .primary: there are seven of them, and seven
+   primary buttons means none of them is primary. On the warm paper they also read as
+   seven dark slabs, which buries the hero line above them. Surface-coloured with a
+   left-aligned label is calmer and matches how the rest of the product treats a list
+   of equal choices. */
+.need {
+  text-align: left;
+  width: 100%;
+  padding: 15px 16px;
+  font-weight: 500;
+  line-height: 1.35;
+  background: var(--surface);
+}
+.need:hover { border-color: var(--ink-soft); }
+.front-door { display: grid; gap: 10px; }
+
 .persona-list { display: grid; gap: 10px; margin: 12px 0; }
 .persona {
   text-align: left;
