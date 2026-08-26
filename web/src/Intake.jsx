@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { fetchIntakeForm, submitIntake } from './api.js';
-import { t } from './strings.js';
+import { useLang } from './lang.jsx';
 
-const s = t('en');
 
 /*
  * Guided intake — the front door.
@@ -19,6 +18,7 @@ const s = t('en');
  */
 
 export function Intake({ vertical, onResult, onCancel, prefill = null }) {
+  const { s, lang } = useLang();
   const [form, setForm] = useState(null);
   // Seeded from a remembered session when there is one, so she is not retyping what
   // she already told this device. Still fully editable — a remembered answer is a
@@ -29,10 +29,10 @@ export function Intake({ vertical, onResult, onCancel, prefill = null }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchIntakeForm(vertical)
+    fetchIntakeForm(vertical, lang)
       .then(({ data }) => setForm(data))
       .catch((e) => setError(e.message));
-  }, [vertical]);
+  }, [vertical, lang]);
 
   function setAnswer(id, value) {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -48,7 +48,7 @@ export function Intake({ vertical, onResult, onCancel, prefill = null }) {
     event.preventDefault();
     setBusy(true);
     setError(null);
-    submitIntake(vertical, answers, documents)
+    submitIntake(vertical, answers, documents, lang)
       .then(({ data, detail }) => {
         if (!data) setError(detail || s.intakeUnavailable);
         // The answers travel back with the result so App can keep them on this

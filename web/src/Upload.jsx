@@ -1,9 +1,8 @@
 import { useState } from 'react';
 
 import { extract } from './api.js';
-import { t } from './strings.js';
+import { useLang } from './lang.jsx';
 
-const s = t('en');
 
 /*
  * Document upload.
@@ -20,6 +19,7 @@ const DOCUMENT_TYPES = [
 ];
 
 export function Upload({ personaId, onResult }) {
+  const { s } = useLang();
   const [documentType, setDocumentType] = useState(DOCUMENT_TYPES[0].id);
   const [file, setFile] = useState(null);
   const [mode, setMode] = useState('FIXTURE_BACKED');

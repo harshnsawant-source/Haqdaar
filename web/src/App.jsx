@@ -5,9 +5,9 @@ import { Intake } from './Intake.jsx';
 import { Upload } from './Upload.jsx';
 import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession } from './api.js';
 import { forget, recall, remember, savedAtLabel } from './remember.js';
-import { t } from './strings.js';
+import { LanguageProvider, useLang } from './lang.jsx';
+import { LANGUAGES, LANGUAGE_NAMES } from './strings.js';
 
-const s = t('en');
 
 /*
  * Citizen-facing labels for the demo fixtures.
@@ -76,7 +76,8 @@ function orderCards(cards) {
   return { actionable, ruledOut: all.filter((c) => c.status === 'NOT_ELIGIBLE') };
 }
 
-export default function App() {
+function AppInner() {
+  const { lang, setLang, s } = useLang();
   const [personas, setPersonas] = useState([]);
   const [needs, setNeeds] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -135,7 +136,7 @@ export default function App() {
     // `data` is the whole response envelope; the array is on `.needs`. Setting the
     // envelope here made `needs.length` undefined, so the front door silently fell
     // back to the domain buttons and nobody would have noticed without opening it.
-    fetchNeeds()
+    fetchNeeds(lang)
       .then(({ data }) => setNeeds(data?.needs || []))
       .catch(() => setNeeds([]));
         // If even the persona list is unavailable, say so. An empty screen with no
@@ -144,12 +145,12 @@ export default function App() {
         else if (stored) setOffline({ stored: true, storedAt });
       })
       .catch((e) => setError(e.message));
-  }, []);
+  }, [lang]);
 
   const run = useCallback((personaId, q) => {
     setStatus('loading');
     setError(null);
-    fetchEvaluation(personaId, q)
+    fetchEvaluation(personaId, q, lang)
       .then(({ data, stored, storedAt, detail }) => {
         if (!data) {
           setResult(null);
@@ -225,6 +226,23 @@ export default function App() {
       <header className="masthead">
         <h1>{s.appName}</h1>
         <span className="tagline">{s.tagline}</span>
+        {/* Language sits before the theme control because it matters more: someone who
+            cannot read the page cannot find the theme button either. Each option is
+            written in its own script and never translated. */}
+        <div className="lang-switch" role="group" aria-label="Language">
+          {LANGUAGES.map((code) => (
+            <button
+              type="button"
+              key={code}
+              className={code === lang ? 'on' : undefined}
+              aria-pressed={code === lang}
+              lang={code}
+              onClick={() => setLang(code)}
+            >
+              {LANGUAGE_NAMES[code]}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           className="theme-toggle"
@@ -470,5 +488,18 @@ export default function App() {
         </>
       )}
     </div>
+  );
+}
+
+
+/*
+ * The provider sits OUTSIDE the component that reads the context, so App is split
+ * rather than wrapped in place: a component cannot consume a context it renders.
+ */
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
   );
 }

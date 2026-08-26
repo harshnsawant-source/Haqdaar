@@ -172,8 +172,26 @@ header.masthead {
   padding: 8px 0 4px;
 }
 header.masthead h1 { font-size: 1.35rem; margin: 0; letter-spacing: -0.01em; }
-.theme-toggle {
+.lang-switch {
   margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.lang-switch button {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  min-height: 34px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+}
+.lang-switch button.on {
+  border-color: var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.theme-toggle {
+  margin-left: 0;
   font-size: 0.78rem;
   padding: 6px 12px;
   min-height: 34px;

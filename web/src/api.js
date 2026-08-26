@@ -22,17 +22,17 @@ async function get(path) {
   return { data: await response.json(), offline, stored: offline, storedAt };
 }
 
-export function fetchIntakeForm(vertical) {
-  const params = new URLSearchParams();
+export function fetchIntakeForm(vertical, language = 'en') {
+  const params = new URLSearchParams({ language });
   if (vertical) params.set('vertical', vertical);
   return get(`/api/intake?${params.toString()}`);
 }
 
-export async function submitIntake(vertical, answers, documentsHeld) {
+export async function submitIntake(vertical, answers, documentsHeld, language = 'en') {
   const response = await fetch('/api/intake', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ vertical, answers, documents_held: documentsHeld }),
+    body: JSON.stringify({ vertical, answers, documents_held: documentsHeld, language }),
   });
   const body = await response.json().catch(() => ({}));
   if (response.status >= 500) return { data: null, offline: true, detail: body.detail };
@@ -83,8 +83,8 @@ export async function extract(personaId, mode, documents) {
   return { data: body };
 }
 
-export function fetchEvaluation(personaId, query) {
-  const params = new URLSearchParams({ persona_id: personaId });
+export function fetchEvaluation(personaId, query, language = 'en') {
+  const params = new URLSearchParams({ persona_id: personaId, language });
   if (query) params.set('query', query);
   return get(`/api/evaluate?${params.toString()}`);
 }

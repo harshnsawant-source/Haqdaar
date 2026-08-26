@@ -10,10 +10,15 @@
  * belongs in engine/haqdaar/render/templates/<lang>.yaml instead, where T4 can check
  * it. This split is what keeps "it cannot hallucinate" true all the way to the screen.
  *
- * Marathi (mr) lands with the engine's mr.yaml on day 7.
+ * Marathi and Hindi were drafted on 2026-08-26 and are AWAITING NATIVE-SPEAKER
+ * REVIEW. See docs/TRANSLATION-REVIEW.md.
  */
 
-export const LANGUAGES = ['en'];
+//: Order matters: this is the order the switcher renders them in.
+export const LANGUAGES = ['en', 'mr', 'hi'];
+
+//: What each language calls itself. Never translated.
+export const LANGUAGE_NAMES = { en: 'English', mr: 'मराठी', hi: 'हिन्दी' };
 
 const en = {
   appName: 'Haqdaar',
@@ -108,7 +113,181 @@ const en = {
   },
 };
 
-const bundles = { en };
+
+/*
+ * Marathi UI chrome. DRAFTED 2026-08-26, AWAITING NATIVE-SPEAKER REVIEW.
+ * Review alongside docs/TRANSLATION-REVIEW.md. Verdict sentences are NOT here;
+ * they come from the engine's mr.yaml, which is reviewed in the same pass.
+ */
+const mr = {
+  appName: 'हक्कदार',
+  tagline: 'पुरावा, नुसते उत्तर नाही.',
+  themeToLight: 'उजळ',
+  themeToDark: 'गडद',
+  hero: 'शासनाच्या योजनेचे नाव माहीत असल्याशिवाय तिचा लाभ मिळू नये, असे असता कामा नये.',
+  tellUs: 'तुमची परिस्थिती आम्हाला सांगा',
+  tellUsHint: 'काही प्रश्न. तुम्हाला जमेल तेवढे उत्तर द्या. जे वगळाल ते अज्ञातच राहील.',
+  startIntake: 'काही प्रश्नांची उत्तरे द्या',
+  whichDomain: 'तुम्ही कशाच्या शोधात आहात?',
+  showMyEntitlements: 'मला कशाचा हक्क आहे ते दाखवा',
+  checking: 'नियम तपासत आहे…',
+  cancel: 'मागे',
+  yes: 'होय',
+  no: 'नाही',
+  intakeUnavailable: 'सध्या यंत्रणेशी संपर्क होत नाही.',
+  notForYou: 'तुमच्यासाठी नाही, आणि का ते',
+  notForYouHint: 'प्रत्येक योजना का नाकारली गेली, तो नेमका नियम पाहण्यासाठी उघडा.',
+  bringThese: 'ही कागदपत्रे आणा',
+  bringTheseHint: 'तुम्ही दाखवू शकाल असे प्रत्येक कागदपत्र "पुरावा हवा" चे रूपांतर प्रत्यक्ष हक्कात करते.',
+  youAlreadyHave: 'तुमच्याकडे आहेत असे तुम्ही सांगितलेत, ती आता चढवा',
+  uploadNow: 'चढवा',
+  orPickDemo: 'किंवा नमुना माहिती वापरा',
+  orPickDemoHint: 'सरावासाठी व चाचणीसाठी तयार केलेली माहिती.',
+  choosePersona: 'आपण कोणाची परिस्थिती तपासत आहोत?',
+  chooseHint: 'नमुना माहिती निवडा, किंवा निवडल्यानंतर कागदपत्र चढवा.',
+  check: 'हक्क तपासा',
+  back: 'दुसरे कोणी निवडा',
+  results: 'नियम काय सांगतात',
+  askAnything: 'एखाद्या विशिष्ट योजनेबद्दल विचारा',
+  askPlaceholder: 'उदा. स्टँड अप इंडिया',
+  ask: 'विचारा',
+  clearQuery: 'सर्व दाखवा',
+  proofHeading: 'नियम, जसाच्या तसा',
+  sourceLink: 'अधिकृत स्रोत उघडा',
+  approvalHeading: 'वेगळा प्रश्न: मंजुरी',
+  unlockHeading: 'फक्त एक कागदपत्र कमी',
+  provisional: 'अपडताळलेले नियम',
+  stale: 'तारीख तपासा',
+  offlineStored: 'साठवलेले उत्तर दाखवत आहे. तुम्ही ऑफलाइन आहात.',
+  offlineNothing: 'तुम्ही ऑफलाइन आहात आणि यासाठी अजून काही साठवलेले नाही.',
+  loading: 'नियम तपासत आहे…',
+  simulatedAction: 'या माहितीवरून अर्ज भरा',
+  simulatedBadge: 'नक्कल',
+  simulatedNote: 'कुठेही काहीही पाठवले जात नाही. संदर्भ क्रमांक याच उपकरणावर तयार होतो.',
+  acting: 'अर्ज भरत आहे…',
+  actionUnavailable: 'या योजनेसाठी अजून अर्जाचा नमुना उपलब्ध नाही.',
+  verticalHint: 'तेच इंजिन. नियमांची वेगळी संचिका.',
+  stackedWith: 'एकत्र मिळणारे',
+  stackedNote: 'हे एकाच रकमेचे दोन भाग आहेत, दोन वेगळे लाभ नाहीत. इंजिन त्यांना एकत्र दाखवते जेणेकरून बेरीज दुप्पट होणार नाही.',
+  resumeTitle: 'यातील काही उत्तरे तुम्ही आधी दिली होती',
+  resumeHint: 'फक्त याच उपकरणावर ठेवलेली, कुठेही पाठवलेली नाहीत. शेवटचे उत्तर',
+  resumeGo: 'तिथूनच पुढे चालू ठेवा',
+  resumeForget: 'त्याऐवजी नव्याने सुरू करा',
+  finishSession: 'संपवा आणि पुसून टाका',
+  finishHint: 'पुढील व्यक्तीपूर्वी या व्यक्तीची उत्तरे व निकाल या उपकरणावरून पुसून टाकते.',
+  purged: 'पुसले गेले. त्या सत्रातील काहीही या उपकरणावर शिल्लक नाही.',
+  uploadHeading: 'कागदपत्र चढवा',
+  documentType: 'हे कोणते कागदपत्र आहे?',
+  chooseFile: 'प्रतिमा निवडा',
+  modeHeading: 'न वाचता येणाऱ्या नोंदींचे काय करायचे?',
+  modeLive: 'फक्त प्रत्यक्ष वाचन. न वाचता येणाऱ्या नोंदी अज्ञात ठेवा',
+  modeFixtureBacked: 'नमुना माहितीचा आधार घ्या (घेतलेली प्रत्येक नोंद तशी दर्शवली जाते)',
+  readDocument: 'हे कागदपत्र वाचा',
+  reading: 'वाचत आहे…',
+  field: 'नोंद',
+  value: 'मूल्य',
+  confidence: 'कोठून',
+  originRead: 'वाचले',
+  originFixture: 'नमुना माहिती',
+  couldNotRead: 'या कागदपत्रातून हे वाचता आले नाही:',
+  ocrUnavailable: 'या उपकरणावर मजकूर वाचणारी यंत्रणा बसवलेली नाही, त्यामुळे प्रतिमेतून काहीही वाचता आले नाही.',
+  fixtureBacked: 'खालील काही नोंदी तुमच्या कागदपत्रातून नव्हे, तर साठवलेल्या नमुना माहितीतून आल्या आहेत. प्रत्येक तशी दर्शवली आहे.',
+  extractUnavailable: 'सध्या वाचन यंत्रणेशी संपर्क होत नाही.',
+  statusLabels: {
+    ELIGIBLE: 'पात्र',
+    NOT_ELIGIBLE: 'पात्र नाही',
+    BLOCKED_ON_DOCUMENT: 'एक कागदपत्र कमी',
+    UNVERIFIABLE: 'खात्री करता येत नाही',
+  },
+};
+
+/*
+ * Hindi UI chrome. DRAFTED 2026-08-26, AWAITING NATIVE-SPEAKER REVIEW.
+ * Review alongside docs/TRANSLATION-REVIEW.md.
+ */
+const hi = {
+  appName: 'हक़दार',
+  tagline: 'प्रमाण, केवल उत्तर नहीं.',
+  themeToLight: 'उजाला',
+  themeToDark: 'गहरा',
+  hero: 'किसी सरकारी योजना का नाम जाने बिना भी उसका लाभ मिलना चाहिए.',
+  tellUs: 'अपनी स्थिति हमें बताइए',
+  tellUsHint: 'कुछ प्रश्न. जितना बता सकें बताइए. जो छोड़ेंगे वह अज्ञात ही रहेगा.',
+  startIntake: 'कुछ प्रश्नों के उत्तर दें',
+  whichDomain: 'आप किसकी तलाश में हैं?',
+  showMyEntitlements: 'मुझे किसका हक है, वह दिखाइए',
+  checking: 'नियम जांचे जा रहे हैं…',
+  cancel: 'पीछे',
+  yes: 'हां',
+  no: 'नहीं',
+  intakeUnavailable: 'अभी सिस्टम से संपर्क नहीं हो पा रहा है.',
+  notForYou: 'आपके लिए नहीं, और क्यों',
+  notForYouHint: 'हर योजना किस नियम से बाहर हुई, वह देखने के लिए खोलिए.',
+  bringThese: 'ये कागज़ात लाइए',
+  bringTheseHint: 'आप जो भी दिखा सकें, वह "प्रमाण चाहिए" को असली हक में बदल देता है.',
+  youAlreadyHave: 'आपने कहा था कि ये आपके पास हैं, अब इन्हें अपलोड कीजिए',
+  uploadNow: 'अपलोड करें',
+  orPickDemo: 'या नमूना प्रोफ़ाइल इस्तेमाल करें',
+  orPickDemoHint: 'अभ्यास और परीक्षण के लिए तैयार प्रोफ़ाइल.',
+  choosePersona: 'हम किसकी स्थिति जांच रहे हैं?',
+  chooseHint: 'कोई नमूना प्रोफ़ाइल चुनें, या चुनने के बाद कागज़ अपलोड करें.',
+  check: 'हक जांचें',
+  back: 'कोई और चुनें',
+  results: 'नियम क्या कहते हैं',
+  askAnything: 'किसी विशेष योजना के बारे में पूछें',
+  askPlaceholder: 'जैसे स्टैंड अप इंडिया',
+  ask: 'पूछें',
+  clearQuery: 'सब दिखाएं',
+  proofHeading: 'नियम, ज्यों का त्यों',
+  sourceLink: 'आधिकारिक स्रोत खोलें',
+  approvalHeading: 'अलग प्रश्न: मंजूरी',
+  unlockHeading: 'बस एक दस्तावेज़ की कमी',
+  provisional: 'असत्यापित नियम',
+  stale: 'तारीख जांचें',
+  offlineStored: 'सहेजा हुआ उत्तर दिखा रहे हैं. आप ऑफ़लाइन हैं.',
+  offlineNothing: 'आप ऑफ़लाइन हैं और इसके लिए अभी कुछ सहेजा नहीं गया है.',
+  loading: 'नियम जांचे जा रहे हैं…',
+  simulatedAction: 'इस प्रोफ़ाइल से आवेदन भरें',
+  simulatedBadge: 'नकल',
+  simulatedNote: 'कहीं कुछ भी नहीं भेजा जाता. संदर्भ संख्या इसी डिवाइस पर बनती है.',
+  acting: 'फ़ॉर्म भरा जा रहा है…',
+  actionUnavailable: 'इस योजना के लिए अभी कोई आवेदन प्रारूप उपलब्ध नहीं है.',
+  verticalHint: 'वही इंजन. नियमों का अलग फ़ोल्डर.',
+  stackedWith: 'साथ में मिलने वाले',
+  stackedNote: 'ये एक ही भुगतान के दो हिस्से हैं, दो अलग लाभ नहीं. इंजन इन्हें साथ रखता है ताकि जोड़ दोगुना न हो.',
+  resumeTitle: 'इनमें से कुछ उत्तर आपने पहले दिए थे',
+  resumeHint: 'केवल इसी डिवाइस पर रखे हैं, कहीं नहीं भेजे गए. अंतिम उत्तर',
+  resumeGo: 'वहीं से आगे बढ़ें',
+  resumeForget: 'इसके बजाय नए सिरे से शुरू करें',
+  finishSession: 'समाप्त करें और मिटाएं',
+  finishHint: 'अगले व्यक्ति से पहले इस व्यक्ति के उत्तर और परिणाम इस डिवाइस से मिटा देता है.',
+  purged: 'मिटा दिया गया. उस सत्र का कुछ भी इस डिवाइस पर बाकी नहीं है.',
+  uploadHeading: 'दस्तावेज़ अपलोड करें',
+  documentType: 'यह कौन सा दस्तावेज़ है?',
+  chooseFile: 'चित्र चुनें',
+  modeHeading: 'जो नहीं पढ़ा जा सका, उसका क्या करें?',
+  modeLive: 'केवल सीधा पठन. जो न पढ़ा जाए उसे अज्ञात रहने दें',
+  modeFixtureBacked: 'नमूना प्रोफ़ाइल का सहारा लें (हर ली गई प्रविष्टि चिह्नित रहती है)',
+  readDocument: 'यह दस्तावेज़ पढ़ें',
+  reading: 'पढ़ा जा रहा है…',
+  field: 'प्रविष्टि',
+  value: 'मान',
+  confidence: 'कहां से',
+  originRead: 'पढ़ा गया',
+  originFixture: 'नमूना प्रोफ़ाइल',
+  couldNotRead: 'इस दस्तावेज़ से यह नहीं पढ़ा जा सका:',
+  ocrUnavailable: 'इस डिवाइस पर पाठ पढ़ने वाला सॉफ़्टवेयर नहीं है, इसलिए चित्र से कुछ नहीं पढ़ा जा सका.',
+  fixtureBacked: 'नीचे की कुछ प्रविष्टियां आपके दस्तावेज़ से नहीं, बल्कि सहेजी गई नमूना प्रोफ़ाइल से आई हैं. हर एक चिह्नित है.',
+  extractUnavailable: 'अभी पठन प्रणाली से संपर्क नहीं हो पा रहा है.',
+  statusLabels: {
+    ELIGIBLE: 'पात्र',
+    NOT_ELIGIBLE: 'पात्र नहीं',
+    BLOCKED_ON_DOCUMENT: 'एक दस्तावेज़ की कमी',
+    UNVERIFIABLE: 'पुष्टि नहीं कर सकते',
+  },
+};
+
+const bundles = { en, mr, hi };
 
 export function t(lang = 'en') {
   return bundles[lang] || bundles.en;

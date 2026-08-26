@@ -155,8 +155,19 @@ def _load_persona(persona_id: str) -> tuple[str, CitizenProfile]:
     return vertical, load_profile(path)
 
 
-def _cards_for(profile: CitizenProfile, schemes: list[Scheme], today: date):
-    """Run the pipeline and serialize. Shared so /evaluate and /extract cannot drift."""
+def _cards_for(
+    profile: CitizenProfile,
+    schemes: list[Scheme],
+    today: date,
+    language: str = "en",
+):
+    """Run the pipeline and serialize. Shared so /evaluate and /extract cannot drift.
+
+    `language` picks the template set. It was missing until 2026-08-26, which meant the
+    API accepted a language, validated it, and then rendered English anyway — the worst
+    shape of bug, because the request looked honoured. A citizen reading Marathi got
+    Marathi buttons around English verdicts.
+    """
     verdicts = evaluate_corpus(schemes, profile)
     unlock = best_unlock(verdicts)
     by_id = {s.scheme_id: s for s in schemes}
@@ -165,7 +176,11 @@ def _cards_for(profile: CitizenProfile, schemes: list[Scheme], today: date):
             result,
             by_id[result.verdict.scheme_id],
             render_card(
-                result, by_id[result.verdict.scheme_id], today=today, unlock=unlock
+                result,
+                by_id[result.verdict.scheme_id],
+                today=today,
+                unlock=unlock,
+                language=language,
             ),
         )
         for result in gate_all(verdicts, schemes, today=today)
@@ -385,7 +400,7 @@ def intake(request: IntakeRequest) -> IntakeResponse:
     # she holds is not evidence of what it says; it only tells the UI which papers she
     # could upload next.
     profile = build_intake_profile(spec, dict(request.answers), schemes=schemes)
-    cards, unlock = _cards_for(profile, schemes, _today())
+    cards, unlock = _cards_for(profile, schemes, _today(), request.language)
 
     held = list(request.documents_held)
     blocking = [d for card in cards for d in card.unlocking_docs]
@@ -424,6 +439,7 @@ async def extract(
     request: Request,
     persona_id: str = Form(...),
     mode: str = Form(ExtractionMode.FIXTURE_BACKED.value),
+    language: str = Form("en"),
     document_types: list[str] = Form(default=[]),
     files: list[UploadFile] = File(default=[]),
 ) -> ExtractResponse:
@@ -476,7 +492,7 @@ async def extract(
     profile = build_profile(
         reports, profile_id=persona_id, fixture=fixture, mode=extraction_mode
     )
-    cards, unlock = _cards_for(profile, schemes, today)
+    cards, unlock = _cards_for(profile, schemes, today, language)
 
     return ExtractResponse(
         persona_id=persona_id,
@@ -553,7 +569,9 @@ def act(persona_id: str, scheme_id: str) -> ActionResponse:
 
 
 @app.get("/api/evaluate", response_model=EvaluateResponse)
-def evaluate(persona_id: str, query: str | None = None) -> EvaluateResponse:
+def evaluate(
+    persona_id: str, query: str | None = None, language: str = "en"
+) -> EvaluateResponse:
     """Run the full pipeline for one persona and return rendered cards.
 
     With a `query`, routing runs first: if nothing clears the similarity floor, T3
@@ -586,7 +604,7 @@ def evaluate(persona_id: str, query: str | None = None) -> EvaluateResponse:
             )
         considered = [s for s in schemes if s.scheme_id in routed.scheme_ids]
 
-    cards, unlock = _cards_for(profile, considered, today)
+    cards, unlock = _cards_for(profile, considered, today, language)
 
     return EvaluateResponse(
         persona_id=persona_id,

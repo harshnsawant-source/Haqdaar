@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { act } from './api.js';
-import { t } from './strings.js';
+import { useLang } from './lang.jsx';
 
 /*
  * One verdict card.
@@ -11,9 +11,9 @@ import { t } from './strings.js';
  * about a verdict, and it never merges the approval refusal into the eligibility.
  */
 
-const s = t('en');
 
 export function Card({ card, personaId, stackedWith = [], canAct = true }) {
+  const { s } = useLang();
   const [action, setAction] = useState(null);
   const [acting, setActing] = useState(false);
   const [actionError, setActionError] = useState(null);

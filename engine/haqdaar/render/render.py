@@ -48,7 +48,12 @@ from haqdaar.eligibility.verdict import (
 )
 from haqdaar.guard.gate import GateResult
 from haqdaar.guard.triggers import TriggerId
-from haqdaar.render.labels import document_label, field_label, value_label
+from haqdaar.render.labels import (
+    BOUND_PHRASES,
+    document_label,
+    field_label,
+    value_label,
+)
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 
@@ -163,28 +168,29 @@ def _fill(
     return text
 
 
-def _bound_text(bound: object) -> str | None:
+def _bound_text(bound: object, language: str = "en") -> str | None:
     """Describe a bound using only what the corpus itself says.
 
     Every rule type gets a description. A NOT_ELIGIBLE card whose headline promises
     "here is exactly why" and then says nothing is worse than no card at all, and that
     is what happened while only numeric bounds were handled.
     """
+    phrases = BOUND_PHRASES.get(language, BOUND_PHRASES["en"])
     if isinstance(bound, NumericBound):
         if bound.min is not None and bound.max is not None:
-            return f"{_num(bound.min)} to {_num(bound.max)}"
+            return phrases["between"].format(a=_num(bound.min), b=_num(bound.max))
         if bound.min is not None:
-            return f"{_num(bound.min)} and above"
+            return phrases["min"].format(a=_num(bound.min))
         if bound.max is not None:
-            return f"{_num(bound.max)} and below"
+            return phrases["max"].format(a=_num(bound.max))
         return None
     if isinstance(bound, CategoryBound):
-        names = [value_label(v) for v in bound.values]
+        names = [value_label(v, language) for v in bound.values]
         if len(names) == 1:
             return names[0]
-        return f"{', '.join(names[:-1])} or {names[-1]}"
+        return f"{', '.join(names[:-1])}{phrases['or']}{names[-1]}"
     if isinstance(bound, IncomeBound):
-        return f"{_num(bound.max_value)} and below"
+        return phrases["max"].format(a=_num(bound.max_value))
     return None
 
 
@@ -238,7 +244,7 @@ def render_card(
                     _fill(
                         "eligible.evidence_line",
                         templates,
-                        {**base, "document": _label(predicate.evidence.document_id)},
+                        {**base, "document": _label(predicate.evidence.document_id, language)},
                         clause_texts,
                     )
                 )
@@ -248,7 +254,11 @@ def render_card(
 
     elif verdict.status is Status.NOT_ELIGIBLE:
         lines.append(_fill("not_eligible.headline", templates, base, clause_texts))
-        lines.extend(_not_eligible_reason(verdict, scheme, templates, base, clause_texts, today))
+        lines.extend(
+            _not_eligible_reason(
+                verdict, scheme, templates, base, clause_texts, today, language
+            )
+        )
 
     elif verdict.status is Status.BLOCKED_ON_DOCUMENT:
         lines.append(_fill("blocked.headline", templates, base, clause_texts))
@@ -267,7 +277,8 @@ def render_card(
             and unlock.document_id in verdict.unlocking_docs
         )
         document = _label(
-            unlock.document_id if aggregate_applies else verdict.unlocking_docs[0]
+            unlock.document_id if aggregate_applies else verdict.unlocking_docs[0],
+            language,
         )
         if aggregate_applies:
             lines.append(
@@ -433,7 +444,7 @@ def render_action(
                     templates,
                     {
                         **base,
-                        "document": _label(document),
+                        "document": _label(document, language),
                         "count": counts[document],
                     },
                     set(),
@@ -608,6 +619,7 @@ def _not_eligible_reason(
     base: dict[str, object],
     clause_texts: set[str],
     today: date,
+    language: str = "en",
 ) -> list[str]:
     """Name the failing bound, and the year they become eligible when we can compute it.
 
@@ -623,7 +635,7 @@ def _not_eligible_reason(
         return []
 
     clause = clauses.get(failing.clause_id)
-    bound_text = _bound_text(clause.bound) if clause else None
+    bound_text = _bound_text(clause.bound, language) if clause else None
     if bound_text is None or clause is None or clause.profile_field is None:
         return []
 
@@ -649,8 +661,8 @@ def _not_eligible_reason(
             {
                 **base,
                 "bound_text": bound_text,
-                "field_label": field_label(clause.profile_field),
-                "value": value_label(failing.evidence.extracted_value),
+                "field_label": field_label(clause.profile_field, language),
+                "value": value_label(failing.evidence.extracted_value, language),
             },
             clause_texts,
         )
@@ -677,6 +689,6 @@ def _not_eligible_reason(
     return lines
 
 
-def _label(document_id: str) -> str:
+def _label(document_id: str, language: str = "en") -> str:
     """Citizen-facing document name. See render/labels.py for why it lives there."""
-    return document_label(document_id)
+    return document_label(document_id, language)

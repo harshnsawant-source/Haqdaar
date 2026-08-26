@@ -1,0 +1,110 @@
+# Hindi output templates.
+#
+# STATUS: DRAFTED 2026-08-26, AWAITING NATIVE-SPEAKER REVIEW.
+#
+# A first pass, not verified translations. Review them line by line against
+# `docs/TRANSLATION-REVIEW.md` before anyone relies on them, and until that is signed
+# off, say plainly that the Hindi is a draft if a judge asks.
+#
+# A mistranslated eligibility rule sends a real person to an office to be turned away,
+# which is exactly the harm this system exists to prevent. Being wrong in Hindi is not
+# a cosmetic bug.
+#
+# RULES FOR ANYONE EDITING THIS FILE (enforced by tests, not manners):
+#
+# 1. NO DIGITS ANYWHERE, including Devanagari numerals (० १ २ ३ ...). The build-time
+#    audit matches them exactly like ASCII digits. Every number a citizen reads must
+#    arrive through a {slot} that traces back to a predicate.
+# 2. KEEP EVERY {slot} EXACTLY AS WRITTEN, in the same set as the English line.
+# 3. NO HEDGING. A refusal must not soften into "shayad". If we cannot prove it we
+#    refuse, in every language.
+# 4. Translate the MEANING. Several lines are deliberately blunt in English
+#    ("Stop.", "I will not guess"). Keep that register.
+
+# --- ELIGIBLE ---------------------------------------------------------------
+eligible.headline: "आप {scheme_name} के लिए पात्र हैं."
+eligible.proof_intro: "यह रहा वह नियम जो आपको यह हक देता है:"
+eligible.proof_line: "{clause_text}"
+eligible.proof_source: "स्रोत: {source_url}"
+eligible.evidence_line: "आपके {document} से यह प्रमाणित हुआ."
+eligible.next_step: "{filing_office} पर आवेदन करें."
+
+# --- NOT_ELIGIBLE -----------------------------------------------------------
+not_eligible.headline: "यह योजना आपके लिए नहीं है, और इसका सटीक कारण यह है."
+not_eligible.reason: "नियम कहता है {bound_text}. आपका {field_label} है {value}."
+not_eligible.reason_required: "इसके लिए {field_label} आवश्यक है. आपने बताया {value}."
+not_eligible.reason_excluded: "{field_label} होने पर यह योजना नहीं मिलती. आपने बताया {value}."
+not_eligible.becomes_eligible: "{year} में आप पात्र हो जाएंगे."
+
+# --- BLOCKED_ON_DOCUMENT ----------------------------------------------------
+blocked.headline: "बस एक दस्तावेज़ की कमी है."
+blocked.single: "अपना {document} लाइए, इससे {scheme_name} मिल सकेगी."
+blocked.multiple: "अपना {document} लाइए, इससे {count} और योजनाएं मिल सकेंगी."
+blocked.where: "यह आपको {office} से मिलेगा."
+blocked.rule: "इससे यह नियम पूरा होता है: {clause_text}"
+
+# --- UNVERIFIABLE (T1 / T3) -------------------------------------------------
+unverifiable.headline: "इसकी पुष्टि मैं नहीं कर सकता, और मैं अंदाज़ा नहीं लगाऊंगा."
+unverifiable.reason_dataset: >-
+  इस योजना का नियम ऐसे अभिलेखों पर निर्भर है जिन्हें मैं जांच नहीं सकता, और आपने
+  जो दिखाया है उससे वह प्रमाणित नहीं होता.
+unverifiable.reason_discretionary: "वह निर्णय {decider} लेते हैं, कोई दस्तावेज़ नहीं."
+unverifiable.rule: "जो नियम मैं तय नहीं कर सकता: {clause_text}"
+unverifiable.also_unsettleable: >-
+  इन्हीं अभिलेखों पर इस योजना की {count} और शर्तें निर्भर हैं, और उनमें से किसी को
+  भी मैं जांच नहीं सकता.
+unverifiable.next_step: "{office} पर पूछिए और वही नियम बताइए."
+unverifiable.promise: "यदि वे पुष्टि कर दें तो लौट आइए, मैं आपका आवेदन पूरा कर दूंगा."
+unverifiable.outside_corpus: >-
+  उसके नियम मेरे पास नहीं हैं. मैं वहीं उत्तर देता हूं जहां आपको आधिकारिक प्रावधान
+  दिखा सकूं.
+
+# --- SCHEME WINDOW (T6) -----------------------------------------------------
+window.lapsed_headline: "रुकिए. इस योजना के लिए स्वीकृत अवधि समाप्त हो चुकी है."
+window.lapsed_reason: "मेरे पास के नियम {valid_until} तक के हैं."
+window.lapsed_source: "आधिकारिक दस्तावेज़ में लिखा है: {validity_text}"
+window.lapsed_proof_kept: >-
+  फिर भी मैंने आपको इसके प्रकाशित नियमों के अनुसार नीचे जांचा है. इस पर समय लगाने
+  से पहले कार्यालय में पूछ लें कि इसकी जगह कोई नई योजना आई है या नहीं.
+window.not_yet_open_headline: "यह योजना अभी शुरू नहीं हुई है."
+window.not_yet_open_reason: "यह {valid_from} को शुरू होती है."
+
+# --- APPROVAL (reported beside eligibility, never instead of it) ------------
+approval.headline: "मंजूरी मिलेगी या नहीं, इसका वादा करना मेरे हाथ में नहीं है."
+approval.refusal: "वह निर्णय {decider} लेते हैं, और आपके पास का कोई दस्तावेज़ उसे तय नहीं करता."
+approval.rule: "शर्त यह है: {clause_text}"
+
+# --- STALENESS (T5) — flags the answer, never suppresses it ----------------
+staleness.banner: >-
+  यह नियम अंतिम बार {retrieved_on} को जांचा गया था. इस पर भरोसा करने से पहले पुष्टि
+  कर लें कि यह आज भी लागू है.
+staleness.amended: "मेरे पढ़ने के बाद {last_amended} को स्रोत में बदलाव दर्ज हुआ है."
+
+# --- PROVENANCE, shown on every card ----------------------------------------
+source.checked: "आधिकारिक स्रोत से {retrieved_on} को मिलान किया गया."
+
+# --- PROVISIONAL corpus warning --------------------------------------------
+provisional.banner: >-
+  यह नियम अभी तक आधिकारिक स्रोत से सत्यापित नहीं है. इस पर कार्रवाई करना सुरक्षित नहीं है.
+
+# --- GUIDED INTAKE ----------------------------------------------------------
+intake.declared_banner: >-
+  यह उस पर आधारित है जो आपने मुझे बताया. मैंने आपके दस्तावेज़ नहीं देखे हैं, इसलिए
+  जिनके लिए प्रमाणपत्र चाहिए वे अब भी बाकी दिखाए गए हैं.
+
+# --- A+ ACTION LAYER --------------------------------------------------------
+action.headline: "{scheme_name} के लिए आपके दस्तावेज़ों से जो प्रमाणित होता है, वह मैंने भर दिया है."
+action.simulated_banner: >-
+  यह केवल नकल है. किसी सरकारी पोर्टल पर कुछ भी नहीं भेजा गया है, और यह संदर्भ
+  संख्या इसी डिवाइस पर बनी है. यह आवेदन नहीं है.
+action.stand_in_banner: >-
+  यह केवल नकल वाला फ़ॉर्म प्रारूप है. यह हमारा बनाया नमूना है, आधिकारिक आवेदन
+  दस्तावेज़ नहीं.
+action.filled_count: "आपके दस्तावेज़ों से {count} खाने भरे."
+action.gap_intro: "ये अब भी आपको देने होंगे:"
+action.gap_line: "{label}"
+action.gap_document: "अपना {document} लाइए, उससे इनमें से {count} मिल जाएंगे."
+action.complete: "यह फ़ॉर्म जो मांगता है उसमें कुछ भी बाकी नहीं है."
+action.tracking: "आपकी नकल संदर्भ संख्या: {reference}"
+action.approval_pending: >-
+  आवेदन दाखिल करने का अर्थ मंजूरी नहीं है. वह निर्णय {decider} ही लेते हैं.
