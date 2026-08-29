@@ -1,137 +1,248 @@
-# Judge Q&A: the 10 hardest questions
+# Judge Q&A
 
-**How to use this:** I will ask you these one at a time in chat. You answer, I tell you
-whether it survives a judge and how to tighten it. Do not read my model answers first, that
-defeats the exercise. This file is the record of the questions and the traps in each.
+**How to use this:** I ask you these one at a time in chat. You answer out loud, I tell you
+whether it survives and how to tighten it. **Do not read the traps first** — that defeats
+the exercise. Read only the fact sheet at the bottom, which you must have exact.
 
-Rehearsal rule: **an answer over 30 seconds is a losing answer.** Judges read length as
-uncertainty. Lead with the claim, then one piece of evidence, then stop.
+**Rehearsal rule: an answer over 30 seconds is a losing answer.** Judges read length as
+uncertainty. Claim, one piece of evidence, stop. Then offer the screen.
 
----
-
-## Q1. How is this different from myScheme?
-*The question you will definitely get. If you fumble this, nothing else matters.*
-
-**Trap:** listing features. myScheme also has features.
-**What must be in your answer:** myScheme tells you a scheme exists. It does not prove your
-eligibility against the clause, it does not refuse when it cannot verify, and it does not
-fill your form. Name all three in one breath, then offer to show the refusal.
+**Revised 2026-08-30.** Re-pointed from welfare-first to SIH26092, and every scheme count
+corrected: this said "six schemes" throughout and it is ten.
 
 ---
 
-## Q2. Is your corpus real, or did you write those rules yourselves?
+## The frame you are answering from
 
-**Trap:** saying "yes it's real" and moving on. Judges have seen fake corpora.
-**What must be in your answer:** a number, a source, and an offer. Six schemes, every clause
-transcribed verbatim from sjsa.maharashtra.gov.in, pmkisan.gov.in, nha.gov.in and PIB, every
-one with a live link on screen. Then open appendix slide A2 and let them click one.
+The problem statement is **SIH26092, "AI-Driven Scheme Matching for Marginalized
+Entrepreneurs"**, Ministry of Social Justice & Empowerment. So:
 
----
-
-## Q3. What happens when it's wrong?
-
-**Trap:** "it won't be wrong." Fatal.
-**What must be in your answer:** the distinction between being wrong and being *confidently*
-wrong. Our failure mode is refusing something we could have answered, not asserting something
-false, because a predicate cannot resolve TRUE without a document-backed evidence pointer.
-Name the cost of that trade honestly: we under-claim.
+- **The entrepreneur corpus is the demo.** NSFDC, Stand-Up India, VCF-SC.
+- **Welfare is the reveal**, not the pitch. Sunita comes in at the end as "same engine,
+  new corpus", in thirty seconds, to show the thing generalises.
+- If you open on the widow, you have answered a different problem statement than the one
+  you registered for.
 
 ---
 
-## Q4. Did you actually build the agentic layer, or is that a video?
+## Q1. It says AI-Driven Scheme Matching. Where is the AI?
+*The question that decides your round. Everything else is secondary.*
 
-**Trap:** defensiveness, or overclaiming that you file to the real portal.
+**Trap:** inventing AI you do not have, or apologising for not having it. Both lose. There
+is no model in this system: `requirements.txt` is FastAPI, pydantic, PyYAML, Pillow,
+python-multipart. A judge who asks a follow-up will find that in ten seconds.
+
+**What must be in your answer:** own it as a decision, not a gap. Eligibility is decided by
+code against a transcribed clause, because a wrong answer here sends a real person to a
+government office to be turned away. Then give the sharp version: *a model that is right
+95% of the time is a system that lies to one woman in twenty, and she is the one who
+cannot afford the bus fare.* The matching is intelligent; it is just not stochastic.
+
+**Then immediately offer the refusal demo.** Do not wait to be asked. The strongest possible
+answer to "where is the AI" is showing the machine decline to answer and explain why.
+
+**If they push — "so it is just if-else":** three-valued logic where UNKNOWN propagates, a
+typed verdict object, and a Guard with six triggers that can veto a verdict the evaluator
+was willing to give. Then the honest close: the contribution is architectural, not
+statistical, and it is that dishonesty is structurally unrepresentable rather than
+discouraged by a prompt.
+
+---
+
+## Q2. How is this different from myScheme?
+
+**Trap:** listing features. myScheme has features too.
+
+**What must be in your answer:** myScheme tells you a scheme *exists*. It does not prove
+your eligibility against the clause, it does not refuse when it cannot verify, and it does
+not fill your form. Three things, one breath, then offer the screen.
+
+---
+
+## Q3. Is your corpus real, or did you write those rules yourselves?
+
+**Trap:** "yes it's real" and moving on. Judges have seen invented corpora.
+
+**What must be in your answer:** a number, a source, an offer. **Ten schemes across three
+verticals**, every clause transcribed verbatim, every one carrying a live link on screen —
+nsfdc.nic.in, standupmitra.in, ifciltd.com, pmkisan.gov.in, nha.gov.in, nsap.nic.in,
+scholarships.gov.in, sjsa.maharashtra.gov.in. Then let them click one.
+
+**Say the provisional one before they find it.** Nine are VERIFIED against the source.
+Sanjay Gandhi Niradhar Anudan Yojana is marked PROVISIONAL in the corpus and the UI says so
+on every clause. Volunteering that is worth more than the scheme is.
+
+---
+
+## Q4. Ten schemes out of thousands. Isn't this a toy?
+
+**Trap:** promising to scale to thousands. Everyone promises that; nobody is believed.
+
+**What must be in your answer:** invert it. Ten schemes at clause-level depth surfaced
+structure a thousand shallow entries never would — scheme stacking, unverifiable predicates,
+rule amendment tracking, and two lapsed schemes we only found because we read the validity
+text. Ingestion is the easy part. Semantics is not.
+
+---
+
+## Q5. Show me it being wrong.
+
+**Trap:** "it won't be wrong." Fatal, and invites them to spend the session hunting.
+
+**What must be in your answer:** the distinction between being wrong and being
+*confidently* wrong. Our failure mode is refusing something we could have answered, never
+asserting something false, because a predicate cannot resolve TRUE without a
+document-backed evidence pointer. Name the cost honestly: **we under-claim.** A citizen may
+have to fetch a paper we could arguably have inferred.
+
+---
+
+## Q6. A citizen acts on your output, gets rejected at the office, loses a day's wages. Who is accountable?
+
+**Trap:** treating it as a legal question. It is a design question.
+
+**What must be in your answer:** the design consequences. Every output carries the clause
+and the office, so she arrives with the rule in hand rather than our opinion. **We produce
+applications, not determinations** — the same sentence the UI itself uses: *whether it is
+approved is not mine to promise.* The refusal path exists so we never send someone on a
+trip we could not justify.
+
+---
+
+## Q7. Your UI has the tricolour and a chakra on it. Is this a government service?
+
+*New. You now wear the national colours, so expect this.*
+
+**Trap:** treating it as hostile. It is a softball if you have already said it.
+
+**What must be in your answer:** point at your own footer, in whichever language is on
+screen: not an official Government of India service, not affiliated with any ministry or
+department, only the department concerned can approve an application. Then: the State
+Emblem appears nowhere in the product, deliberately, because that is restricted to
+government bodies under the 2005 Act. Knowing that unprompted reads as seriousness.
+
+---
+
+## Q8. Did you build the agentic layer, or is that a video?
+
+**Trap:** defensiveness, or implying you file to a real portal.
+
 **What must be in your answer:** what is real (extraction, matching, the Guard, form fill,
-tracking reference) and what is simulated (the actual submission to a government portal),
-stated in that order, without being asked twice. Then note that you labelled it on the slide
-yourselves.
+tracking reference) and what is simulated (submission to a government portal), in that
+order, unprompted. Then note you labelled it SIMULATED on the screen yourselves.
+
+**Do not claim live OCR on the deployed site.** There is no tesseract binary on Vercel;
+`profile/ocr.py` checks `shutil.which` and reports itself unavailable rather than crashing.
+If you want to show OCR, show it locally and say which it is.
 
 ---
 
-## Q5. Your income threshold is Rs 21,000 a year. That's nonsense in 2026. So is your engine
-## giving people wrong advice?
+## Q9. Your income threshold is Rs 21,000 a year. That's nonsense in 2026.
 
 **Trap:** apologising for the government's rule as if it were your bug.
-**What must be in your answer:** we quote the rule as written and flag it as a stale
-threshold rather than silently reinterpreting it. Then point out the corpus tracks
-`last_amended` precisely because rules move (PMAY-G exclusions relaxed 2024, Vay Vandana
-added Oct 2024). A system that silently modernises a statutory threshold is committing a
-different and worse error.
+
+**What must be in your answer:** we quote the rule as written and flag it as stale rather
+than silently reinterpreting it. The corpus tracks `last_amended` precisely because rules
+move. A system that quietly modernises a statutory threshold commits a different and worse
+error — it invents an entitlement the department will refuse.
 
 ---
 
-## Q6. You claim it runs offline on a cheap device. Show me. What model, what hardware,
-## what latency?
-
-**Trap:** hand-waving. This is the claim in your brief most likely to be under-built.
-**What must be in your answer:** be precise about what runs local today versus what is
-architecture. If retrieval and the Guard run local and only generation needs a model, say
-exactly that. **If you have not actually run it on constrained hardware by 2 Sept, do not
-claim offline as done.** Downgrade it to slide 10 vision language. This is the question I
-expect you to be weakest on right now.
-
----
-
-## Q7. A citizen acts on your output, gets rejected at the office, and loses a day's wages.
-## Who is accountable?
-
-**Trap:** treating it as a legal question. It is an ethics-and-design question.
-**What must be in your answer:** the design consequences. Every output carries the clause and
-the office, so the citizen arrives with the rule in hand rather than our opinion. We produce
-applications, not determinations. The refusal path exists specifically so we never send
-someone on a trip we could not justify.
-
----
-
-## Q8. Six schemes out of thousands. Isn't this a toy?
-
-**Trap:** promising to scale to thousands. Everybody promises that.
-**What must be in your answer:** invert it. Six schemes done to clause-level depth surfaced
-real structure that a thousand shallow entries never would: scheme stacking (IGNWPS is
-topped up by Sanjay Gandhi, they do not add), unverifiable predicates (SECC 2011), and rule
-amendment tracking. Ingestion is the easy part. Getting the semantics right is not.
-
----
-
-## Q9. Your refusal is impressive, but you chose the query. Let me pick one.
+## Q10. Your refusal is impressive, but you chose the query. Let me pick.
 
 **Trap:** accepting an open text box, or refusing outright and looking scripted.
-**What must be in your answer:** the redirect from the Guard doc. "Pick any of our six and
-I'll show you either the proof chain or the refusal for that one." Then actually do it.
-Which means: **rehearse all six, both directions.** This question is why.
+
+**What must be in your answer:** "Pick any of our ten and I'll show you the proof chain or
+the refusal for that one." Then actually do it. **Which means rehearse all ten, both
+directions.** This question is the entire reason to rehearse.
 
 ---
 
-## Q10. What's your actual contribution here? This is RAG plus a form filler. Where's the
-## novelty?
+## Q11. You claim it runs offline. Show me. What hardware, what latency?
 
-**Trap:** claiming novel ML. You do not have novel ML and a judge will know.
-**What must be in your answer:** the novelty is architectural and it is the refusal being a
-deterministic gate on a typed verdict object rather than a prompt instruction. Most systems
-in this space ask a model to be honest. Ours makes dishonesty structurally unrepresentable,
-because a predicate cannot be TRUE without an evidence pointer. Then land the framing: the
-contribution is a trust substrate, and welfare is the first corpus running on it.
+**Trap:** hand-waving. Historically your weakest answer.
 
----
+**What must be in your answer:** be exact about what runs local *today* versus what is
+architecture. The engine has no model and no network dependency, so "offline" is cheap for
+us in a way it is not for an LLM system — say that, it is a genuine advantage. The PWA
+service worker caches the shell and stamps cached API answers so a stored verdict can never
+be passed off as live.
 
-## Questions that are not on this list but may come
-
-Have a one-liner ready for each. Do not build slides.
-
-- Which languages, and did you test the Marathi with a native speaker
-- What is your data privacy story for uploaded income certificates and Aadhaar
-- How does this reach a citizen who does not own a smartphone
-- Who pays for it at scale
-- Why should a state government trust your corpus over their own portal
-- What happens when two schemes conflict
+**If you have not run it on constrained hardware by 2 Sept, do not call offline done.**
 
 ---
 
-## The two things to never say
+## Q12. What is your actual contribution? This is RAG plus a form filler.
+
+**Trap:** claiming novel ML. You have none and they will know.
+
+**What must be in your answer:** the novelty is architectural — the refusal is a
+deterministic gate on a typed verdict object, not a prompt instruction. Most systems in this
+space ask a model to be honest. Ours makes dishonesty unrepresentable, because a predicate
+cannot be TRUE without an evidence pointer. Land it: **the contribution is a trust
+substrate, and marginalised-entrepreneur schemes are the first corpus running on it.**
+
+---
+
+## The demo beat that wins the room
+
+**Stand-Up India.** Its own guidelines say the scheme runs "upto 31.03.2025". It is now past
+that. The engine reports the scheme as closed instead of cheerfully matching an entrepreneur
+to something that no longer exists — which is what a similarity-search system does, because
+nothing in an embedding knows what a date means.
+
+**VCF-SC is the second one**, valid to 31.03.2026, also now past.
+
+Land it in one line: *every scheme-matching demo you will see today would have recommended
+these two.*
+
+---
+
+## Fact sheet — have these exact
+
+| | |
+|---|---|
+| Problem statement | SIH26092, AI-Driven Scheme Matching for Marginalized Entrepreneurs, MoSJ&E |
+| Schemes | **10**: entrepreneur 3, welfare 5, student 2 |
+| Entrepreneur | NSFDC Term Loan, Stand-Up India, Venture Capital Fund for SC |
+| Welfare | PM-KISAN, IGNWPS, PM-JAY, Ayushman Vay Vandana Card, SGNAY |
+| Student | Pre-Matric SC, Top Class SC |
+| Verification | 9 VERIFIED, 1 PROVISIONAL (SGNAY) |
+| Lapsed | Stand-Up India (31.03.2025), VCF-SC (31.03.2026) |
+| Guard triggers | T1–T6; T6 is the lapsed-scheme catch |
+| Tests | 378 passing, 1 skipped |
+| Dependencies | FastAPI, pydantic, PyYAML, Pillow, python-multipart. **No model, no API key.** |
+| Languages | English, Marathi, Hindi |
+
+---
+
+## Questions with no slide, one line each
+
+- **Did a native speaker check the Marathi?** — *Not yet.* Drafted and under review, and the
+  review sheet is in the repo. Do not claim otherwise; a Marathi-speaking judge will know
+  inside one sentence.
+- Privacy for uploaded certificates — nothing is stored; two tests assert it
+- Reaching a citizen with no smartphone — the operator at a CSC or Panchayat is the user
+- Who pays at scale
+- Why a state would trust your corpus over their own portal
+- What happens when two schemes conflict — stacking; IGNWPS is topped up by SGNAY, they do
+  not add
+
+---
+
+## Never say these two things
 
 1. **"It never hallucinates."** Say "it cannot assert a claim without a source-backed
-   predicate, and here is the test suite that proves it." Absolutes invite a judge to spend
-   the rest of the session hunting for a counterexample, and they usually find one.
+   predicate, and here is the suite that proves it." Absolutes invite a hunt for the
+   counterexample, and there usually is one.
 2. **"We'll add that later."** Say "that is deliberately out of scope, and here is why."
-   Scope discipline reads as engineering maturity. Vague future promises read as the
-   opposite.
+   Scope discipline reads as maturity. Vague future promises read as the opposite.
+
+---
+
+## Before you walk in
+
+Read `PROJECT-BRIEF-ADDENDUM.md` §6. **Nobody has read the full SIH26092 text behind the SIH
+login.** Every answer above assumes the title means matching entrepreneurs to government
+schemes. If it means something else, Q1 changes and so does the demo order. That is still
+the highest-value thing you can do, and it takes ten minutes.
