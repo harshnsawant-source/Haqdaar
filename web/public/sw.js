@@ -20,7 +20,19 @@
  * the UI must show that it is looking at a stored answer. Never present cached as live.
  */
 
-const VERSION = 'v1';
+/*
+ * BUMP THIS ON EVERY CHANGE TO SHELL_ASSETS OR TO THE SHELL ITSELF.
+ *
+ * The cache NAME is derived from it, and `activate` deletes only caches whose names no
+ * longer match. Leaving the version alone therefore keeps the previous shell cache
+ * alive, and `cacheFirst` below returns a cached entry without ever revalidating it, so
+ * a returning visitor can be served the old app indefinitely while a new one deploys
+ * fine for everybody else. That happened on 2026-08-30: the maskable icon was added to
+ * SHELL_ASSETS and this line was not touched.
+ *
+ * v2: the ह mark, the opening screen and the maskable icon.
+ */
+const VERSION = 'v2';
 const SHELL_CACHE = `haqdaar-shell-${VERSION}`;
 const DATA_CACHE = `haqdaar-data-${VERSION}`;
 
