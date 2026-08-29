@@ -83,9 +83,38 @@
     say('caches: not supported here');
   }
 
+  // Storage. A stuck worker is only one of the ways a device can hold a bad state, and
+  // clearing caches while leaving localStorage behind fixes half a problem. Everything
+  // the app keeps is a convenience it can rebuild, so none of this is precious.
+  try {
+    var lsKeys = Object.keys(localStorage);
+    localStorage.clear();
+    say('localStorage: cleared ' + (lsKeys.length ? lsKeys.join(', ') : '(was empty)'));
+  } catch (e) { say('localStorage: could not clear (' + e.message + ')'); }
+
+  try {
+    sessionStorage.clear();
+    say('sessionStorage: cleared');
+  } catch (e) { say('sessionStorage: could not clear (' + e.message + ')'); }
+
+  if (window.indexedDB && indexedDB.databases) {
+    jobs.push(
+      indexedDB.databases().then(function (dbs) {
+        if (!dbs.length) { say('indexedDB: none'); return; }
+        return Promise.all(dbs.map(function (d) { return indexedDB.deleteDatabase(d.name); }))
+          .then(function () { say('indexedDB: deleted ' + dbs.length); });
+      }).catch(function (e) { say('indexedDB: could not clear (' + e.message + ')'); })
+    );
+  }
+
+  // Diagnostics, so a report back says something useful rather than "still broken".
+  say('');
+  say('browser: ' + navigator.userAgent);
+
   Promise.all(jobs).then(function () {
     say('');
     say('Done. Open Haqdaar below, and if it still looks wrong, reload once more.');
+    say('If it is STILL wrong, send a photo of this whole box.');
   });
 })();
 </script>
