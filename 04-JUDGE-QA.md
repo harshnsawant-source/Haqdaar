@@ -28,11 +28,16 @@ Entrepreneurs"**, Ministry of Social Justice & Empowerment. So:
 ## Q1. It says AI-Driven Scheme Matching. Where is the AI?
 *The question that decides your round. Everything else is secondary.*
 
-**Trap:** inventing AI you do not have, or apologising for not having it. Both lose. There
-is no model in this system: `requirements.txt` is FastAPI, pydantic, PyYAML, Pillow,
-python-multipart. A judge who asks a follow-up will find that in ten seconds.
+**The answer is in the problem statement itself.** SIH26092 asks for a *"Smart Scheme
+Recommender: An **AI/rule-based engine**"*. Rule-based is one of the two options the
+ministry named. Quote that clause back and the question is over in one sentence.
 
-**What must be in your answer:** own it as a decision, not a gap. Eligibility is decided by
+**Trap:** apologising, or inventing a model you do not have. Both lose, and both are now
+unnecessary. There is no model in this system: `requirements.txt` is FastAPI, pydantic,
+PyYAML, Pillow, python-multipart. A judge who checks will find that in ten seconds.
+
+**What must be in your answer:** lead with their own wording, then own the choice as a
+decision rather than a gap. Eligibility is decided by
 code against a transcribed clause, because a wrong answer here sends a real person to a
 government office to be turned away. Then give the sharp version: *a model that is right
 95% of the time is a system that lies to one woman in twenty, and she is the one who
@@ -242,7 +247,10 @@ these two.*
 
 ## Before you walk in
 
-Read `PROJECT-BRIEF-ADDENDUM.md` §6. **Nobody has read the full SIH26092 text behind the SIH
-login.** Every answer above assumes the title means matching entrepreneurs to government
-schemes. If it means something else, Q1 changes and so does the demo order. That is still
-the highest-value thing you can do, and it takes ten minutes.
+Read `docs/SIH26092-PS.md`. The full text is now known and it changes three things:
+
+1. Q1 is largely solved. The PS says "AI/rule-based engine" in its own words.
+2. The PS names three loan products by ceiling and **the corpus holds one of them**.
+   Micro Finance (Rs 1.40 lakh) and the Educational Loan Scheme are missing.
+3. It asks for an EMI calculator and a geo-spatial Channel Partner locator. Neither
+   exists. Expect to be asked, and answer with scope, not with a promise.
