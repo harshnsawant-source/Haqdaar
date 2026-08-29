@@ -23,6 +23,43 @@ export const LANGUAGE_NAMES = { en: 'English', mr: 'मराठी', hi: 'ह�
 const en = {
   appName: 'Haqdaar',
   tagline: 'Proof, not answers.',
+  // Stated plainly, and stated by us before anyone has to ask. The product wears the
+  // national colours and shows a chakra; that makes saying what it is NOT part of
+  // being honest, not a legal footnote. The second half is the same promise the
+  // verdict cards make: eligibility is ours to check, approval is not ours to give.
+  disclaimer:
+    'Haqdaar is not an official Government of India service, and is not affiliated with any ministry or department. It reads published scheme rules and shows what they say; only the department concerned can approve an application.',
+  /* Vertical labels. These moved here from App.jsx, where they were module-level
+     English constants that never saw the language context, so the three front-door
+     buttons stayed in English on a Marathi or Hindi page.
+
+     App.jsx still owns which verticals EXIST and the order they appear in; this file
+     only says how to name them. A vertical the API serves that is missing here still
+     renders, under its own id. */
+  verticals: {
+    entrepreneur: {
+      group: 'Entrepreneur schemes',
+      door: 'Starting or running a business',
+      eg: 'Loans, capital, subsidies for your own work',
+    },
+    welfare: {
+      group: 'Welfare schemes',
+      door: 'Income, pension and family support',
+      eg: 'Widowhood, old age, farming, health cover',
+    },
+    student: {
+      group: 'Student schemes',
+      door: 'Paying for education',
+      eg: 'School and college scholarships',
+    },
+  },
+  //: Demo fixture labels. Same bug, same fix: these were English constants in App.jsx.
+  who: {
+    'entrepreneur-01': 'First-time SC woman entrepreneur',
+    'entrepreneur-02': 'First-time entrepreneur, no caste certificate',
+    sunita: 'Sunita — 60, widow, small farmer',
+    'student-01': 'SC student in class 10',
+  },
   themeToLight: 'Light',
   themeToDark: 'Dark',
   // The hero line. Says the problem before it says the product, which is why it lands:
@@ -132,6 +169,31 @@ const en = {
 const mr = {
   appName: 'हक्कदार',
   tagline: 'पुरावा, नुसते उत्तर नाही.',
+  disclaimer:
+    'हक्कदार ही भारत सरकारची अधिकृत सेवा नाही, आणि कोणत्याही मंत्रालयाशी किंवा विभागाशी संलग्न नाही. ती प्रकाशित योजनांचे नियम वाचते आणि ते काय सांगतात ते दाखवते; अर्ज मंजूर करण्याचा अधिकार फक्त संबंधित विभागाला आहे.',
+  verticals: {
+    entrepreneur: {
+      group: 'उद्योजकांसाठी योजना',
+      door: 'व्यवसाय सुरू करणे किंवा चालवणे',
+      eg: 'कर्ज, भांडवल, स्वतःच्या कामासाठी अनुदान',
+    },
+    welfare: {
+      group: 'कल्याणकारी योजना',
+      door: 'उत्पन्न, निवृत्तिवेतन आणि कौटुंबिक आधार',
+      eg: 'वैधव्य, वृद्धापकाळ, शेती, आरोग्य विमा',
+    },
+    student: {
+      group: 'विद्यार्थ्यांसाठी योजना',
+      door: 'शिक्षणाचा खर्च भागवणे',
+      eg: 'शाळा व महाविद्यालयीन शिष्यवृत्ती',
+    },
+  },
+  who: {
+    'entrepreneur-01': 'प्रथमच उद्योग सुरू करणारी अनुसूचित जातीतील महिला',
+    'entrepreneur-02': 'प्रथमच उद्योग सुरू करणारी व्यक्ती, जात प्रमाणपत्र नाही',
+    sunita: 'सुनीता — 60, विधवा, अल्पभूधारक शेतकरी',
+    'student-01': 'अनुसूचित जातीतील दहावीतील विद्यार्थी',
+  },
   themeToLight: 'उजळ',
   themeToDark: 'गडद',
   hero: 'शासनाच्या योजनेचे नाव माहीत असल्याशिवाय तिचा लाभ मिळू नये, असे असता कामा नये.',
@@ -228,6 +290,31 @@ const mr = {
 const hi = {
   appName: 'हक़दार',
   tagline: 'प्रमाण, केवल उत्तर नहीं.',
+  disclaimer:
+    'हक़दार भारत सरकार की आधिकारिक सेवा नहीं है, और किसी भी मंत्रालय या विभाग से संबद्ध नहीं है। यह प्रकाशित योजना नियमों को पढ़ता है और वे क्या कहते हैं यह दिखाता है; आवेदन स्वीकृत करने का अधिकार केवल संबंधित विभाग को है।',
+  verticals: {
+    entrepreneur: {
+      group: 'उद्यमियों के लिए योजनाएँ',
+      door: 'व्यवसाय शुरू करना या चलाना',
+      eg: 'ऋण, पूंजी, अपने काम के लिए सब्सिडी',
+    },
+    welfare: {
+      group: 'कल्याणकारी योजनाएँ',
+      door: 'आय, पेंशन और पारिवारिक सहायता',
+      eg: 'वैधव्य, वृद्धावस्था, खेती, स्वास्थ्य कवर',
+    },
+    student: {
+      group: 'विद्यार्थियों के लिए योजनाएँ',
+      door: 'शिक्षा का खर्च उठाना',
+      eg: 'स्कूल और कॉलेज छात्रवृत्ति',
+    },
+  },
+  who: {
+    'entrepreneur-01': 'पहली बार उद्यम शुरू करने वाली अनुसूचित जाति की महिला',
+    'entrepreneur-02': 'पहली बार उद्यम शुरू करने वाला व्यक्ति, जाति प्रमाणपत्र नहीं',
+    sunita: 'सुनीता — 60, विधवा, छोटी किसान',
+    'student-01': 'कक्षा 10 का अनुसूचित जाति का विद्यार्थी',
+  },
   themeToLight: 'उजाला',
   themeToDark: 'गहरा',
   hero: 'किसी सरकारी योजना का नाम जाने बिना भी उसका लाभ मिलना चाहिए.',

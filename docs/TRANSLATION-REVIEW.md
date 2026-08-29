@@ -171,3 +171,76 @@ every other document, which are all direct-case ("तुमचा आधार �
 
 Please answer just this: is the rendered sentence acceptable as it stands, or does it
 need its own frame?
+
+
+## Added 2026-08-30: the disclaimer
+
+- [ ] Reviewed
+
+`web/src/strings.js`, key `disclaimer`, in all three languages. Drafted, not reviewed.
+
+This one is different from everything above it. It is not a label a citizen can shrug
+off if it reads oddly; it is the sentence that says Haqdaar does not speak for the
+government. It sits at the foot of every screen, under a masthead carrying the
+national colours and a chakra. If the Marathi or Hindi wording is weak, the English
+promise is the only one that actually got made.
+
+| | |
+|---|---|
+| **en** | Haqdaar is not an official Government of India service, and is not affiliated with any ministry or department. It reads published scheme rules and shows what they say; only the department concerned can approve an application. |
+| **mr** | हक्कदार ही भारत सरकारची अधिकृत सेवा नाही, आणि कोणत्याही मंत्रालयाशी किंवा विभागाशी संलग्न नाही. ती प्रकाशित योजनांचे नियम वाचते आणि ते काय सांगतात ते दाखवते; अर्ज मंजूर करण्याचा अधिकार फक्त संबंधित विभागाला आहे. |
+| **hi** | हक़दार भारत सरकार की आधिकारिक सेवा नहीं है, और किसी भी मंत्रालय या विभाग से संबद्ध नहीं है। यह प्रकाशित योजना नियमों को पढ़ता है और वे क्या कहते हैं यह दिखाता है; आवेदन स्वीकृत करने का अधिकार केवल संबंधित विभाग को है। |
+
+Three things to check, in order of how much they cost if wrong:
+
+1. **"not affiliated" must stay absolute.** Marathi `संलग्न नाही` and Hindi `संबद्ध नहीं`
+   should read as a flat denial of any connection, not as "not directly involved".
+2. **The second clause must not promise approval.** `अर्ज मंजूर करण्याचा अधिकार फक्त
+   संबंधित विभागाला आहे` has to keep the sense that approval belongs to the
+   department ALONE. It is the same promise the verdict cards make, and softening it
+   here contradicts them.
+3. **Check the app name in each script.** `हक्कदार` in Marathi and `हक़दार` in Hindi,
+   matching `appName`. The nukta on क़ is easy to lose in a copy-paste.
+
+Note this section is prose, not a template: there are no `{slot}` values and no
+numbers, so the build audit cannot catch a bad translation here. Only a reader can.
+
+
+## Added 2026-08-30: the front door and the demo profile labels
+
+- [ ] Reviewed
+
+`web/src/strings.js`, keys `verticals` and `who`, in Marathi and Hindi. Drafted, not
+reviewed.
+
+These were English constants inside `App.jsx` until now, so on a Marathi or Hindi page
+the three front-door buttons and every demo profile label rendered in English. That is
+the FIRST thing on the screen after the heading, which makes it the worst possible
+place for it. Reported from use, not caught by a test.
+
+`verticals` — the three doors. Each has a `door` (the button), an `eg` (the examples
+under it) and a `group` (the heading over the results):
+
+| | door | eg |
+|---|---|---|
+| **mr** entrepreneur | व्यवसाय सुरू करणे किंवा चालवणे | कर्ज, भांडवल, स्वतःच्या कामासाठी अनुदान |
+| **mr** welfare | उत्पन्न, निवृत्तिवेतन आणि कौटुंबिक आधार | वैधव्य, वृद्धापकाळ, शेती, आरोग्य विमा |
+| **mr** student | शिक्षणाचा खर्च भागवणे | शाळा व महाविद्यालयीन शिष्यवृत्ती |
+| **hi** entrepreneur | व्यवसाय शुरू करना या चलाना | ऋण, पूंजी, अपने काम के लिए सब्सिडी |
+| **hi** welfare | आय, पेंशन और पारिवारिक सहायता | वैधव्य, वृद्धावस्था, खेती, स्वास्थ्य कवर |
+| **hi** student | शिक्षा का खर्च उठाना | स्कूल और कॉलेज छात्रवृत्ति |
+
+What to check:
+
+1. **`door` is what she picks herself from, before she has told us anything.** It has
+   to describe a SITUATION she recognises, not a scheme category. "Income, pension and
+   family support" works because a widow reads it and thinks yes, that is me.
+2. **`eg` must not read as a promise.** These are examples of what the door covers,
+   not a list of what she will get.
+3. **Caste wording in `who`.** `अनुसूचित जाती` / `अनुसूचित जाति` is the formal term and
+   is what the corpus uses. It should not be softened or swapped for a colloquialism.
+4. **Sunita's label keeps ASCII digits** (`60`), matching how numbers reach the screen
+   everywhere else in the UI. Do not convert to Devanagari numerals here.
+
+Like the disclaimer section above, this is prose with no slots and no template audit
+behind it. Nothing will go red if it is wrong.

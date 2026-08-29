@@ -28,17 +28,34 @@
   --radius: 14px;
   --pad: 16px;
 
-  /* The national colours. They appear in EXACTLY two places: the rule across the
-     top edge, and a low-opacity wash on the page background. Never on or near a
-     card, because saffron sits beside --blocked and India green beside
-     --eligible, and those four status colours are what a citizen who cannot read
-     learns first. Decoration must not compete with the only accessible signal in
-     the product. */
+  /* The national colours. They appear in EXACTLY three places: the rule across the
+     top edge, a low-opacity wash on the page background, and the open ring of the
+     logo badge on the OPENING SCREEN only. Never on or near a card, because saffron
+     sits beside --blocked and India green beside --eligible, and those four status
+     colours are what a citizen who cannot read learns first. Decoration must not
+     compete with the only accessible signal in the product.
+
+     The badge is confined to the opening screen for exactly that reason: there are
+     no verdict cards on it. The masthead and the favicon use the plain mark. See
+     LogoBadge in Logo.jsx, which carries the same rule. */
   --saffron: #ff9933;
   --india-green: #138808;
   /* Navy, as on the flag. Decoration only: it appears in the masthead and as a page
      watermark, never on a card, for the same reason as the other two. */
   --chakra: #000080;
+
+  /* The logo. Currently the same navy as the chakra, deliberately given its own name:
+     the mark and the national wheel are different things, and a future change to one
+     must not silently restyle the other. See Logo.jsx. */
+  --brand: #000080;
+
+  /* The badge ring. Saffron holds up on both grounds, but India green at #138808 goes
+     muddy on #0b1220 while the saffron beside it stays bright, so the two are tuned
+     separately. Same lesson as the background wash above, applied before it had to be
+     reported a third time. The lifted green stays yellow-green rather than drifting
+     toward --eligible mint (#34d399), which would read as a status colour. */
+  --badge-saffron: #ff9933;
+  --badge-green: #138808;
 }
 
 /* Three theme states, which is what a real toggle needs.
@@ -67,6 +84,8 @@
     --not-eligible: #94a3b8;
     --unverifiable: #a5b4fc;
     --chakra: #8494e0;
+    --brand: #8494e0;
+    --badge-green: #35b31a;
   }
 }
 
@@ -85,6 +104,8 @@
     --not-eligible: #94a3b8;
     --unverifiable: #a5b4fc;
     --chakra: #8494e0;
+    --brand: #8494e0;
+    --badge-green: #35b31a;
 }
 
 * { box-sizing: border-box; }
@@ -173,16 +194,21 @@ body::before {
 
 /* The Ashoka Chakra.
  *
- * Two placements, one component. The masthead mark is legible and full strength; the
- * watermark is a wash. Neither goes on or near a card, which is the same rule the
- * saffron and green follow: the four status colours are the only signal a citizen who
- * cannot read can use, and decoration must never compete with it.
+ * Two placements, one component: the page watermark below, and the halo on the
+ * opening screen. It is NO LONGER the masthead mark -- the logo took that slot, and
+ * `.chakra-mark` was deleted with it rather than left behind as dead CSS.
+ *
+ * Neither placement goes on or near a card, which is the same rule the saffron and
+ * green follow: the four status colours are the only signal a citizen who cannot read
+ * can use, and decoration must never compete with it.
  */
-.chakra-mark {
-  width: 22px;
-  height: 22px;
+/* The logo in the masthead. The plain mark, never the tricolour badge: this sits
+   directly above a column of verdict cards. See LogoBadge in Logo.jsx. */
+.brand-mark {
+  width: 26px;
+  height: 26px;
   flex: none;
-  color: var(--chakra);
+  color: var(--brand);
   /* The masthead is baseline-aligned for the wordmark and tagline. An SVG has no
      baseline worth aligning to, so it centres against the title instead. */
   align-self: center;
@@ -746,4 +772,251 @@ details.ruled-out .tagline { margin: 8px 0 0; }
     display: block !important;
   }
   a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+}
+
+
+/* ---------------------------------------------------------------------------
+ * The opening screen.
+ *
+ * Sits at z-index 40, one layer BELOW the tricolour rule at 50, so the rule keeps
+ * crowning the page while the panel is up and the handover to the app reads as one
+ * continuous surface rather than a cut.
+ *
+ * The panel is a <button>, so every one of the global button styles has to be undone
+ * here. Class beats element on specificity, so these win; the reset is explicit
+ * rather than `all: unset` because a stray inherited value on a full-screen overlay
+ * is a bug nobody would think to look for.
+ * ------------------------------------------------------------------------- */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+
+  /* undoing button */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  min-height: 0;
+  text-align: center;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+
+  background-color: var(--bg);
+  /* A DEEPER tricolour wash than the app carries, and deliberately so.
+     
+     The page wash is held down to 0.16 / 0.13 because it sits behind verdict cards,
+     where saffron next to --blocked and green next to --eligible would compete with
+     the only signal a citizen who cannot read can use. The opening screen has no
+     cards on it. Nothing here competes with anything, so the colour can do what it
+     cannot do anywhere else in the product and fill the screen.
+     
+     This is the answer to "put the flag in the background". The national flag is not
+     decoration and not a backdrop for lettering; the Flag Code is clear about that,
+     and a logo and a wordmark sitting on top of it is exactly the use it rules out.
+     The flag's COLOURS carrying the whole screen give the same presence and ask no
+     forgiveness. */
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 153, 51, 0.34) 0%,
+    rgba(255, 153, 51, 0.10) 30%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(19, 136, 8, 0.10) 72%,
+    rgba(19, 136, 8, 0.30) 100%
+  );
+
+  /* Transform only. Fading the panel out WHILE it slides shows the splash and the app
+     on top of each other as a double exposure, which reads as a rendering fault
+     rather than a transition. An opaque panel sliding off is a reveal. */
+  transition: transform 640ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .splash {
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 153, 51, 0.30) 0%,
+      rgba(255, 153, 51, 0.09) 30%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(19, 136, 8, 0.11) 72%,
+      rgba(19, 136, 8, 0.32) 100%
+    );
+  }
+}
+:root[data-theme="dark"] .splash {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 153, 51, 0.30) 0%,
+    rgba(255, 153, 51, 0.09) 30%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(19, 136, 8, 0.11) 72%,
+    rgba(19, 136, 8, 0.32) 100%
+  );
+}
+
+/* The swipe. Left, because that is the direction the mark's own head-line travels and
+   the direction "next" moves. */
+.splash.is-leaving {
+  transform: translateX(-100%);
+}
+
+/* The chakra as a halo behind the whole composition, filling the screen the way the
+   flag was meant to. It is the wheel from the flag, not the State Emblem, and it is
+   already used this way as the page watermark, so it introduces no new claim.
+   
+   Never animated, for the reason given at the chakra rules above: a spinning national
+   symbol is a novelty, and this is the front door of a page where someone finds out
+   whether she qualifies for a pension. */
+.splash-chakra {
+  position: absolute;
+  /* Sized and raised to sit BEHIND THE BADGE as a halo, not centred on the panel.
+     Filling the whole screen with it was tried first and the spokes ran straight
+     through the wordmark; the badge and the wheel are both circles, and at full size
+     they fight for the same middle. Ending the rim at the wordmark's cap height turns
+     the wheel into depth instead of a competing graphic. */
+  top: 41%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(88vw, 400px);
+  height: auto;
+  color: var(--chakra);
+  opacity: 0.055;
+  pointer-events: none;
+}
+
+/* Same correction as everywhere else in this file: a wash tuned on warm paper
+   disappears against #0b1220. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .splash-chakra { opacity: 0.085; }
+}
+:root[data-theme="dark"] .splash-chakra { opacity: 0.085; }
+
+.splash-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+}
+
+/* The badge arcs. Stroked here rather than on the element, because a var() inside an
+   SVG presentation attribute does not resolve. */
+.logo-badge .badge-arc-saffron { stroke: var(--badge-saffron); }
+.logo-badge .badge-arc-green { stroke: var(--badge-green); }
+
+.splash-mark {
+  width: min(50vw, 210px);
+  height: auto;
+  color: var(--brand);
+
+  /* The mark is written on, left to right, which is the direction Devanagari is
+     written. The clip is on the <svg> element rather than on the path inside it:
+     percentage insets resolve against an SVG child's bounding box inconsistently
+     between engines, while the svg box itself is reliable everywhere. */
+  clip-path: inset(0 100% 0 0);
+  animation: splash-write 900ms cubic-bezier(0.55, 0, 0.2, 1) 120ms forwards;
+}
+
+@keyframes splash-write {
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.splash-word {
+  font-family: Mukta, Hind, system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.1rem, 9vw, 3.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--brand);
+
+  opacity: 0;
+  transform: translateY(10px);
+  animation: splash-rise 500ms ease-out 820ms forwards;
+}
+
+.splash-tag {
+  color: var(--ink-soft);
+  font-size: 1rem;
+
+  opacity: 0;
+  transform: translateY(10px);
+  animation: splash-rise 500ms ease-out 960ms forwards;
+}
+
+@keyframes splash-rise {
+  to { opacity: 1; transform: none; }
+}
+
+/* Latin only. Devanagari has no case, and letter-spacing separates the shirorekha
+   between characters, which breaks the word visually. See Splash.jsx. */
+.splash-word.is-latin {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  /* Tracking adds space after the LAST letter too, which throws a centred line off
+     to the left by half that amount. */
+  text-indent: 0.14em;
+}
+
+.splash-rule {
+  width: 132px;
+  height: 1px;
+  background: var(--line);
+  opacity: 0;
+  animation: splash-rise 500ms ease-out 900ms forwards;
+}
+
+
+/* Hold the page still underneath, so a stray scroll during the animation does not
+   drop someone into the middle of their results. */
+.splash-open { overflow: hidden; }
+
+/* No draw, no swipe. The screen still appears, briefly, and fades: someone who has
+   asked for less motion should still see the name of the thing they opened. */
+@media (prefers-reduced-motion: reduce) {
+  .splash-mark {
+    animation: none;
+    clip-path: none;
+  }
+  .splash-word,
+  .splash-tag,
+  .splash-rule {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .splash {
+    transition: opacity 220ms linear;
+  }
+  .splash.is-leaving {
+    transform: none;
+    opacity: 0;
+  }
+}
+
+
+/* The disclaimer.
+ *
+ * Quiet, but permanent. Not a dismissible banner: it has to still be there on the
+ * hundredth visit, and on the empty first screen, which is exactly where someone
+ * decides whether this looks like a government site.
+ *
+ * Sized and coloured like fine print on purpose. It is not competing for attention
+ * with a verdict; it is there to be found, and to be already said before a judge or a
+ * citizen thinks to ask.
+ */
+.disclaimer {
+  display: block;
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  text-wrap: pretty;
 }

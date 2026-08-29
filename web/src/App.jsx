@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Card } from './Card.jsx';
 import Chakra from './Chakra.jsx';
+import Logo from './Logo.jsx';
 import { Intake } from './Intake.jsx';
+import Splash from './Splash.jsx';
 import { Upload } from './Upload.jsx';
 import { fetchEvaluation, fetchNeeds, fetchPersonas, purgeSession, understandText } from './api.js';
 import { forget, recall, remember, savedAtLabel } from './remember.js';
@@ -11,46 +13,19 @@ import { LANGUAGES, LANGUAGE_NAMES } from './strings.js';
 
 
 /*
- * Citizen-facing labels for the demo fixtures.
- *
- * The persona JSON's `description` field is developer documentation — it talks about
- * PROVISIONAL corpora and which lane owns what — so it does NOT belong on screen. It
- * stays in the API for debugging; the UI shows these instead.
- */
-const WHO = {
-  'entrepreneur-01': 'First-time SC woman entrepreneur',
-  'entrepreneur-02': 'First-time entrepreneur, no caste certificate',
-  sunita: 'Sunita — 60, widow, small farmer',
-  'student-01': 'SC student in class 10',
-};
-
-/*
  * Verticals are data, not code, in the engine. They are data here too: this file lists
- * how to LABEL a vertical, never which ones exist. The set comes from the API, so a
- * fourth corpus folder needs no change to this component.
+ * which verticals EXIST and the order they appear in, never what they are called. The
+ * set comes from the API, so a fourth corpus folder needs no change to this component.
+ *
+ * The NAMES live in strings.js, once per language. They were English constants in this
+ * file until 2026-08-30, which meant the three front-door buttons and every demo
+ * profile label stayed in English on a Marathi or Hindi page: the one part of the
+ * screen a citizen reads first, in the one language she does not.
  *
  * ORDER is a pitch decision. Entrepreneur leads because it is the problem statement we
  * answer; the others follow as the "same engine, new corpus" reveal.
  */
 const VERTICAL_ORDER = ['entrepreneur', 'welfare', 'student'];
-
-const VERTICAL_LABELS = {
-  entrepreneur: {
-    group: 'Entrepreneur schemes',
-    door: 'Starting or running a business',
-    eg: 'Loans, capital, subsidies for your own work',
-  },
-  welfare: {
-    group: 'Welfare schemes',
-    door: 'Income, pension and family support',
-    eg: 'Widowhood, old age, farming, health cover',
-  },
-  student: {
-    group: 'Student schemes',
-    door: 'Paying for education',
-    eg: 'School and college scholarships',
-  },
-};
 
 function verticalsOf(personas) {
   const present = [...new Set(personas.map((p) => p.vertical))];
@@ -60,9 +35,11 @@ function verticalsOf(personas) {
   return [...known, ...present.filter((v) => !VERTICAL_ORDER.includes(v)).sort()];
 }
 
-function labelFor(vertical) {
+function labelFor(vertical, s) {
+  // A vertical the API serves that no language file names still renders, under its own
+  // id, rather than vanishing from the front door.
   return (
-    VERTICAL_LABELS[vertical] || {
+    s.verticals?.[vertical] || {
       group: vertical,
       door: vertical,
     }
@@ -250,7 +227,11 @@ function AppInner() {
           four status colours a citizen actually has to read. */}
       <Chakra className="chakra-watermark" />
       <header className="masthead">
-        <Chakra className="chakra-mark" />
+        {/* The plain mark, NOT the tricolour badge. The badge belongs to the opening
+            screen only: saffron sits beside --blocked and green beside --eligible, and
+            nothing decorative may compete with the status colours above a column of
+            verdict cards. See LogoBadge in Logo.jsx. */}
+        <Logo className="brand-mark" />
         <h1>{s.appName}</h1>
         <span className="tagline">{s.tagline}</span>
         {/* Language sits before the theme control because it matters more: someone who
@@ -456,8 +437,8 @@ function AppInner() {
                   setIntakeVertical(vertical);
                 }}
               >
-                <span className="door">{labelFor(vertical).door}</span>
-                <span className="eg">{labelFor(vertical).eg}</span>
+                <span className="door">{labelFor(vertical, s).door}</span>
+                <span className="eg">{labelFor(vertical, s).eg}</span>
               </button>
             ))}
           </div>
@@ -494,7 +475,7 @@ function AppInner() {
           {verticalsOf(personas).map((vertical) => (
             <section className="vertical-group" key={vertical}>
               <h3>
-                {labelFor(vertical).group}
+                {labelFor(vertical, s).group}
                 <span className="vertical-hint">{s.verticalHint}</span>
               </h3>
               <div className="persona-list">
@@ -507,7 +488,7 @@ function AppInner() {
                       key={p.persona_id}
                       onClick={() => choose(p.persona_id)}
                     >
-                      <span className="who">{WHO[p.persona_id] || p.persona_id}</span>
+                      <span className="who">{s.who?.[p.persona_id] || p.persona_id}</span>
                     </button>
                   ))}
               </div>
@@ -626,6 +607,12 @@ function AppInner() {
           )}
         </>
       )}
+
+      {/* Last thing on the page, and deliberately not a dismissible banner: it should
+          still be there on the hundredth visit. It sits outside the results block so
+          it shows on the empty first screen too, which is where someone forms the
+          impression this might be a government site. */}
+      <footer className="disclaimer">{s.disclaimer}</footer>
     </div>
   );
 }
@@ -638,6 +625,10 @@ function AppInner() {
 export default function App() {
   return (
     <LanguageProvider>
+      {/* Inside the provider, so the opening screen says हक्कदार to someone whose phone
+          is set to Marathi rather than showing English and then switching. It removes
+          itself; see Splash.jsx for why it can never become a wall. */}
+      <Splash />
       <AppInner />
     </LanguageProvider>
   );
