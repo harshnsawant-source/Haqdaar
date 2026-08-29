@@ -31,6 +31,7 @@ const SHELL_ASSETS = [
   '/icon.svg',
   '/icon-192.png',
   '/icon-512.png',
+  '/icon-maskable-512.png',
 ];
 
 /*
