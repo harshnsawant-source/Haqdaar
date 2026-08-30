@@ -21,18 +21,25 @@
  */
 
 /*
- * BUMP THIS ON EVERY CHANGE TO SHELL_ASSETS OR TO THE SHELL ITSELF.
+ * STAMPED AT BUILD TIME. Do not edit, and do not replace with a literal.
  *
- * The cache NAME is derived from it, and `activate` deletes only caches whose names no
- * longer match. Leaving the version alone therefore keeps the previous shell cache
- * alive, and `cacheFirst` below returns a cached entry without ever revalidating it, so
- * a returning visitor can be served the old app indefinitely while a new one deploys
- * fine for everybody else. That happened on 2026-08-30: the maskable icon was added to
- * SHELL_ASSETS and this line was not touched.
+ * The cache NAME derives from this, and `activate` deletes only caches whose names no
+ * longer match, so a version that does not move leaves the previous shell cache alive.
+ * `cacheFirst` below then serves it without revalidating, and a returning visitor gets
+ * the old app indefinitely while a new one deploys correctly for everyone else. If the
+ * old shell's HTML points at asset filenames the new build replaced, those 404 and the
+ * page renders white with no JavaScript running at all.
  *
- * v2: the ह mark, the opening screen and the maskable icon.
+ * That happened on 2026-08-30. The maskable icon was added to SHELL_ASSETS and this
+ * line was not touched, so it was fixed by hand and the same trap was left armed for
+ * whoever deployed next. It is now a content hash of the built shell, stamped by
+ * vite.config.js: it changes exactly when the shell changes, and it cannot be
+ * forgotten because there is nothing left to remember.
+ *
+ * In `vite dev` the token below is served unreplaced, which is harmless: main.jsx only
+ * registers the worker in production builds.
  */
-const VERSION = 'v2';
+const VERSION = '__HAQDAAR_SHELL_BUILD__';
 const SHELL_CACHE = `haqdaar-shell-${VERSION}`;
 const DATA_CACHE = `haqdaar-data-${VERSION}`;
 

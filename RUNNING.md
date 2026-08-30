@@ -496,3 +496,28 @@ Check the function logs for an import error first. The two things that break it 
 corpus not being bundled (`includeFiles` in `vercel.json`) and a dependency missing from
 `requirements.txt`, which is pinned to what the local `.venv` runs so a deploy cannot
 quietly install a different engine than the one the tests passed against.
+
+
+## The service worker cache version is stamped by the build
+
+`public/sw.js` carries `const VERSION = '__HAQDAAR_SHELL_BUILD__'`. Do not replace that
+with a literal. `vite.config.js` rewrites it during `npm run build` with a content hash
+of the shell, and **throws if the token is missing**.
+
+Why it is not a number somebody bumps: the worker's cache name derives from VERSION, and
+`activate` deletes only caches whose names no longer match. A version that does not move
+leaves the previous shell cache alive, `cacheFirst` serves it without revalidating, and a
+returning visitor gets an `index.html` pointing at asset filenames the new build
+replaced. Those 404, no JavaScript runs, and **the page is white**. The site is fine on a
+cold browser and broken on a warm one, which is the worst shape this bug takes because it
+is invisible to whoever shipped it.
+
+That happened on 2026-08-30, when the maskable icon was added to `SHELL_ASSETS` and the
+version was not touched. Hand-bumping only postpones the next one.
+
+A hash and not a timestamp, so the version moves when the shell actually moves. A
+timestamp would invalidate every visitor's cache on every deploy, including deploys that
+changed nothing they hold.
+
+If a user is ever stuck on a stale build, send them to `/reset.html`, which unregisters
+every worker and clears every cache and storage on that device.
