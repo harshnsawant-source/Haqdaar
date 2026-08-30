@@ -465,3 +465,40 @@ class EmiResponse(BaseModel):
     assumptions: list[str]
     #: What the source never said, and which moves the real number.
     unknowns: list[str]
+
+
+class PartnerPayload(BaseModel):
+    name: str
+    address: str | None
+    state: str | None
+    category: str
+    category_label: str
+
+
+class PartnersResponse(BaseModel):
+    """Where to take one scheme, for one state.
+
+    SIH26092 component three. `cannot_rank` is not an error field and is present on
+    every successful response: the problem statement asks for partners filtered by fund
+    utilisation and NPA, NSFDC publishes neither, and the UI is required to say so
+    wherever it shows a partner.
+    """
+
+    scheme_id: str
+    scheme_name: str
+    state: str | None
+    #: The partner type the scheme itself names, which for NSFDC credit is the State
+    #: Channelising Agency.
+    primary: list[PartnerPayload]
+    #: Banks and other Channelising Agencies in the same state.
+    also: list[PartnerPayload]
+    #: Every state the partner corpus can place, for the picker.
+    states: list[str]
+    #: Partners held whose state the source did not make readable. Counted, never shown
+    #: under a state we cannot support.
+    unplaced: int
+    #: Verbatim routing wording, cited the way a clause is.
+    quote: str
+    also_quote: str
+    source_url: str
+    cannot_rank: str

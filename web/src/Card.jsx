@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { act } from './api.js';
 import { Emi } from './Emi.jsx';
+import { Partners } from './Partners.jsx';
 import { useLang } from './lang.jsx';
 
 /*
@@ -105,7 +106,14 @@ export function Card({ card, personaId, vertical, stackedWith = [], canAct = tru
           reads in the order a person thinks: what this is, what it would cost, what
           to do next. */}
       {card.lends && vertical && (
-        <Emi vertical={vertical} schemeId={card.scheme_id} />
+        <>
+          <Emi vertical={vertical} schemeId={card.scheme_id} />
+          {/* Gated on the same flag, and a test asserts the two sets match: every
+              scheme with credit terms has a routing rule and vice versa. If they ever
+              diverge the suite fails rather than a citizen meeting a panel that opens
+              and immediately refuses. */}
+          <Partners vertical={vertical} schemeId={card.scheme_id} />
+        </>
       )}
 
       {/* A+ — it acts. Every step of this is SIMULATED and says so; the banners come

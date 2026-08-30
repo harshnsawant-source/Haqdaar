@@ -42,6 +42,14 @@ from haqdaar.corpus.forms import load_form_for
 from haqdaar.corpus.loader import load_corpus
 from haqdaar.corpus.schema import Scheme
 from haqdaar.finance.emi import IllustrationRefused, illustrate
+# Aliased: haqdaar.retrieval.route already exports a `route` into this module,
+# and the collision silently bound the wrong callable.
+from haqdaar.partners.router import (
+    PartnersUnavailable,
+    load_partners,
+    route as route_to_partners,
+    states_covered,
+)
 from haqdaar.eligibility.aggregate import best_unlock
 from haqdaar.eligibility.compare import ComparisonError, compare
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
@@ -72,6 +80,8 @@ from haqdaar.api.schemas import (
     CardPayload,
     EmiResponse,
     EvaluateResponse,
+    PartnerPayload,
+    PartnersResponse,
     ExtractedFieldPayload,
     ExtractionReportPayload,
     ExtractResponse,
@@ -700,6 +710,61 @@ def emi(vertical: str, scheme_id: str, principal: float) -> EmiResponse:
         source_url=scheme.source_url,
         assumptions=list(shown.assumptions),
         unknowns=list(shown.unknowns),
+    )
+
+
+@app.get("/api/partners", response_model=PartnersResponse)
+def partners(vertical: str, scheme_id: str, state: str | None = None) -> PartnersResponse:
+    """Which Channel Partner can process this scheme, in this state.
+
+    SIH26092's third component. Matching is by STATE and the response says so. The
+    published partner lists carry postal addresses and no coordinates; geocoding them
+    would need an external service and a key, which would end the claim that this runs
+    with no keys and no network.
+
+    `cannot_rank` rides on every successful response. The problem statement asks for
+    partners filtered so applications avoid those with high NPAs or overdues, and NSFDC
+    publishes no such figures, so the order carries no meaning and the response says
+    that rather than letting the order imply one.
+    """
+    if vertical not in set(PERSONAS.values()):
+        raise HTTPException(status_code=404, detail=f"unknown vertical {vertical}")
+
+    schemes = {s.scheme_id: s for s in _load_vertical(vertical)}
+    scheme = schemes.get(scheme_id)
+    if scheme is None:
+        raise HTTPException(
+            status_code=404, detail=f"unknown scheme {scheme_id} in {vertical}"
+        )
+
+    directory = CORPUS_ROOT / "partners"
+    try:
+        found = route_to_partners(directory, scheme_id, state)
+        every = load_partners(directory)
+    except PartnersUnavailable as unavailable:
+        raise HTTPException(status_code=422, detail=str(unavailable)) from unavailable
+
+    def payload(p) -> PartnerPayload:
+        return PartnerPayload(
+            name=p.name,
+            address=p.address or None,
+            state=p.state,
+            category=p.category,
+            category_label=p.category_label,
+        )
+
+    return PartnersResponse(
+        scheme_id=scheme.scheme_id,
+        scheme_name=scheme.name,
+        state=found.state,
+        primary=[payload(p) for p in found.primary],
+        also=[payload(p) for p in found.also],
+        states=states_covered(every),
+        unplaced=found.unplaced,
+        quote=found.quote,
+        also_quote=found.also_quote,
+        source_url=found.source_url,
+        cannot_rank=found.cannot_rank,
     )
 
 

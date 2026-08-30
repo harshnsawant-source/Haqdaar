@@ -49,6 +49,16 @@ const en = {
   emiInterest: 'Interest paid',
   emiIllustration: 'An illustration, not an offer. Figures from',
   emiSource: 'the scheme rules',
+  // Where to take it. SIH26092 component three.
+  partnersTitle: 'Where do I take this?',
+  partnersStateLabel: 'Which state are you in?',
+  partnersStatePrompt: 'Choose your state',
+  partnersPrimary: 'Your State Channelising Agency',
+  partnersAlso: 'Banks and other agencies here',
+  partnersNone: 'We hold no partner for this state yet. Ask at the nearest agency office listed on the scheme page.',
+  partnersUnplaced: (n) => `${n} more partners are on the official lists without a state we could read, so they are not shown here.`,
+  partnersFrom: 'From the official Channel Partner lists at',
+  partnersSource: 'nsfdc.nic.in',
   /* Vertical labels. These moved here from App.jsx, where they were module-level
      English constants that never saw the language context, so the three front-door
      buttons stayed in English on a Marathi or Hindi page.
@@ -208,6 +218,15 @@ const mr = {
   emiInterest: 'दिलेले व्याज',
   emiIllustration: 'हे केवळ उदाहरण आहे, ऑफर नाही. आकडे',
   emiSource: 'योजनेच्या नियमांवरून',
+  partnersTitle: 'हे कुठे न्यायचे?',
+  partnersStateLabel: 'तुम्ही कोणत्या राज्यात आहात?',
+  partnersStatePrompt: 'तुमचे राज्य निवडा',
+  partnersPrimary: 'तुमची राज्य वाहिनी संस्था',
+  partnersAlso: 'येथील बँका व इतर संस्था',
+  partnersNone: 'या राज्यासाठी आमच्याकडे अद्याप भागीदार नोंद नाही. योजनेच्या पानावर दिलेल्या जवळच्या कार्यालयात विचारा.',
+  partnersUnplaced: (n) => `अधिकृत यादीत आणखी ${n} भागीदार आहेत, पण त्यांचे राज्य वाचता आले नाही, म्हणून ते येथे दाखवलेले नाहीत.`,
+  partnersFrom: 'अधिकृत चॅनेल पार्टनर याद्यांमधून',
+  partnersSource: 'nsfdc.nic.in',
   verticals: {
     entrepreneur: {
       group: 'उद्योजकांसाठी योजना',
@@ -346,6 +365,15 @@ const hi = {
   emiInterest: 'दिया गया ब्याज',
   emiIllustration: 'यह केवल एक उदाहरण है, प्रस्ताव नहीं. आँकड़े',
   emiSource: 'योजना के नियमों से',
+  partnersTitle: 'इसे कहाँ ले जाना है?',
+  partnersStateLabel: 'आप किस राज्य में हैं?',
+  partnersStatePrompt: 'अपना राज्य चुनें',
+  partnersPrimary: 'आपकी राज्य चैनलाइज़िंग एजेंसी',
+  partnersAlso: 'यहाँ के बैंक और अन्य एजेंसियाँ',
+  partnersNone: 'इस राज्य के लिए हमारे पास अभी कोई भागीदार दर्ज नहीं है. योजना के पृष्ठ पर दिए निकटतम कार्यालय में पूछें.',
+  partnersUnplaced: (n) => `आधिकारिक सूचियों में ${n} और भागीदार हैं, पर उनका राज्य पढ़ा नहीं जा सका, इसलिए वे यहाँ नहीं दिखाए गए हैं.`,
+  partnersFrom: 'आधिकारिक चैनल पार्टनर सूचियों से',
+  partnersSource: 'nsfdc.nic.in',
   verticals: {
     entrepreneur: {
       group: 'उद्यमियों के लिए योजनाएँ',

@@ -182,3 +182,21 @@ export async function fetchEmi(vertical, schemeId, principal) {
   if (!response.ok) throw new Error(body.detail || `request failed (${response.status})`);
   return { data: body, refused: null };
 }
+
+/*
+ * Channel Partners for one scheme, optionally narrowed to a state.
+ *
+ * A 422 is the router declining, not a failure: the corpus records no route for this
+ * scheme. The reason is written for a citizen, so it comes back to be printed.
+ */
+export async function fetchPartners(vertical, schemeId, state) {
+  const params = new URLSearchParams({ vertical, scheme_id: schemeId });
+  if (state) params.set('state', state);
+  const response = await fetch(`/api/partners?${params.toString()}`, {
+    headers: { Accept: 'application/json' },
+  });
+  const body = await response.json().catch(() => ({}));
+  if (response.status === 422) return { data: null, refused: body.detail };
+  if (!response.ok) throw new Error(body.detail || `request failed (${response.status})`);
+  return { data: body, refused: null };
+}

@@ -558,3 +558,46 @@ def test_emi_404s_on_an_unknown_scheme(client):
         params={"vertical": "entrepreneur", "scheme_id": "no-such", "principal": 1000},
     )
     assert response.status_code == 404
+
+
+# --- /api/partners ------------------------------------------------------------
+# SIH26092's third component. Matching is by STATE, and the response says so rather
+# than implying a distance it cannot compute from postal addresses.
+
+
+def test_partners_are_served_for_a_state(client):
+    body = client.get(
+        "/api/partners",
+        params={
+            "vertical": "entrepreneur",
+            "scheme_id": "nsfdc-term-loan",
+            "state": "Maharashtra",
+        },
+    ).json()
+
+    assert body["primary"], "Maharashtra should have a channelising agency"
+    assert all(p["state"] == "Maharashtra" for p in body["primary"] + body["also"])
+    assert all(p["category"] == "SCA" for p in body["primary"])
+    assert len(body["states"]) > 25
+    # The sentence that sends her there travels with the answer.
+    assert "SCAs / CAs" in body["quote"]
+
+
+def test_every_partner_response_admits_it_cannot_rank(client):
+    body = client.get(
+        "/api/partners",
+        params={
+            "vertical": "entrepreneur",
+            "scheme_id": "nsfdc-micro-finance",
+            "state": "Kerala",
+        },
+    ).json()
+    assert "does not publish" in body["cannot_rank"]
+
+
+def test_partners_refuses_a_scheme_it_cannot_route(client):
+    response = client.get(
+        "/api/partners", params={"vertical": "welfare", "scheme_id": "ignwps"}
+    )
+    assert response.status_code == 422
+    assert "does not record who processes" in response.json()["detail"]

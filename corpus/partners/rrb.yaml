@@ -47,7 +47,7 @@ partners:
     state: "Rajasthan"
   - name: "Uttar Pradesh Gramin Bank"
     address: "2 nd & 3 rd Floor, NBCC Commercial Complex, Vardan Khand, Gomti Nagar Extension, Lucknow–229001(Uttar Pradesh)"
-    state: null
+    state: "Uttar Pradesh"
   - name: "Kerala Grameena Bank"
     address: "PB No.10, KGpB Towers, AK Road, Uphill, Malappuram,Kerala – 676505."
     state: "Kerala"
@@ -65,25 +65,25 @@ partners:
     state: "Assam"
   - name: "Andhra Pradesh Grameena Bank"
     address: "4 th Floor, Raghu Mansion, 4-1, Broadipet, Guntur -522 002 (Andhra Pradesh)"
-    state: null
+    state: "Andhra Pradesh"
   - name: "Punjab Gramin Bank"
     address: "HO Jalandhar Road, Kapurthala – 144 601. (Punjab)"
     state: "Punjab"
   - name: "Tamil Nadu Grama Bank"
     address: "6, Yercaud Road, Hasthasmpatti, Salem – 636007 (Tamil Nadu)"
-    state: null
+    state: "Tamil Nadu"
   - name: "Madhaya Pradesh Gramin Bank. C21"
     address: "Business Park, C21 Square opposite Hotel Radisson Blue, MR-10 Indore- 452010, Madhaya Pradesh"
     state: null
   - name: "Himachal Pradesh Gramin Bank"
     address: "Jail Road (Panjethi), PO – Talyahar Mandi 175001 (Himachal Pradesh)"
-    state: null
+    state: "Himachal Pradesh"
   - name: "Puducherry Grama Bank"
     address: "No.441, Mahatma Gandhi Road, Muthialpet, Puducherry – 605 003"
     state: "Puducherry"
   - name: "West Bengal Gramin Bank Natabar Paul Road"
     address: "Chatterjee Para More, Tikiapara, Howrah – 711101 (WB)"
-    state: null
+    state: "West Bengal"
   - name: "Chhattisgarh Gramin Bank"
     address: "Corporate Office Raipur, Plot No.-47, Sector-24, Atal Nagar, Nava Raipur-492013"
     state: "Chhattisgarh"
@@ -95,7 +95,7 @@ partners:
     state: "Meghalaya"
   - name: "J&K Grameen Bank M.T.C Building, 2nd Floor, Police Bazar, Shillong-793001 Jammu & Kashmir Near Fruit Complex, Narwal, Jammu (J&K)"
     address: "-180006"
-    state: null
+    state: "Jammu & Kashmir"
   - name: "Odisha Grameen Bank"
     address: "Bhubaneswar. 7R25-H75, Jagamara, Sunderpada Road, Gandamuda, Pokhhariput, Bhubaneshwar -751030,Odisha"
     state: "Odisha"

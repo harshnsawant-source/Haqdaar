@@ -1,0 +1,54 @@
+# Which Channel Partners can process which scheme.
+#
+# SIH26092: "applicants face difficulties identifying and locating the nearest
+# authorized Channel Partner equipped to process their specific loan category."
+# This file is the "equipped to process" half. The partner lists beside it are the
+# "locating" half.
+#
+# IT IS DATA, NOT CODE, for the same reason the schemes are. A routing rule is a fact
+# about a government programme, it will change when the programme changes, and it must
+# carry the sentence it came from so a citizen can be shown why she is being sent
+# somewhere. None of that survives being a dict in a Python file.
+#
+# EVERY RULE CARRIES ITS QUOTE. The verbatim wording is what the UI cites when it names
+# a partner, exactly as a verdict cites the clause it came from.
+#
+# WHAT IS DELIBERATELY NOT HERE
+# -----------------------------
+# Any ordering by fund availability, NPA, or disbursement record. SIH26092 asks for
+# partners filtered so applications are not "sent to partners with high NPAs or
+# overdues". NSFDC publishes no such figures, on any page we have read. So the router
+# returns partners in a fixed order and says out loud that it cannot rank them. An
+# ordering invented here would look exactly like an ordering that meant something.
+
+source_url: "https://nsfdc.nic.in/scheme"
+also_source_url: "https://nsfdc.nic.in/how-to-apply-2"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+
+# The categories every scheme below can also be filed through. Sourced from
+# how-to-apply-2, which describes the Channel Partner network as a whole rather than
+# per scheme, which is why it is stated once here instead of repeated on each rule.
+also_categories: [PSB, RRB, COOPERATIVE, SFB, OTHER]
+also_quote: >-
+  NSFDC lends through its designated Channel Partners, including State Channelizing
+  Agencies (SCAs), Banks, and other Channelizing Agencies (CAs).
+
+rules:
+  - scheme_id: nsfdc-micro-finance
+    primary_categories: [SCA]
+    quote: >-
+      NSFDC charges 2.5% from the SCAs/CAs, which in turn shall charge 6.5% from the
+      Beneficiaries.
+
+  - scheme_id: nsfdc-term-loan
+    primary_categories: [SCA]
+    quote: >-
+      NSFDC shall charge interest @ 4% from the SCAs / CAs, which in turn shall charge
+      8% from the beneficiaries.
+
+  - scheme_id: nsfdc-educational-loan
+    primary_categories: [SCA]
+    quote: >-
+      Education Loan Scheme (Domestic & Abroad) Upto Rs 40.00 Lakh or 90% of course
+      fee, whichever is less. Interest Rate p.a. for CAs 2.5%, Beneficiary 6.5%.

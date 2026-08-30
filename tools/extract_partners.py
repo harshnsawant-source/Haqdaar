@@ -194,7 +194,13 @@ def parse(pdf: Path, has_state_column: bool) -> tuple[list[Partner], list[str]]:
         if has_state_column:
             state, rest = take_state(body)
         else:
-            rest, state = clean(body), find_state(body)
+            # find_state on the CLEANED text, not the raw body. These PDFs wrap
+            # mid-phrase, so a raw body holds "Uttar" and "Pradesh" on separate
+            # lines and the state pattern never matched. Every bank whose state
+            # appeared only as wrapped text came out unplaced, and then showed up
+            # under whichever state the citizen had chosen.
+            rest = clean(body)
+            state = find_state(rest)
         pair = split_name_address(rest)
         if pair is None:
             skipped.append(f"#{serial}: {rest[:70]}")
