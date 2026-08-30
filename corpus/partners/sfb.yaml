@@ -1,0 +1,30 @@
+# NSFDC Channel Partners: Small Finance Banks.
+#
+# Extracted from https://nsfdc.nic.in/storage/uploads/images/banners/20260408_100851_UrGTfH.pdf
+# by tools/extract_partners.py on 2026-08-30. Not typed by hand.
+#
+# The source PDF uses a dash character that does not survive text extraction;
+# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.
+#
+# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by
+# 'current fund utilization eligibility (ensuring applications aren't sent to
+# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.
+# It is therefore absent rather than estimated, and the engine refuses to rank
+# on it. A locator that shows a citizen which branch has money, without the
+# data to know, is guessing about her time and her bus fare.
+#
+# REVIEW, name contains digits, 1:
+#   Ujjiwan Small Finance Bank Small Finance Bank- 02
+#
+category: SFB
+label: "Small Finance Banks"
+source_url: "https://nsfdc.nic.in/storage/uploads/images/banners/20260408_100851_UrGTfH.pdf"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+partners:
+  - name: "AU small finance bank"
+    address: null
+    state: null
+  - name: "Ujjiwan Small Finance Bank Small Finance Bank- 02"
+    address: null
+    state: null

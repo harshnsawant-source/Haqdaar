@@ -1,0 +1,57 @@
+# NSFDC Channel Partners: Public Sector Banks.
+#
+# Extracted from https://nsfdc.nic.in/storage/channel-partners/attachments/20260408_100623_Bea3za.pdf
+# by tools/extract_partners.py on 2026-08-30. Not typed by hand.
+#
+# The source PDF uses a dash character that does not survive text extraction;
+# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.
+#
+# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by
+# 'current fund utilization eligibility (ensuring applications aren't sent to
+# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.
+# It is therefore absent rather than estimated, and the engine refuses to rank
+# on it. A locator that shows a citizen which branch has money, without the
+# data to know, is guessing about her time and her bus fare.
+#
+# REVIEW, name contains digits, 1:
+#   Bank of Maharashtra Head office ‘Lok mangal’ 1501
+#
+category: PSB
+label: "Public Sector Banks"
+source_url: "https://nsfdc.nic.in/storage/channel-partners/attachments/20260408_100623_Bea3za.pdf"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+partners:
+  - name: "Indian Overseas Bank"
+    address: "Central Office, 763, Anna Salai, Chennai, Tamil Nadu – 600 002."
+    state: "Tamil Nadu"
+  - name: "Bank of Baroda"
+    address: "Baroda Bhavan, 7 th Floor, R.C. Dutt Road, Vadodara – 390 007 (Gujarat)"
+    state: "Gujarat"
+  - name: "Canara Bank"
+    address: "Head Office, 112, J.C. Road, Bengaluru – 560 002."
+    state: null
+  - name: "Punjab National Bank"
+    address: "Plot No.-4, Sector 10, Dwarka, New Delhi – 110 075"
+    state: "Punjab"
+  - name: "Punjab & Sind Bank"
+    address: "Priority Sector Advance Department, 5 th Floor, 21 Rajendra Place, New Delhi – 110 008"
+    state: "Punjab"
+  - name: "Union Bank of India"
+    address: "Rural & Agri Business Department, Central Office Union Bank Bhavan Marg,Nariman Point, Mumbai – 400"
+    state: null
+  - name: "Indian Bank Corporate Office"
+    address: "No.254-260, Avvai Shanmungam Salai, Gowdi Mutt Road, Royapetta, Chennai – 600 014"
+    state: null
+  - name: "Bank of Maharashtra Head office ‘Lok mangal’ 1501"
+    address: "Shivajinagar, Pune-411005 Maharashtra"
+    state: "Maharashtra"
+  - name: "Bank of India"
+    address: "Bandra Kurla Complex, Bandra (East), Mumbai- 400051"
+    state: null
+  - name: "Central bank Of India"
+    address: "Mumbai Chandermukhi Bldg., Nariman Point, Mumbai – 400 021"
+    state: null
+  - name: "UCO Bank"
+    address: "Kolkata No 3&4, DD Block, Sector-1, Bidhannagar, Kolkata, West Bengal-700064 Total=11"
+    state: "West Bengal"

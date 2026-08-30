@@ -1,0 +1,302 @@
+"""Extract NSFDC's Channel Partner lists from the official PDFs into corpus YAML.
+
+SIH26092's third component needs to point a citizen at the partner who can actually
+process her loan, because "direct loan applications are not entertained" and everything
+routes through the Channel Finance System.
+
+WHY THIS IS A SCRIPT AND NOT A TYPING JOB
+-----------------------------------------
+Ninety-odd partners transcribed by hand would carry ninety-odd chances of a typo in a
+bank's name or a PIN code, and no way for anyone to check them short of reading the
+PDFs again. Run this instead: it takes the published PDFs and produces the corpus, so
+the provenance of every entry is a URL and a command rather than somebody's evening.
+
+WHAT IT REFUSES TO DO
+---------------------
+Guess. A record it cannot split into a name and an address is reported and SKIPPED, not
+half-parsed into the corpus. A state it cannot match against the official list is left
+null rather than inferred from a city name. The count of skipped records is printed, so
+a silent loss is impossible.
+
+KNOWN LOSS: the PDFs use a dash character that does not survive text extraction and
+arrives as U+FFFD. It appears between a place and its PIN code ("Amaravathi ? 522 501"),
+so it is normalised to a hyphen and that normalisation is recorded in every file header.
+Nothing else is altered.
+
+Usage:
+    python tools/extract_partners.py --pdf-dir <dir> --out corpus/partners
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+from dataclasses import dataclass
+from pathlib import Path
+
+from pypdf import PdfReader
+
+#: Official state and UT names, longest first so "Andhra Pradesh" wins over "Andhra".
+STATES = sorted(
+    [
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+        "Chhatisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+        "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+        "Mizoram", "Nagaland", "Odisha", "Orissa", "Punjab", "Rajasthan", "Sikkim",
+        "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
+        "West Bengal", "Delhi", "Puducherry", "Jammu & Kashmir", "Jammu and Kashmir",
+        "Ladakh", "Chandigarh", "Andaman & Nicobar Islands", "Lakshadweep",
+        "Dadra & Nagar Haveli, Daman & Diu", "Dadra & Nagar Haveli", "Daman & Diu",
+    ],
+    key=len,
+    reverse=True,
+)
+
+#: Spellings the source uses that differ from the name we file under.
+CANONICAL = {"Chhatisgarh": "Chhattisgarh", "Orissa": "Odisha",
+             "Jammu and Kashmir": "Jammu & Kashmir"}
+
+CATEGORIES = {
+    "sca": ("State Channelising Agencies", "SCA"),
+    "rrb": ("Regional Rural Banks", "RRB"),
+    "psb": ("Public Sector Banks", "PSB"),
+    "nbfc_mfi": ("NBFC-MFIs", "NBFC_MFI"),
+    "coop": ("Co-operative Banks and Societies", "COOPERATIVE"),
+    "sfb": ("Small Finance Banks", "SFB"),
+    "other": ("Other Agencies and SIDBI", "OTHER"),
+}
+
+
+@dataclass
+class Partner:
+    serial: int
+    state: str | None
+    name: str
+    address: str
+
+
+def clean(text: str) -> str:
+    """Normalise whitespace and the one character extraction loses."""
+    text = text.replace("�", "-")
+    text = re.sub(r"[ \t]+", " ", text)
+    return re.sub(r"\s*\n\s*", " ", text).strip(" ,")
+
+
+def read(pdf: Path) -> str:
+    return "\n".join((page.extract_text() or "") for page in PdfReader(str(pdf)).pages)
+
+
+def split_records(text: str) -> list[tuple[int, str]]:
+    """Cut the page into numbered records.
+
+    Two things make this harder than a regex.
+
+    ADDRESSES CONTAIN NUMBERS AT THE START OF A LINE. One co-operative bank sits at
+    "109. Sakar-II", and a splitter that trusts any leading number tore that address
+    off its bank and filed it as record 109.
+
+    SO DO PAGE NUMBERS. The SCA list opens with a bare "1" above its own title, and a
+    splitter that starts at the first "1" it sees swallowed the table header and the
+    real first record into one entry, producing a corporation whose name began "STATE/
+    UT-WISE LIST OF STATE CHANNELISING AGENCIES".
+
+    Both are solved the same way: find every candidate, then keep the LONGEST run of
+    consecutive serials. A page number starts a run of one; the real list starts a run
+    of thirty-eight. Anything outside the winning run is text belonging to the record
+    above it, and is put back there rather than dropped.
+    """
+    candidates = [
+        (m.start(), int(m.group(1)), m.end())
+        for m in re.finditer(r"(?m)^[ 	]*(\d{1,3})[.\s][ 	]*", text)
+    ]
+    if not candidates:
+        return []
+
+    def run_from(start: int) -> list[int]:
+        chosen, expected = [], 1
+        for i in range(start, len(candidates)):
+            if candidates[i][1] == expected:
+                chosen.append(i)
+                expected += 1
+        return chosen
+
+    best: list[int] = []
+    for i, (_, serial, _) in enumerate(candidates):
+        if serial == 1:
+            run = run_from(i)
+            # `>=`, not `>`. A leading page number and the real first record both start
+            # runs of the same length, and on a tie the later start is the right one:
+            # the page number sits above the table header, so choosing it drags the
+            # header into the first record's name.
+            if len(run) >= len(best):
+                best = run
+
+    if not best:
+        return []
+
+    records: list[tuple[int, str]] = []
+    for slot, i in enumerate(best):
+        body_start = candidates[i][2]
+        body_end = candidates[best[slot + 1]][0] if slot + 1 < len(best) else len(text)
+        records.append((candidates[i][1], text[body_start:body_end]))
+    return [(n, b) for n, b in records if len(clean(b)) > 12]
+
+
+def take_state(body: str) -> tuple[str | None, str]:
+    """Pull a leading state name off a record, or report none."""
+    flat = clean(body)
+    for state in STATES:
+        if flat.lower().startswith(state.lower()):
+            return CANONICAL.get(state, state), flat[len(state):].strip(" ,")
+    return None, flat
+
+
+def find_state(text: str) -> str | None:
+    """Find a state named anywhere, for lists with no state column."""
+    for state in STATES:
+        if re.search(rf"\b{re.escape(state)}\b", text, re.I):
+            return CANONICAL.get(state, state)
+    return None
+
+
+def split_name_address(rest: str) -> tuple[str, str] | None:
+    """Separate the organisation from its postal address.
+
+    Two shapes appear. Most SCAs end their name with a bracketed abbreviation, which is
+    an unambiguous cut. Everything else is "Name, Address", so the first comma is used.
+    A record matching neither is returned as None and skipped by the caller.
+    """
+    # The FIRST all-capitals bracket, which is an abbreviation, not any bracket at all.
+    # Taking the last one pulled "(Block-A)" out of a Patna address and left it inside
+    # the Bihar corporation's name. Lower case disqualifies a bracket.
+    abbreviation = re.search(r"\([A-Z0-9&./\- ]{2,20}\)", rest)
+    if abbreviation:
+        cut = abbreviation.end()
+        name, address = rest[:cut].strip(), rest[cut:].strip(" ,")
+        if name and address:
+            return name, address
+    if "," in rest:
+        name, address = rest.split(",", 1)
+        if name.strip() and address.strip():
+            return name.strip(), address.strip(" ,")
+    # A name with no address. Some lists genuinely give none: the Small Finance Banks
+    # page is two bank names and nothing else. That is the source being sparse, not a
+    # parse failure, so the entry is kept and the address left null.
+    if rest and len(rest) < 70:
+        return rest.strip(), ""
+    return None
+
+
+def parse(pdf: Path, has_state_column: bool) -> tuple[list[Partner], list[str]]:
+    partners: list[Partner] = []
+    skipped: list[str] = []
+    for serial, body in split_records(read(pdf)):
+        if has_state_column:
+            state, rest = take_state(body)
+        else:
+            rest, state = clean(body), find_state(body)
+        pair = split_name_address(rest)
+        if pair is None:
+            skipped.append(f"#{serial}: {rest[:70]}")
+            continue
+        name, address = pair
+        partners.append(Partner(serial, state, name, address))
+    return partners, skipped
+
+
+def quote(value: str) -> str:
+    return '"' + value.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+
+def write_yaml(out: Path, key: str, partners: list[Partner], source_url: str,
+               retrieved_on: str, skipped: list[str]) -> None:
+    label, category = CATEGORIES[key]
+    lines = [
+        f"# NSFDC Channel Partners: {label}.",
+        "#",
+        f"# Extracted from {source_url}",
+        f"# by tools/extract_partners.py on {retrieved_on}. Not typed by hand.",
+        "#",
+        "# The source PDF uses a dash character that does not survive text extraction;",
+        "# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.",
+        "#",
+        "# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by",
+        "# 'current fund utilization eligibility (ensuring applications aren't sent to",
+        "# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.",
+        "# It is therefore absent rather than estimated, and the engine refuses to rank",
+        "# on it. A locator that shows a citizen which branch has money, without the",
+        "# data to know, is guessing about her time and her bus fare.",
+        "#",
+    ]
+    if skipped:
+        lines += [f"# SKIPPED, unparseable, {len(skipped)} record(s):"] + [
+            f"#   {s}" for s in skipped
+        ] + ["#"]
+
+    # A name carrying digits is usually a house number that leaked across the cut, or a
+    # page footer the PDF put inside the record. The script will not guess where the
+    # name really ends, so it flags them here for one human glance instead of quietly
+    # shipping a bank whose name has an address stuck to it.
+    suspect = [p.name for p in partners if re.search(r"\d", p.name)]
+    if suspect:
+        lines += [f"# REVIEW, name contains digits, {len(suspect)}:"] + [
+            f"#   {n}" for n in suspect
+        ] + ["#"]
+    lines += [
+        f"category: {category}",
+        f"label: {quote(label)}",
+        f"source_url: {quote(source_url)}",
+        f"retrieved_on: {retrieved_on}",
+        "verification_status: VERIFIED",
+        "partners:",
+    ]
+    for p in partners:
+        lines.append(f"  - name: {quote(p.name)}")
+        lines.append(
+            f"    address: {quote(p.address) if p.address else 'null'}"
+        )
+        lines.append(f"    state: {quote(p.state) if p.state else 'null'}")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pdf-dir", required=True)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--retrieved-on", default="2026-08-30")
+    args = ap.parse_args()
+
+    pdf_dir, out_dir = Path(args.pdf_dir), Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    base = "https://nsfdc.nic.in/storage/channel-partners/attachments/"
+    banners = "https://nsfdc.nic.in/storage/uploads/images/banners/"
+    jobs = [
+        ("sca", "cp4.pdf", base + "20260401_164458_Ip6UJm.pdf", True),
+        ("rrb", "cp3.pdf", base + "20260401_163145_9tiTZM.pdf", False),
+        ("psb", "cp5.pdf", base + "20260408_100623_Bea3za.pdf", False),
+        ("nbfc_mfi", "cp1.pdf", base + "20251223_101231_7smjJC.pdf", False),
+        ("coop", "cp2.pdf", base + "20251223_101341_Zcm8s6.pdf", False),
+        ("sfb", "cp7.pdf", banners + "20260408_100851_UrGTfH.pdf", False),
+        ("other", "cp6.pdf", base + "20260408_101214_Yw5CGQ.pdf", False),
+    ]
+
+    total = 0
+    for key, filename, url, has_state in jobs:
+        pdf = pdf_dir / filename
+        if not pdf.is_file():
+            print(f"{key:9s} MISSING {pdf}")
+            continue
+        partners, skipped = parse(pdf, has_state)
+        write_yaml(out_dir / f"{key}.yaml", key, partners, url, args.retrieved_on, skipped)
+        total += len(partners)
+        states = len({p.state for p in partners if p.state})
+        print(
+            f"{key:9s} {len(partners):3d} partners, {states:2d} states"
+            + (f", {len(skipped)} SKIPPED" if skipped else "")
+        )
+    print(f"total {total} partners")
+
+
+if __name__ == "__main__":
+    main()

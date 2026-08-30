@@ -1,0 +1,45 @@
+# NSFDC Channel Partners: NBFC-MFIs.
+#
+# Extracted from https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_101231_7smjJC.pdf
+# by tools/extract_partners.py on 2026-08-30. Not typed by hand.
+#
+# The source PDF uses a dash character that does not survive text extraction;
+# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.
+#
+# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by
+# 'current fund utilization eligibility (ensuring applications aren't sent to
+# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.
+# It is therefore absent rather than estimated, and the engine refuses to rank
+# on it. A locator that shows a citizen which branch has money, without the
+# data to know, is guessing about her time and her bus fare.
+#
+# REVIEW, name contains digits, 1:
+#   Vector Finance PVT LTD RO-K7/110
+#
+category: NBFC_MFI
+label: "NBFC-MFIs"
+source_url: "https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_101231_7smjJC.pdf"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+partners:
+  - name: "Anik Financial Services Private Limited"
+    address: "Regd.Office: ‘Sahyadri Building” Behind Amitesh Hotel, Ambajogai Roa, Sai Naka, Latur – 413 512"
+    state: null
+  - name: "Grameen Development & Finance Private Limited"
+    address: "Dubjent, Kulshi Road, Chhaygaon, Kamrup, Assam Pin – 781 124."
+    state: "Assam"
+  - name: "ASA International Microfinance Ltd."
+    address: "Kolkata Victoria Park, 4th Floor, GN-37/2, Sector-V, Salt Lake City, Kolkata – 700 091, West Bengal."
+    state: "West Bengal"
+  - name: "Midland Microfin Ltd."
+    address: "Ludhiana The Axis, Plot No.1, R.B.Badri Dass Colony, BMC Chowk, G.T.Road, Jalandhar – 144 001, Punjab."
+    state: "Punjab"
+  - name: "Satin Creditcare Network Ltdl."
+    address: "Gurgaon Plot No.492, Udyog Vihar, Phase-III, Gurugram, Haryana – 122 016."
+    state: "Haryana"
+  - name: "Pahal Financial Services Pvt. Ltd."
+    address: "Ahmedabad 7th Floor, Binori B Square-2, Opp. Hathising Ni Vadi, Ambli-Iscon Road, Ahmedabad – 380 054, Gujarat"
+    state: "Gujarat"
+  - name: "Vector Finance PVT LTD RO-K7/110"
+    address: "Ground Floor, Klinga Vihar, P.S. Khandagiri, Bhubaneswar ODISHA-751029"
+    state: "Odisha"

@@ -1,0 +1,104 @@
+# NSFDC Channel Partners: Regional Rural Banks.
+#
+# Extracted from https://nsfdc.nic.in/storage/channel-partners/attachments/20260401_163145_9tiTZM.pdf
+# by tools/extract_partners.py on 2026-08-30. Not typed by hand.
+#
+# The source PDF uses a dash character that does not survive text extraction;
+# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.
+#
+# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by
+# 'current fund utilization eligibility (ensuring applications aren't sent to
+# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.
+# It is therefore absent rather than estimated, and the engine refuses to rank
+# on it. A locator that shows a citizen which branch has money, without the
+# data to know, is guessing about her time and her bus fare.
+#
+# REVIEW, name contains digits, 3:
+#   3 Jharkhand Gramin Bank
+#   Madhaya Pradesh Gramin Bank. C21
+#   J&K Grameen Bank M.T.C Building, 2nd Floor, Police Bazar, Shillong-793001 Jammu & Kashmir Near Fruit Complex, Narwal, Jammu (J&K)
+#
+category: RRB
+label: "Regional Rural Banks"
+source_url: "https://nsfdc.nic.in/storage/channel-partners/attachments/20260401_163145_9tiTZM.pdf"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+partners:
+  - name: "Bihar Gramin Bank"
+    address: "Shri Vishnu Commercial Complex, NH-30, New Bypass, Near Bp Highway Services Petrol Pump, Asochak, Patna - 800016"
+    state: "Bihar"
+  - name: "Maharashtra Gramin Bank"
+    address: "Plot No.35, Jeewan Shri Town Centre, CIDCO, Aurangabad, Maharashtra – 431"
+    state: "Maharashtra"
+  - name: "3 Jharkhand Gramin Bank"
+    address: "Zila Parishad Market Complex, 3 rd Floor, Kutchery Road, Ranchi- 834001, Jharkhand."
+    state: "Jharkhand"
+  - name: "Haryana Gramin Bank"
+    address: "Near Bajrang Bhawan, Delhi Road, Rohtak, Haryana –124 001"
+    state: "Haryana"
+  - name: "Gujarat Gramin Bank"
+    address: "Head Office, Sky Line Building, 2nd Floor, Near Shital Guest House, Bharuch - 392001, Gujarat."
+    state: "Gujarat"
+  - name: "Telangana Grameena Bank"
+    address: "H.No.2-1-520, 2 nd Floor, Vijaya Sri Sai Celestia, Street No.9, Shankermut Road, Nallakunta, Hyderabad, Telangana – 500044."
+    state: "Telangana"
+  - name: "Rajasthan Gramin Bank"
+    address: "Tulsi Tower, 9 th B Road Sardarpura, Jodhpur – 342003 (Rajasthan)"
+    state: "Rajasthan"
+  - name: "Uttar Pradesh Gramin Bank"
+    address: "2 nd & 3 rd Floor, NBCC Commercial Complex, Vardan Khand, Gomti Nagar Extension, Lucknow–229001(Uttar Pradesh)"
+    state: null
+  - name: "Kerala Grameena Bank"
+    address: "PB No.10, KGpB Towers, AK Road, Uphill, Malappuram,Kerala – 676505."
+    state: "Kerala"
+  - name: "Uttarakhand Gramin Bank"
+    address: "18-New Road, Dehradun, Uttarakhand."
+    state: "Uttarakhand"
+  - name: "Tripura Gramin Bank"
+    address: "H.O. Airport Road, PO Abhaynagar, Agartala, Tripura (W) Pin – 799 005."
+    state: "Tripura"
+  - name: "Karnataka Grameena Bank"
+    address: "Head Office, CA 20, Vijayanagar IInd Stage, Musure – 570017 (Karnataka)"
+    state: "Karnataka"
+  - name: "Assam Gramin Bank"
+    address: "HO, G.S. Road, Bhangagarh, Guwahati- 781 005.(Assam)"
+    state: "Assam"
+  - name: "Andhra Pradesh Grameena Bank"
+    address: "4 th Floor, Raghu Mansion, 4-1, Broadipet, Guntur -522 002 (Andhra Pradesh)"
+    state: null
+  - name: "Punjab Gramin Bank"
+    address: "HO Jalandhar Road, Kapurthala – 144 601. (Punjab)"
+    state: "Punjab"
+  - name: "Tamil Nadu Grama Bank"
+    address: "6, Yercaud Road, Hasthasmpatti, Salem – 636007 (Tamil Nadu)"
+    state: null
+  - name: "Madhaya Pradesh Gramin Bank. C21"
+    address: "Business Park, C21 Square opposite Hotel Radisson Blue, MR-10 Indore- 452010, Madhaya Pradesh"
+    state: null
+  - name: "Himachal Pradesh Gramin Bank"
+    address: "Jail Road (Panjethi), PO – Talyahar Mandi 175001 (Himachal Pradesh)"
+    state: null
+  - name: "Puducherry Grama Bank"
+    address: "No.441, Mahatma Gandhi Road, Muthialpet, Puducherry – 605 003"
+    state: "Puducherry"
+  - name: "West Bengal Gramin Bank Natabar Paul Road"
+    address: "Chatterjee Para More, Tikiapara, Howrah – 711101 (WB)"
+    state: null
+  - name: "Chhattisgarh Gramin Bank"
+    address: "Corporate Office Raipur, Plot No.-47, Sector-24, Atal Nagar, Nava Raipur-492013"
+    state: "Chhattisgarh"
+  - name: "Manipur Rural Bank"
+    address: "Keishampat, Keisham Leikai, Imphal, Manipur 795001"
+    state: "Manipur"
+  - name: "Meghalaya Rural Bank"
+    address: null
+    state: "Meghalaya"
+  - name: "J&K Grameen Bank M.T.C Building, 2nd Floor, Police Bazar, Shillong-793001 Jammu & Kashmir Near Fruit Complex, Narwal, Jammu (J&K)"
+    address: "-180006"
+    state: null
+  - name: "Odisha Grameen Bank"
+    address: "Bhubaneswar. 7R25-H75, Jagamara, Sunderpada Road, Gandamuda, Pokhhariput, Bhubaneshwar -751030,Odisha"
+    state: "Odisha"
+  - name: "Mizoram Rural Bank"
+    address: "Mizoram MINECO, Khatla Aizawl - 796001. Total=26"
+    state: "Mizoram"

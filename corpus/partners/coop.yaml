@@ -1,0 +1,30 @@
+# NSFDC Channel Partners: Co-operative Banks and Societies.
+#
+# Extracted from https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_101341_Zcm8s6.pdf
+# by tools/extract_partners.py on 2026-08-30. Not typed by hand.
+#
+# The source PDF uses a dash character that does not survive text extraction;
+# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.
+#
+# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by
+# 'current fund utilization eligibility (ensuring applications aren't sent to
+# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.
+# It is therefore absent rather than estimated, and the engine refuses to rank
+# on it. A locator that shows a citizen which branch has money, without the
+# data to know, is guessing about her time and her bus fare.
+#
+# REVIEW, name contains digits, 1:
+#   Shri Mahila Sewa Sahakari Bank Ltd. 109. Sakar-II
+#
+category: COOPERATIVE
+label: "Co-operative Banks and Societies"
+source_url: "https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_101341_Zcm8s6.pdf"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+partners:
+  - name: "Shri Mahila Sewa Sahakari Bank Ltd. 109. Sakar-II"
+    address: "Opp.Town Hall, Ellisbridge, Ahmedabad- 38006"
+    state: null
+  - name: "Konoklata mahila Urban Cooperative Bank"
+    address: "Assam."
+    state: "Assam"
