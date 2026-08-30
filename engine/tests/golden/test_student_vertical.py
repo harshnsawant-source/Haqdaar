@@ -58,6 +58,12 @@ def test_the_whole_student_arc(student_schemes_dir, student_profile, today):
     assert {v.scheme_id: v.status for v in verdicts} == {
         "pre-matric-sc": Status.ELIGIBLE,
         "top-class-sc": Status.NOT_ELIGIBLE,
+        # Added 2026-08-30 with the NSFDC Educational Loan Scheme, which SIH26092
+        # names alongside the two credit products. She is SC and under the Rs 5.00
+        # lakh ceiling, so the two eligibility clauses both hold. Whether her course
+        # is a recognised one sits in the APPROVAL group, where it cannot make her
+        # ineligible, only unapproved.
+        "nsfdc-educational-loan": Status.ELIGIBLE,
     }
 
 
@@ -168,12 +174,12 @@ def test_the_slot_refusal_does_not_hide_a_provable_entitlement(
     assert approval.unlocking_docs == []  # nothing to fetch; it is not hers to settle
 
 
-def test_both_student_schemes_are_verified_against_official_sources(
+def test_every_student_scheme_is_verified_against_official_sources(
     student_schemes_dir,
 ):
     """A new vertical does not get to skip the rule the other two follow."""
     schemes = load_corpus(student_schemes_dir)
-    assert len(schemes) == 2
+    assert len(schemes) == 3
     for scheme in schemes:
         assert scheme.verification_status is VerificationStatus.VERIFIED
         assert scheme.source_url.startswith("https://")
@@ -181,7 +187,8 @@ def test_both_student_schemes_are_verified_against_official_sources(
             assert "[VERIFY AT SOURCE]" not in clause.clause_text, clause.clause_id
             assert clause.verify_note
 
-    assert len(load_corpus(student_schemes_dir, strict=True)) == 2
+    # All three are VERIFIED, so strict mode drops none of them.
+    assert len(load_corpus(student_schemes_dir, strict=True)) == 3
 
 
 def test_no_rendered_student_card_hedges(

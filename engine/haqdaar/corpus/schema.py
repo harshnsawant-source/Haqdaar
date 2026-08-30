@@ -184,6 +184,71 @@ class ClauseGroup(_Frozen):
         return self
 
 
+class InstalmentFrequency(str, Enum):
+    MONTHLY = "MONTHLY"
+    QUARTERLY = "QUARTERLY"
+    HALF_YEARLY = "HALF_YEARLY"
+
+
+class MoratoriumInterest(str, Enum):
+    """How interest behaves during the moratorium.
+
+    NOT_STATED is the default and is the honest answer for every NSFDC scheme read so
+    far: the published terms give the moratorium length and say nothing about whether
+    interest accrues through it. That single unknown moves the total repayable by a
+    real amount, so the calculator reports it rather than picking a convention.
+    """
+
+    NOT_STATED = "NOT_STATED"
+    ACCRUES = "ACCRUES"
+    WAIVED = "WAIVED"
+
+
+class CreditTerms(_Frozen):
+    """What a loan COSTS, as distinct from who qualifies for it.
+
+    Eligibility clauses and credit terms are different kinds of fact and are kept
+    apart on purpose. A clause decides a verdict; these numbers only ever produce an
+    illustration. Nothing here may feed the evaluator.
+
+    Everything is transcribed the same way a clause is -- verbatim `terms_text`, a
+    source, a verification status -- because a wrong interest rate is exactly as
+    damaging as a wrong eligibility rule, and rather harder for a citizen to notice.
+
+    NOTE THE FREQUENCY. NSFDC repays in QUARTERLY instalments. The problem statement
+    asks for an "EMI", and a monthly amortisation would be wrong for every scheme in
+    this corpus. The calculator uses the frequency stated here and says which it used.
+    """
+
+    #: Verbatim from the source, the way clause_text is.
+    terms_text: str
+    #: What the BENEFICIARY pays. `channel_interest_pct` is what NSFDC charges the
+    #: channel partner, which is not the citizen's rate and must never be shown as it.
+    beneficiary_interest_pct: float
+    repayment_months: int
+    instalment_frequency: InstalmentFrequency
+    verification_status: VerificationStatus
+    verify_note: str
+    moratorium_months: int | None = None
+    moratorium_interest: MoratoriumInterest = MoratoriumInterest.NOT_STATED
+    max_project_cost: float | None = None
+    max_loan: float | None = None
+    financed_share_pct: float | None = None
+    channel_interest_pct: float | None = None
+    currency: str = "INR"
+
+    @model_validator(mode="after")
+    def _provisional_terms_are_marked(self) -> CreditTerms:
+        if (
+            self.verification_status is VerificationStatus.PROVISIONAL
+            and VERIFY_MARKER not in self.terms_text
+        ):
+            raise ValueError(
+                f"PROVISIONAL credit terms must carry {VERIFY_MARKER} in terms_text"
+            )
+        return self
+
+
 class Scheme(_Frozen):
     scheme_id: str
     name: str
@@ -206,6 +271,9 @@ class Scheme(_Frozen):
     validity_text: str | None = None
     portal_url: str | None = None
     filing_office: str | None = None
+    #: Product terms, for the illustrative instalment calculator. Optional: a
+    #: welfare pension has no credit terms and must not be forced to invent any.
+    credit_terms: CreditTerms | None = None
     #: scheme_ids. Parsed and carried on day 1; resolved by the evaluator on day 2.
     stacks_with: list[str] = Field(default_factory=list)
     subsumed_by: list[str] = Field(default_factory=list)

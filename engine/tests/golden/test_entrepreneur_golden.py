@@ -124,11 +124,11 @@ def test_nsfdc_eligible_with_a_separate_approval_refusal(nsfdc, entrepreneur_pro
             assert predicate.evidence is not None
 
 
-def test_one_document_unlocks_both_schemes(schemes_dir, entrepreneur_02_profile):
-    """The "one document away" beat, computed off the real provisional corpus.
+def test_one_document_unlocks_every_scheme(schemes_dir, entrepreneur_02_profile):
+    """The "one document away" beat, computed off the real corpus.
 
     entrepreneur-02 has a project report and Aadhaar but no caste certificate. That
-    single paper is the sole blocker on both schemes, which is what makes the headline
+    single paper is the sole blocker on every one of them, which is what makes the headline
     true rather than merely plausible.
     """
     schemes = load_corpus(schemes_dir)
@@ -136,6 +136,10 @@ def test_one_document_unlocks_both_schemes(schemes_dir, entrepreneur_02_profile)
 
     assert {v.scheme_id: v.status for v in verdicts} == {
         "nsfdc-term-loan": Status.BLOCKED_ON_DOCUMENT,
+        # Added 2026-08-30. The micro finance scheme carries the same NSFDC-wide caste
+        # clause, so the same single missing paper blocks it too. The beat gets
+        # stronger, not weaker: one document now unlocks four schemes.
+        "nsfdc-micro-finance": Status.BLOCKED_ON_DOCUMENT,
         "stand-up-india": Status.BLOCKED_ON_DOCUMENT,
         "vcf-sc": Status.BLOCKED_ON_DOCUMENT,
     }
@@ -146,8 +150,13 @@ def test_one_document_unlocks_both_schemes(schemes_dir, entrepreneur_02_profile)
     option = best_unlock(verdicts)
     assert option is not None
     assert option.document_id == "caste_certificate"
-    assert option.unlocks == ["nsfdc-term-loan", "stand-up-india", "vcf-sc"]
-    assert option.unlock_count == 3
+    assert option.unlocks == [
+        "nsfdc-micro-finance",
+        "nsfdc-term-loan",
+        "stand-up-india",
+        "vcf-sc",
+    ]
+    assert option.unlock_count == 4
     assert option.contributes_to == []
 
     # Her eligibility is blocked on paperwork; the bank's discretion is still separate.

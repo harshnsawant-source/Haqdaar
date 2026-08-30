@@ -11,6 +11,7 @@ from haqdaar.corpus.schema import Clause, RuleType, VerificationStatus
 def test_day_one_corpus_loads(schemes_dir: Path):
     schemes = load_corpus(schemes_dir)
     assert [s.scheme_id for s in schemes] == [
+        "nsfdc-micro-finance",
         "nsfdc-term-loan",
         "stand-up-india",
         "vcf-sc",
@@ -21,7 +22,14 @@ def test_day_one_corpus_loads(schemes_dir: Path):
 #: government page. The tripwire below names them one by one on purpose: adding a
 #: scheme here is a deliberate act that says a human read the source, and a scheme
 #: cannot drift into the verified set by accident.
-VERIFIED_SCHEMES = {"stand-up-india", "nsfdc-term-loan", "vcf-sc"}
+#: Declared by hand on purpose. Adding a scheme to the corpus must be a deliberate
+#: act that someone signs for here, not something the suite quietly accepts.
+VERIFIED_SCHEMES = {
+    "stand-up-india",
+    "nsfdc-term-loan",
+    "nsfdc-micro-finance",
+    "vcf-sc",
+}
 
 
 def test_strict_mode_yields_only_the_schemes_we_have_actually_read(schemes_dir: Path):

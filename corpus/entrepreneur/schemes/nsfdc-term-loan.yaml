@@ -44,6 +44,42 @@ verify_note: >-
 portal_url: "https://pmsuraj.dosje.gov.in/"
 filing_office: "the nearest State Channelising Agency or Channelising Agency office"
 
+# Added 2026-08-30. The header above says loan ceiling, interest rate and repayment
+# period were "not on the eligibility page, and they are product terms rather than
+# eligibility tests". Both halves are still true; they are simply on a DIFFERENT page,
+# nsfdc.nic.in/scheme, and SIH26092 asks for an instalment calculator, so the corpus
+# now carries them as terms rather than as clauses. They do not reach the evaluator.
+#
+# Note the two bands. The scheme covers units costing MORE than Rs 1.40 lakh, which is
+# exactly where the Micro Finance Scheme stops, and lends above Rs 1.25 lakh. Unit cost
+# and loan amount are different quantities and are kept apart.
+credit_terms:
+  terms_text: >-
+    NSFDC provides Term Loans for units costing more than Rs 1.40 lakh and up to Rs
+    50.00 lakh. Maximum Loan Limit: NSFDC provides term loans up to 90% of the project
+    cost, above Rs 1.25 lakh and up to Rs 45 lakh per unit. Rate of Interest: NSFDC
+    shall charge interest @ 4% from the SCAs / CAs, which in turn shall charge 8% from
+    the beneficiaries. Repayment Period: Repaid in quarterly instalments within seven
+    years, including a 6-month moratorium (12 months for plantation and construction
+    activities).
+  beneficiary_interest_pct: 8
+  channel_interest_pct: 4
+  repayment_months: 84
+  instalment_frequency: QUARTERLY
+  moratorium_months: 6
+  moratorium_interest: NOT_STATED
+  max_project_cost: 5000000
+  max_loan: 4500000
+  financed_share_pct: 90
+  verification_status: VERIFIED
+  verify_note: >-
+    Verbatim from nsfdc.nic.in/scheme, read 2026-08-30, rupee signs written out so the
+    text stays plain ASCII. The six-month moratorium is the general case; the source
+    gives twelve months for plantation and construction activities, which is recorded
+    in terms_text and NOT encoded, because the corpus does not know which activity a
+    given applicant is financing. The page does not say whether interest accrues during
+    the moratorium.
+
 clause_groups:
   - group_id: eligibility
     satisfy: ALL

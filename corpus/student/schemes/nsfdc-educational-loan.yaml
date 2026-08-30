@@ -1,0 +1,149 @@
+# VERIFIED against the official source on 2026-08-30.
+#
+# Transcribed from nsfdc.nic.in/scheme, NSFDC's own loan/credit schemes page, which
+# lists this as scheme 5 of its product family.
+#
+# WHY IT IS FILED UNDER student/ AND NOT entrepreneur/
+# ----------------------------------------------------
+# SIH26092 asks for one recommender covering "the most suitable credit or educational
+# loan scheme", so this product belongs to the same NSFDC family as the micro finance
+# and term loan entries. It is filed here anyway, because a vertical is what the
+# CITIZEN is trying to do, not which ministry funds it, and the student vertical is
+# labelled "Paying for education". An educational loan under a button that says
+# "Starting or running a business" would be a lie told by an information architecture.
+#
+# That the same engine answers across two verticals is the point, not a problem. It is
+# the "same engine, new corpus" claim, demonstrated inside a single problem statement.
+#
+# THE MORATORIUM HERE IS NOT A NUMBER OF MONTHS
+# ---------------------------------------------
+# Every other NSFDC product states a fixed moratorium. This one states "Course period
+# plus 01 year, where repayment has not started", which depends on a course length the
+# corpus does not know. `moratorium_months` is therefore ABSENT rather than guessed,
+# and the calculator reports the moratorium as unknown for this scheme instead of
+# quietly substituting six months. The source's own alternative branch, six months
+# where repayment has already started, is recorded in terms_text.
+#
+# REPAYMENT PERIOD: THE SHORTER BRANCH IS ENCODED
+# -----------------------------------------------
+# The source gives two: up to 12 years where repayment has not started, and up to 10
+# years where the loan is disbursed and repayment has started. `repayment_months` uses
+# 10 years, the branch that applies once money has moved, because that is the case an
+# illustration is for. Both appear verbatim in terms_text.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# The course list. The page names twelve-plus recognised professional and technical
+# courses; that is an eligibility test the engine cannot settle from a citizen
+# declaration, and encoding a partial list would silently rule out a real course.
+
+scheme_id: nsfdc-educational-loan
+name: NSFDC Educational Loan Scheme
+authority: "National Scheduled Castes Finance and Development Corporation, Ministry of Social Justice and Empowerment"
+benefit: "Concessional educational loan for regular full-time professional and technical courses in India or abroad"
+source_url: "https://nsfdc.nic.in/scheme"
+retrieved_on: 2026-08-30
+last_amended: 2026-01-07
+verification_status: VERIFIED
+verify_note: >-
+  Product terms transcribed verbatim from nsfdc.nic.in/scheme, read 2026-08-30.
+  Eligibility clauses transcribed from nsfdc.nic.in/eligibility-requirements, read
+  2026-08-26, and are the same NSFDC-wide criteria carried by the other NSFDC schemes.
+  The page states no age requirement and no scheme validity window.
+
+portal_url: "https://pmsuraj.dosje.gov.in/"
+filing_office: "the nearest State Channelising Agency or Channelising Agency office"
+
+credit_terms:
+  terms_text: >-
+    Educational Loan shall be provided to eligible students for pursuing regular
+    full-time professional / technical recognized courses approved by the Government
+    in India or abroad. Education Loan Scheme (Domestic & Abroad): Upto Rs 40.00 Lakh
+    or 90% of course fee, whichever is less. Interest Rate p.a. for CAs 2.5%,
+    Beneficiary 6.5%. Repayment Period: Upto 12 years where repayment has not started;
+    Upto 10 years, where loan disbursed and repayment started. Moratorium Period:
+    Course period plus 01 year, where repayment has not started; Upto 6 months, where
+    loan disbursed and repayment started.
+  beneficiary_interest_pct: 6.5
+  channel_interest_pct: 2.5
+  repayment_months: 120
+  instalment_frequency: QUARTERLY
+  moratorium_interest: NOT_STATED
+  max_loan: 4000000
+  financed_share_pct: 90
+  verification_status: VERIFIED
+  verify_note: >-
+    Verbatim from nsfdc.nic.in/scheme, read 2026-08-30, rupee signs written out so the
+    text stays plain ASCII. `moratorium_months` is deliberately ABSENT: the source
+    states the moratorium as the course period plus one year, which depends on a
+    course length this corpus does not hold. `repayment_months` encodes the 10-year
+    branch, which applies once the loan is disbursed and repayment has started; the
+    12-year branch is in terms_text. The instalment frequency is not stated on this
+    row and is taken to be quarterly, as every other NSFDC product on the same page
+    states; that assumption is reported by the calculator rather than hidden.
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: ELS-C1
+        clause_text: "The beneficiary(ies) must belong to the Scheduled Caste (SC) community."
+        rule_type: enumerated_category
+        profile_field: applicant.social_category
+        bound:
+          values: [SC]
+        verifiable_from: [caste_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26. The
+          page does not name the accepted proof document; a caste certificate reflects
+          standard practice.
+
+      - clause_id: ELS-C2
+        clause_text: >-
+          The annual family income of applicants must not exceed Rs 5.00 lakh
+          (applicable to both rural and urban areas, effective from January 7, 2026).
+        rule_type: income_threshold
+        profile_field: household.annual_income
+        bound:
+          max_value: 500000
+          currency: INR
+          period: ANNUAL
+        verifiable_from: [income_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26.
+
+
+  # ELS-C3 lives HERE, not in the eligibility group above, and the schema is what
+  # taught us so: it refuses a discretionary clause inside an ELIGIBILITY group,
+  # because whether a course is "recognized" and "approved by the Government" is a
+  # fact about an institution that no citizen declaration can settle. Filed as
+  # eligibility it would have read as something she could fail; filed as approval it
+  # reads as something only the agency can decide, which is true.
+  - group_id: verification-by-agency
+    kind: APPROVAL
+    satisfy: ALL
+    clauses:
+      - clause_id: ELS-C3
+        clause_text: >-
+          Educational Loan shall be provided to eligible students for pursuing regular
+          full-time professional / technical recognized courses approved by the
+          Government in India or abroad.
+        rule_type: discretionary
+        decided_by: "the concerned State Channelising Agency or Channelising Agency"
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/scheme, read 2026-08-30. Encoded as discretionary
+          rather than as an enumerated course list: the page names twelve-plus course
+          families, and a partial transcription would silently rule out a real course.
+
+      - clause_id: ELS-C4
+        clause_text: >-
+          verification of eligibility criteria shall be the sole responsibility of the
+          concerned SCAs/CAs
+        rule_type: discretionary
+        decided_by: "the concerned State Channelising Agency or Channelising Agency"
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26.

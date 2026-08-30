@@ -74,7 +74,7 @@ def test_voice_blocked_on_document(schemes_dir, entrepreneur_02_profile, today):
     assert card.status is Status.BLOCKED_ON_DOCUMENT
     assert card.lines[0] == "You are one document away."
     assert card.lines[1] == (
-        "Bring your caste certificate and this unlocks 3 more schemes."
+        "Bring your caste certificate and this unlocks 4 more schemes."
     )
     assert card.lines[2].startswith(
         "The rule this settles: The beneficiary(ies) must belong to"
@@ -151,7 +151,7 @@ def test_each_card_declares_whether_its_rules_were_verified(
     means nothing and citizens learn to ignore it. Until 2026-08-26 every scheme was
     provisional and this test simply asserted the banner everywhere.
     """
-    verified = {"stand-up-india", "nsfdc-term-loan", "vcf-sc"}
+    verified = {"stand-up-india", "nsfdc-term-loan", "nsfdc-micro-finance", "vcf-sc"}
     for scheme_id, card in cards(schemes_dir, entrepreneur_profile, today).items():
         says_unverified = any("not yet been verified" in b for b in card.banners)
         assert says_unverified is (scheme_id not in verified), scheme_id

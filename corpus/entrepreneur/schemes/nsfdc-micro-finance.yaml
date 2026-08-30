@@ -1,0 +1,124 @@
+# VERIFIED against the official source on 2026-08-30.
+#
+# Transcribed from nsfdc.nic.in/scheme, NSFDC's own loan/credit schemes page, which
+# lists this as scheme 1 of its product family.
+#
+# WHY THIS SCHEME EXISTS IN THE CORPUS
+# ------------------------------------
+# SIH26092 names three products a citizen cannot tell apart: "a Micro Finance Scheme
+# for small projects (up to Rs 1.40 lakh), a Term Loan for larger projects (up to Rs
+# 50.00 lakh), or an Educational Loan Scheme". We held only the term loan. Without
+# this file the recommender cannot answer the question the problem statement is
+# actually about.
+#
+# THE TWO NUMBERS ARE DIFFERENT NUMBERS, AND THIS IS THE WHOLE POINT
+# ------------------------------------------------------------------
+# Rs 1.40 lakh is the maximum UNIT COST. Rs 1.25 lakh is the maximum LOAN, because
+# NSFDC funds up to 90% of project cost. A search summary of this page reports "Rs
+# 1.25 lakh" as the scheme limit and the problem statement reports "Rs 1.40 lakh";
+# both are right about different quantities, and a corpus that flattened them would
+# tell a citizen she can borrow Rs 1.40 lakh, which she cannot.
+#
+# ELIGIBILITY IS INHERITED, NOT RESTATED
+# --------------------------------------
+# The scheme page gives product terms only. The eligibility criteria for NSFDC
+# assistance are on nsfdc.nic.in/eligibility-requirements and are the same ones already
+# transcribed in nsfdc-term-loan.yaml, so the two clauses below are the same clauses,
+# carrying their own clause_ids. They are restated rather than referenced because the
+# engine evaluates a scheme against a profile independently and has no include
+# mechanism, and inventing one for two clauses would be worse than the duplication.
+#
+# DELIBERATELY ABSENT
+# -------------------
+# Age. The eligibility page states none.
+# A validity window. The page declares no start or end date for the scheme.
+
+scheme_id: nsfdc-micro-finance
+name: NSFDC Micro Finance Scheme
+authority: "National Scheduled Castes Finance and Development Corporation, Ministry of Social Justice and Empowerment"
+benefit: "Concessional micro credit for small income-generating units, routed through State Channelising Agencies and Channelising Agencies"
+source_url: "https://nsfdc.nic.in/scheme"
+retrieved_on: 2026-08-30
+last_amended: 2026-01-07
+verification_status: VERIFIED
+verify_note: >-
+  Product terms transcribed verbatim from nsfdc.nic.in/scheme, read 2026-08-30.
+  Eligibility clauses transcribed from nsfdc.nic.in/eligibility-requirements, read
+  2026-08-26, and are identical to those on the NSFDC Term Loan. The page states no
+  age requirement and no scheme validity window, so neither is encoded.
+
+portal_url: "https://pmsuraj.dosje.gov.in/"
+filing_office: "the nearest State Channelising Agency or Channelising Agency office"
+
+credit_terms:
+  terms_text: >-
+    NSFDC provides Micro Credit Finance for units costing up to Rs 1.40 lakh. Maximum
+    Loan Limit: NSFDC provides loans up to 90% of the Project Cost with a maximum
+    amount of up to Rs 1.25 lakh per unit. Rate of Interest: NSFDC charges 2.5% from
+    the SCAs/CAs, which in turn shall charge 6.5% from the Beneficiaries. Repayment
+    Period: To be repaid in quarterly instalments within a maximum period of three
+    years from the date of disbursement, including a 3-month moratorium period.
+  beneficiary_interest_pct: 6.5
+  channel_interest_pct: 2.5
+  repayment_months: 36
+  instalment_frequency: QUARTERLY
+  moratorium_months: 3
+  moratorium_interest: NOT_STATED
+  max_project_cost: 140000
+  max_loan: 125000
+  financed_share_pct: 90
+  verification_status: VERIFIED
+  verify_note: >-
+    Verbatim from nsfdc.nic.in/scheme, read 2026-08-30, with the rupee sign written
+    out so the text stays plain ASCII. The three-year repayment period is stated as
+    INCLUDING the three-month moratorium, which is how the calculator treats it. The
+    page does not say whether interest accrues during the moratorium, so
+    moratorium_interest stays NOT_STATED and the calculator declines to assume.
+
+clause_groups:
+  - group_id: eligibility
+    satisfy: ALL
+    clauses:
+      - clause_id: MFS-C1
+        clause_text: "The beneficiary(ies) must belong to the Scheduled Caste (SC) community."
+        rule_type: enumerated_category
+        profile_field: applicant.social_category
+        bound:
+          values: [SC]
+        verifiable_from: [caste_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26. The
+          page does not name the accepted proof document; a caste certificate reflects
+          standard practice, and an SCA may accept others.
+
+      - clause_id: MFS-C2
+        clause_text: >-
+          The annual family income of applicants must not exceed Rs 5.00 lakh
+          (applicable to both rural and urban areas, effective from January 7, 2026).
+        rule_type: income_threshold
+        profile_field: household.annual_income
+        bound:
+          max_value: 500000
+          currency: INR
+          period: ANNUAL
+        verifiable_from: [income_certificate]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26, with
+          the rupee sign written out so the clause text stays plain ASCII.
+
+  - group_id: verification-by-agency
+    kind: APPROVAL
+    satisfy: ALL
+    clauses:
+      - clause_id: MFS-C3
+        clause_text: >-
+          verification of eligibility criteria shall be the sole responsibility of the
+          concerned SCAs/CAs
+        rule_type: discretionary
+        decided_by: "the concerned State Channelising Agency or Channelising Agency"
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26. Lower
+          case and no full stop because that is how the sentence appears in the source.
