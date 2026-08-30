@@ -160,3 +160,25 @@ export async function understandText(text, language = 'en') {
   if (!response.ok) return { data: null, detail: body.detail };
   return { data: body };
 }
+
+/*
+ * The repayment illustration for one scheme.
+ *
+ * A 422 here is not a failure, it is the calculator declining: the amount is above the
+ * scheme's ceiling, or the scheme is not a loan at all. The reason is written for a
+ * citizen to read, so it is returned rather than thrown, and the panel prints it.
+ */
+export async function fetchEmi(vertical, schemeId, principal) {
+  const params = new URLSearchParams({
+    vertical,
+    scheme_id: schemeId,
+    principal: String(principal),
+  });
+  const response = await fetch(`/api/emi?${params.toString()}`, {
+    headers: { Accept: 'application/json' },
+  });
+  const body = await response.json().catch(() => ({}));
+  if (response.status === 422) return { data: null, refused: body.detail };
+  if (!response.ok) throw new Error(body.detail || `request failed (${response.status})`);
+  return { data: body, refused: null };
+}

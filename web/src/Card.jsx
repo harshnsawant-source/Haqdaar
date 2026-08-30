@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { act } from './api.js';
+import { Emi } from './Emi.jsx';
 import { useLang } from './lang.jsx';
 
 /*
@@ -12,7 +13,7 @@ import { useLang } from './lang.jsx';
  */
 
 
-export function Card({ card, personaId, stackedWith = [], canAct = true }) {
+export function Card({ card, personaId, vertical, stackedWith = [], canAct = true }) {
   const { s } = useLang();
   const [action, setAction] = useState(null);
   const [acting, setActing] = useState(false);
@@ -96,6 +97,15 @@ export function Card({ card, personaId, stackedWith = [], canAct = true }) {
             </div>
           ))}
         </div>
+      )}
+
+      {/* SIH26092 component 2. Only where the corpus actually holds credit terms:
+          `lends` is false for every pension, and a repayment calculator on a widow's
+          pension card would be nonsense. Placed before the action slot so the card
+          reads in the order a person thinks: what this is, what it would cost, what
+          to do next. */}
+      {card.lends && vertical && (
+        <Emi vertical={vertical} schemeId={card.scheme_id} />
       )}
 
       {/* A+ — it acts. Every step of this is SIMULATED and says so; the banners come

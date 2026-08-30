@@ -41,6 +41,7 @@ from haqdaar.action.track import submit
 from haqdaar.corpus.forms import load_form_for
 from haqdaar.corpus.loader import load_corpus
 from haqdaar.corpus.schema import Scheme
+from haqdaar.finance.emi import IllustrationRefused, illustrate
 from haqdaar.eligibility.aggregate import best_unlock
 from haqdaar.eligibility.compare import ComparisonError, compare
 from haqdaar.eligibility.evaluate import evaluate_corpus, evaluate_scheme
@@ -69,6 +70,7 @@ from haqdaar.retrieval.route import route
 from haqdaar.api.schemas import (
     ActionResponse,
     CardPayload,
+    EmiResponse,
     EvaluateResponse,
     ExtractedFieldPayload,
     ExtractionReportPayload,
@@ -642,6 +644,62 @@ def act(persona_id: str, scheme_id: str) -> ActionResponse:
     rendered = render_action(filled_form, receipt, scheme)
     return to_action(
         filled_form, receipt, rendered, scheme, missing_documents(filled_form)
+    )
+
+
+@app.get("/api/emi", response_model=EmiResponse)
+def emi(vertical: str, scheme_id: str, principal: float) -> EmiResponse:
+    """An illustrative repayment schedule for one scheme.
+
+    SIH26092 asks for a projected-EMI tool "accounting for specific scheme guidelines
+    like maximum loan limits, interest rates and moratorium periods". This is it.
+
+    It is a SEPARATE endpoint from /api/evaluate on purpose. A verdict answers whether
+    she qualifies; this answers what the money costs. Fusing them would let a price
+    appear on a card that has not established she is eligible for anything, and would
+    make the calculator look like an offer.
+
+    A refusal comes back as 422 with the reason in `detail`, because the reasons are
+    written to be read by a citizen: "This scheme lends up to Rs 1.25 lakh."
+    """
+    if vertical not in set(PERSONAS.values()):
+        raise HTTPException(status_code=404, detail=f"unknown vertical {vertical}")
+
+    schemes = {s.scheme_id: s for s in _load_vertical(vertical)}
+    scheme = schemes.get(scheme_id)
+    if scheme is None:
+        raise HTTPException(
+            status_code=404, detail=f"unknown scheme {scheme_id} in {vertical}"
+        )
+    if scheme.credit_terms is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"{scheme.name} is not a loan, so there is nothing to repay.",
+        )
+
+    try:
+        shown = illustrate(scheme.credit_terms, principal)
+    except IllustrationRefused as refusal:
+        raise HTTPException(status_code=422, detail=str(refusal)) from refusal
+
+    return EmiResponse(
+        scheme_id=scheme.scheme_id,
+        scheme_name=scheme.name,
+        principal=float(shown.principal),
+        annual_rate_pct=float(shown.annual_rate_pct),
+        frequency=shown.frequency.value,
+        instalment_count=shown.instalment_count,
+        instalment_amount=float(shown.instalment_amount),
+        monthly_equivalent=float(shown.monthly_equivalent),
+        total_repayable=float(shown.total_repayable),
+        total_interest=float(shown.total_interest),
+        repayment_months=shown.repayment_months,
+        moratorium_months=shown.moratorium_months,
+        max_loan=scheme.credit_terms.max_loan,
+        terms_text=scheme.credit_terms.terms_text,
+        source_url=scheme.source_url,
+        assumptions=list(shown.assumptions),
+        unknowns=list(shown.unknowns),
     )
 
 

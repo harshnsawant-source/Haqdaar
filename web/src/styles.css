@@ -1020,3 +1020,92 @@ details.ruled-out .tagline { margin: 8px 0 0; }
   line-height: 1.55;
   text-wrap: pretty;
 }
+
+
+/* ---------------------------------------------------------------------------
+ * The repayment illustration (SIH26092 component 2).
+ *
+ * Collapsed by default. It answers a question a citizen only asks AFTER she knows
+ * she qualifies, and an open calculator on every card would compete with the verdict,
+ * which is the one thing on the page that must be read.
+ *
+ * Deliberately unstyled by status: the figures are the same arithmetic whether she is
+ * eligible or blocked, and colouring them would imply a verdict they do not carry.
+ * ------------------------------------------------------------------------- */
+.emi {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.emi > summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+}
+
+.emi-form { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.emi-form label { font-size: 0.82rem; color: var(--ink-soft); }
+.emi-form .row { display: flex; gap: 8px; }
+.emi-form input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 10px 12px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* A refusal, not an error. She asked for more than this scheme lends, and the
+   calculator saying so IS the product working. Amber, like BLOCKED_ON_DOCUMENT,
+   because both mean "do something different", not "something broke". */
+.emi-refused {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--blocked-bg);
+  color: var(--blocked);
+  font-size: 0.9rem;
+}
+
+.emi-result { margin-top: 12px; }
+.emi-headline { margin: 0; font-size: 1.15rem; }
+.emi-headline strong { font-family: Mukta, Hind, system-ui, sans-serif; }
+.emi-sub { margin: 2px 0 0; font-size: 0.85rem; color: var(--ink-soft); }
+
+.emi-facts {
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+}
+.emi-facts > div { display: flex; flex-direction: column; gap: 2px; }
+.emi-facts dt { font-size: 0.75rem; color: var(--ink-soft); }
+.emi-facts dd {
+  margin: 0;
+  font-weight: 600;
+  /* Figures line up in a row, so the digits should line up too. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* The honest half: what the source never said. Indigo, the same calm colour the
+   product already uses for "I cannot verify this", because it is the same idea. */
+.emi-caveats {
+  margin: 12px 0 0;
+  padding: 10px 12px 10px 28px;
+  border-radius: 10px;
+  background: var(--unverifiable-bg);
+  color: var(--unverifiable);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.emi-caveats li + li { margin-top: 6px; }
+
+.emi-source { margin: 10px 0 0; font-size: 0.78rem; color: var(--ink-soft); }

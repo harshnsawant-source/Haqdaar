@@ -120,8 +120,13 @@ def test_unlock_beat_is_served(client):
     assert body["unlock"] == {
         "document_id": "caste_certificate",
         "document_label": "caste certificate",
-        "count": 3,
-        "scheme_ids": ["nsfdc-term-loan", "stand-up-india", "vcf-sc"],
+        "count": 4,
+        "scheme_ids": [
+            "nsfdc-micro-finance",
+            "nsfdc-term-loan",
+            "stand-up-india",
+            "vcf-sc",
+        ],
     }
     assert all(c["status"] == "BLOCKED_ON_DOCUMENT" for c in body["cards"])
 
@@ -182,7 +187,7 @@ def test_every_card_declares_whether_its_rules_were_verified(client):
 
     A verified scheme must not carry the banner, or it stops meaning anything.
     """
-    verified = {"stand-up-india", "nsfdc-term-loan", "vcf-sc"}
+    verified = {"stand-up-india", "nsfdc-term-loan", "nsfdc-micro-finance", "vcf-sc"}
     body = client.get(
         "/api/evaluate", params={"persona_id": "entrepreneur-01"}
     ).json()
@@ -326,6 +331,7 @@ def test_extract_fixture_backed_reproduces_the_golden_verdict(client):
     assert body["mode"] == "FIXTURE_BACKED"
     assert {c["scheme_id"]: c["status"] for c in body["cards"]} == {
         "nsfdc-term-loan": "ELIGIBLE",
+        "nsfdc-micro-finance": "ELIGIBLE",
         "stand-up-india": "ELIGIBLE",
         "vcf-sc": "ELIGIBLE",
     }
@@ -478,3 +484,77 @@ def test_the_headline_and_the_card_spell_the_document_the_same_way(client):
         assert any(headline in line for line in card["lines"]), (
             f"{card['scheme_id']}: card does not spell the document as {headline!r}"
         )
+
+
+# --- /api/emi -----------------------------------------------------------------
+# SIH26092's second required component. Served separately from /api/evaluate on
+# purpose: a verdict says whether she qualifies, this says what the money costs, and
+# fusing them would put a price on a card that has established no entitlement.
+
+
+def test_emi_is_served_for_a_scheme_that_lends(client):
+    body = client.get(
+        "/api/emi",
+        params={
+            "vertical": "entrepreneur",
+            "scheme_id": "nsfdc-micro-finance",
+            "principal": 100000,
+        },
+    ).json()
+
+    # Quarterly, because that is what NSFDC states. A monthly reading would have
+    # returned 33 instalments here and every figure would have been wrong.
+    assert body["frequency"] == "QUARTERLY"
+    assert body["instalment_count"] == 11
+    assert body["annual_rate_pct"] == 6.5
+    assert body["total_repayable"] > body["principal"]
+    assert body["total_interest"] == round(
+        body["total_repayable"] - body["principal"], 2
+    )
+    # The arithmetic is citable the same way a verdict is.
+    assert body["source_url"].startswith("https://nsfdc.nic.in")
+    assert "1.25 lakh" in body["terms_text"]
+
+
+def test_emi_reports_what_the_source_never_said(client):
+    body = client.get(
+        "/api/emi",
+        params={
+            "vertical": "entrepreneur",
+            "scheme_id": "nsfdc-term-loan",
+            "principal": 500000,
+        },
+    ).json()
+    assert any("moratorium" in u for u in body["unknowns"]), body["unknowns"]
+
+
+def test_emi_refuses_above_the_scheme_ceiling_in_words_a_citizen_can_read(client):
+    response = client.get(
+        "/api/emi",
+        params={
+            "vertical": "entrepreneur",
+            "scheme_id": "nsfdc-micro-finance",
+            "principal": 140000,
+        },
+    )
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert "1.25 lakh" in detail
+    assert "different scheme" in detail
+
+
+def test_emi_refuses_a_scheme_that_is_not_a_loan(client):
+    response = client.get(
+        "/api/emi",
+        params={"vertical": "welfare", "scheme_id": "ignwps", "principal": 10000},
+    )
+    assert response.status_code == 422
+    assert "not a loan" in response.json()["detail"]
+
+
+def test_emi_404s_on_an_unknown_scheme(client):
+    response = client.get(
+        "/api/emi",
+        params={"vertical": "entrepreneur", "scheme_id": "no-such", "principal": 1000},
+    )
+    assert response.status_code == 404

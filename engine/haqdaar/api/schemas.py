@@ -76,6 +76,10 @@ class CardPayload(BaseModel):
     stack_group_id: str | None = None
     claimable: bool = True
     subsumed_by_scheme: str | None = None
+    #: True when the corpus holds credit terms for this scheme, so the UI knows whether
+    #: a repayment panel belongs on the card at all. A pension has nothing to repay and
+    #: must never be offered a calculator.
+    lends: bool = False
 
 
 class CompareResponse(BaseModel):
@@ -391,6 +395,7 @@ def to_payload(result: GateResult, scheme: Scheme, card: RenderedCard) -> CardPa
         window_lines=list(card.window_lines),
         window_state=verdict.window.state.value if verdict.window else None,
         source_url=scheme.source_url,
+        lends=scheme.credit_terms is not None,
         authority=scheme.authority,
         retrieved_on=scheme.retrieved_on.isoformat(),
         last_amended=scheme.last_amended.isoformat() if scheme.last_amended else None,
@@ -429,3 +434,34 @@ def to_unlock(option: UnlockOption | None) -> UnlockPayload | None:
         count=option.unlock_count,
         scheme_ids=list(option.unlocks),
     )
+
+
+class EmiResponse(BaseModel):
+    """One repayment illustration for one scheme.
+
+    Deliberately NOT part of a card. A verdict says whether she qualifies; this says
+    what the money would cost if she borrows. Keeping them on separate endpoints keeps
+    them separate ideas, and means no card can accidentally start quoting a price.
+    """
+
+    scheme_id: str
+    scheme_name: str
+    principal: float
+    annual_rate_pct: float
+    frequency: str
+    instalment_count: int
+    instalment_amount: float
+    monthly_equivalent: float
+    total_repayable: float
+    total_interest: float
+    repayment_months: int
+    moratorium_months: int | None
+    max_loan: float | None
+    #: Verbatim scheme wording the figures came from, so the arithmetic is citable the
+    #: same way a verdict is.
+    terms_text: str
+    source_url: str
+    #: What we had to decide because the source did not.
+    assumptions: list[str]
+    #: What the source never said, and which moves the real number.
+    unknowns: list[str]

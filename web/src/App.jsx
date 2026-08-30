@@ -575,6 +575,7 @@ function AppInner() {
               <Card
                 card={card}
                 personaId={selected}
+                vertical={result?.vertical}
                 stackedWith={stackedWith}
                 /* Filing from an intake profile would need /api/act to accept a
                    profile rather than a persona id. Out of scope here, so the
@@ -595,6 +596,7 @@ function AppInner() {
                 <Card
                   card={card}
                   personaId={selected}
+                  vertical={result?.vertical}
                   canAct={false}
                   key={card.scheme_id || `out-${i}`}
                 />

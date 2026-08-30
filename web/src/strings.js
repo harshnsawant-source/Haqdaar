@@ -29,6 +29,26 @@ const en = {
   // verdict cards make: eligibility is ours to check, approval is not ours to give.
   disclaimer:
     'Haqdaar is not an official Government of India service, and is not affiliated with any ministry or department. It reads published scheme rules and shows what they say; only the department concerned can approve an application.',
+  // The repayment illustration. INSTALMENT, never "EMI": every NSFDC product repays
+  // quarterly, and calling a quarterly payment a monthly one would be wrong four times
+  // a year. See Emi.jsx.
+  emiTitle: 'What would repayment look like?',
+  emiAmountLabel: 'How much do you need to borrow?',
+  emiPlaceholder: 'Amount in rupees',
+  emiGo: 'Work it out',
+  emiWorking: 'Working it out…',
+  emiFrequency: {
+    QUARTERLY: 'every three months',
+    MONTHLY: 'every month',
+    HALF_YEARLY: 'every six months',
+  },
+  emiInstalments: (n) => `${n} instalments`,
+  emiMonthly: (amount) => `about ${amount} a month`,
+  emiRate: 'Interest rate',
+  emiTotal: 'Total repayable',
+  emiInterest: 'Interest paid',
+  emiIllustration: 'An illustration, not an offer. Figures from',
+  emiSource: 'the scheme rules',
   /* Vertical labels. These moved here from App.jsx, where they were module-level
      English constants that never saw the language context, so the three front-door
      buttons stayed in English on a Marathi or Hindi page.
@@ -171,6 +191,23 @@ const mr = {
   tagline: 'पुरावा, नुसते उत्तर नाही.',
   disclaimer:
     'हक्कदार ही भारत सरकारची अधिकृत सेवा नाही, आणि कोणत्याही मंत्रालयाशी किंवा विभागाशी संलग्न नाही. ती प्रकाशित योजनांचे नियम वाचते आणि ते काय सांगतात ते दाखवते; अर्ज मंजूर करण्याचा अधिकार फक्त संबंधित विभागाला आहे.',
+  emiTitle: 'परतफेड कशी असेल?',
+  emiAmountLabel: 'तुम्हाला किती कर्ज हवे आहे?',
+  emiPlaceholder: 'रकम रुपयांत',
+  emiGo: 'हिशोब करा',
+  emiWorking: 'हिशोब करत आहे…',
+  emiFrequency: {
+    QUARTERLY: 'दर तीन महिन्यांनी',
+    MONTHLY: 'दर महिन्याला',
+    HALF_YEARLY: 'दर सहा महिन्यांनी',
+  },
+  emiInstalments: (n) => `${n} हप्ते`,
+  emiMonthly: (amount) => `महिन्याला अंदाजे ${amount}`,
+  emiRate: 'व्याजदर',
+  emiTotal: 'एकूण परतफेड',
+  emiInterest: 'दिलेले व्याज',
+  emiIllustration: 'हे केवळ उदाहरण आहे, ऑफर नाही. आकडे',
+  emiSource: 'योजनेच्या नियमांवरून',
   verticals: {
     entrepreneur: {
       group: 'उद्योजकांसाठी योजना',
@@ -292,6 +329,23 @@ const hi = {
   tagline: 'प्रमाण, केवल उत्तर नहीं.',
   disclaimer:
     'हक़दार भारत सरकार की आधिकारिक सेवा नहीं है, और किसी भी मंत्रालय या विभाग से संबद्ध नहीं है। यह प्रकाशित योजना नियमों को पढ़ता है और वे क्या कहते हैं यह दिखाता है; आवेदन स्वीकृत करने का अधिकार केवल संबंधित विभाग को है।',
+  emiTitle: 'चुकौती कैसी होगी?',
+  emiAmountLabel: 'आपको कितना ऋण चाहिए?',
+  emiPlaceholder: 'राशि रुपये में',
+  emiGo: 'हिसाब लगाएँ',
+  emiWorking: 'हिसाब लगाया जा रहा है…',
+  emiFrequency: {
+    QUARTERLY: 'हर तीन महीने',
+    MONTHLY: 'हर महीने',
+    HALF_YEARLY: 'हर छह महीने',
+  },
+  emiInstalments: (n) => `${n} किश्तें`,
+  emiMonthly: (amount) => `महीने में लगभग ${amount}`,
+  emiRate: 'ब्याज दर',
+  emiTotal: 'कुल चुकौती',
+  emiInterest: 'दिया गया ब्याज',
+  emiIllustration: 'यह केवल एक उदाहरण है, प्रस्ताव नहीं. आँकड़े',
+  emiSource: 'योजना के नियमों से',
   verticals: {
     entrepreneur: {
       group: 'उद्यमियों के लिए योजनाएँ',
