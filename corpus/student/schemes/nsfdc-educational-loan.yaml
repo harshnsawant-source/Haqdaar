@@ -114,22 +114,51 @@ clause_groups:
         verify_note: >-
           Verbatim from nsfdc.nic.in/eligibility-requirements, read 2026-08-26.
 
+      # THE SENTENCE HAS TWO LIMBS AND THEY BELONG IN DIFFERENT PLACES.
+      #
+      # "for pursuing regular full-time ... courses" is a fact about HER, which she can
+      # declare and an admission letter can prove, so it is eligibility.
+      # "recognized ... approved by the Government" is a fact about the INSTITUTION,
+      # which no document she holds can settle, so it is approval. See ELS-C4.
+      #
+      # Splitting it is not tidiness. Without this clause the scheme resolved ELIGIBLE
+      # for a class 10 school pupil with no college admission, because nothing in it
+      # tested whether she was pursuing a course at all. That is a wrong verdict of
+      # exactly the kind this engine exists to prevent, and it existed for the few
+      # hours between this scheme being added and this clause being written.
+      #
+      # Same field and same shape as TOPCL-C3, which reads the same declaration.
+      - clause_id: ELS-C3
+        clause_text: >-
+          Educational Loan shall be provided to eligible students for pursuing regular
+          full-time professional / technical recognized courses approved by the
+          Government in India or abroad.
+        rule_type: enumerated_category
+        profile_field: student.admission_secured
+        bound:
+          values: ["true"]
+        verifiable_from: [admission_letter]
+        verification_status: VERIFIED
+        verify_note: >-
+          Verbatim from nsfdc.nic.in/scheme, read 2026-08-30. The admission limb only.
+          Whether the course is recognised and government-approved is a fact about the
+          institution rather than the student and is carried separately as ELS-C4.
 
-  # ELS-C3 lives HERE, not in the eligibility group above, and the schema is what
-  # taught us so: it refuses a discretionary clause inside an ELIGIBILITY group,
-  # because whether a course is "recognized" and "approved by the Government" is a
-  # fact about an institution that no citizen declaration can settle. Filed as
+
+  # The recognition limb lives HERE, not in the eligibility group above, and the schema
+  # is what taught us so: it refuses a discretionary clause inside an ELIGIBILITY
+  # group, because whether a course is "recognized" and "approved by the Government" is
+  # a fact about an institution that no citizen declaration can settle. Filed as
   # eligibility it would have read as something she could fail; filed as approval it
   # reads as something only the agency can decide, which is true.
   - group_id: verification-by-agency
     kind: APPROVAL
     satisfy: ALL
     clauses:
-      - clause_id: ELS-C3
+      - clause_id: ELS-C4
         clause_text: >-
-          Educational Loan shall be provided to eligible students for pursuing regular
-          full-time professional / technical recognized courses approved by the
-          Government in India or abroad.
+          regular full-time professional / technical recognized courses approved by the
+          Government in India or abroad
         rule_type: discretionary
         decided_by: "the concerned State Channelising Agency or Channelising Agency"
         verification_status: VERIFIED
@@ -138,7 +167,7 @@ clause_groups:
           rather than as an enumerated course list: the page names twelve-plus course
           families, and a partial transcription would silently rule out a real course.
 
-      - clause_id: ELS-C4
+      - clause_id: ELS-C5
         clause_text: >-
           verification of eligibility criteria shall be the sole responsibility of the
           concerned SCAs/CAs

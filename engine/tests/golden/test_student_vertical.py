@@ -59,11 +59,18 @@ def test_the_whole_student_arc(student_schemes_dir, student_profile, today):
         "pre-matric-sc": Status.ELIGIBLE,
         "top-class-sc": Status.NOT_ELIGIBLE,
         # Added 2026-08-30 with the NSFDC Educational Loan Scheme, which SIH26092
-        # names alongside the two credit products. She is SC and under the Rs 5.00
-        # lakh ceiling, so the two eligibility clauses both hold. Whether her course
-        # is a recognised one sits in the APPROVAL group, where it cannot make her
-        # ineligible, only unapproved.
-        "nsfdc-educational-loan": Status.ELIGIBLE,
+        # names alongside the two credit products.
+        #
+        # NOT_ELIGIBLE, and the route there is the point. She is SC and under the Rs
+        # 5.00 lakh ceiling, so both money clauses hold; what rules her out is her own
+        # declaration that she has not secured admission to a full-time course, which
+        # is the same field that rules out Top Class. A declaration can rule a scheme
+        # OUT and can never rule one IN, so she is told why instead of being sent to
+        # fetch a college admission letter a class 10 pupil has no reason to have.
+        #
+        # This assertion read ELIGIBLE for a few hours on 2026-08-30, while the scheme
+        # existed but nothing in it tested whether she was studying at all.
+        "nsfdc-educational-loan": Status.NOT_ELIGIBLE,
     }
 
 
@@ -234,3 +241,30 @@ def test_the_engine_does_not_know_what_a_student_is():
         "engine code mentions 'student'; a vertical must stay a corpus folder:\n"
         + "\n".join(offenders)
     )
+
+
+def test_a_school_pupil_is_not_offered_a_professional_course_loan(
+    student_schemes_dir, student_profile, today
+):
+    """The regression this file exists to hold.
+
+    The NSFDC Educational Loan Scheme funds "regular full-time professional /
+    technical" courses. When it was first added, its only eligibility clauses were the
+    SC category and the Rs 5.00 lakh income ceiling, so a class 10 school pupil with no
+    college admission resolved ELIGIBLE for a course loan of up to Rs 40 lakh. Nothing
+    in the scheme asked whether she was studying at that level at all.
+
+    The fix was to split the source sentence: the limb about HER, pursuing a full-time
+    course, is eligibility and reads a declaration she has already made; the limb about
+    the INSTITUTION, whether the course is recognised and government-approved, stays in
+    approval where no document she holds could settle it.
+    """
+    _, verdicts, _ = _run(student_schemes_dir, student_profile, today)
+    loan = next(v for v in verdicts if v.scheme_id == "nsfdc-educational-loan")
+
+    assert loan.status is Status.NOT_ELIGIBLE
+    # Ruled out on the admission declaration, not on money.
+    by_id = {p.clause_id: p.evaluation for p in loan.predicates}
+    assert by_id["ELS-C3"] is not Evaluation.TRUE, by_id["ELS-C3"]
+    assert by_id["ELS-C1"] is Evaluation.TRUE
+    assert by_id["ELS-C2"] is Evaluation.TRUE
