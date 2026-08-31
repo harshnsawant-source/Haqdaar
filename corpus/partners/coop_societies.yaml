@@ -1,0 +1,30 @@
+# NSFDC Channel Partners: Co-operative Societies.
+#
+# Extracted from https://nsfdc.nic.in/storage/uploads/images/banners/20260408_101711_6Iyved.pdf
+# by tools/extract_partners.py on 2026-08-30. Not typed by hand.
+#
+# The source PDF uses a dash character that does not survive text extraction;
+# it arrives as U+FFFD and is normalised to a hyphen. Nothing else is altered.
+#
+# NO FUND-UTILISATION OR NPA DATA. SIH26092 asks for partners to be filtered by
+# 'current fund utilization eligibility (ensuring applications aren't sent to
+# partners with high NPAs or overdues)'. NSFDC does not publish that, anywhere.
+# It is therefore absent rather than estimated, and the engine refuses to rank
+# on it. A locator that shows a citizen which branch has money, without the
+# data to know, is guessing about her time and her bus fare.
+#
+# CORRECTED BY HAND, 1 record(s):
+#   #1 Streenidhi: address (This list writes the state between the name and the address, so the address opened with a stray 'Telangana ,'. The state itself is unchanged; only the duplicate at the front of the address is removed.)
+#
+category: COOPERATIVE_SOCIETY
+label: "Co-operative Societies"
+source_url: "https://nsfdc.nic.in/storage/uploads/images/banners/20260408_101711_6Iyved.pdf"
+retrieved_on: 2026-08-30
+verification_status: VERIFIED
+partners:
+  - name: "Streenidhi"
+    address: "401 & 402 , 4th Floor My Home Sarovar Plaza, Secretariat Road Ambedkar Colony, Saifabad, Hyderabad, Telangana 500004"
+    state: "Telangana"
+  - name: "Streenidhi AP"
+    address: "2nd Floor, NTR, Administrative Block, Rtc Complex, Vijayawada-520013, Andhra Pradesh"
+    state: "Andhra Pradesh"

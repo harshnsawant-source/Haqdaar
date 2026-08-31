@@ -1,0 +1,111 @@
+# The published documents this corpus was built from.
+#
+# WHY THEY ARE IN THE REPOSITORY
+# ------------------------------
+# corpus/partners/*.yaml claims to be extracted from NSFDC's official Channel Partner
+# lists rather than typed. Until now that claim rested on eight URLs. NSFDC serves
+# these from a path carrying an upload timestamp, so a revised list becomes a NEW URL
+# and the old one can simply stop resolving - three of the eight below were already
+# re-uploaded in 2026, and one is served from a banners path rather than the channel
+# partners path, which is what re-uploading rather than replacing looks like.
+#
+# A provenance claim that depends on someone else's file still being there is not a
+# provenance claim. So the documents are here, and the corpus can be rebuilt from this
+# repository alone, with no network.
+#
+# WHAT THE CHECKSUMS ARE FOR
+# --------------------------
+# tools/extract_partners.py verifies every sha256 below before it reads a page, and
+# refuses to run if one does not match. That is what makes "extracted by script from
+# the official lists" a checkable statement rather than a promise: the bytes that
+# produced the corpus are the bytes recorded here.
+#
+# If NSFDC publishes a revision, the checksum will not match and extraction will stop.
+# That is the intended behaviour. Re-download, replace the file, update the sha256 and
+# retrieved_on here, then re-run the extractor and read the diff.
+#
+# verified_on records the last date every file here was confirmed byte-identical to
+# what the URL served.
+
+verified_on: 2026-08-31
+
+lists:
+  - file: sca.pdf
+    produces: sca.yaml
+    printed_title: "STATE/UT-WISE LIST OF STATE CHANNELISING AGENCIES"
+    url: https://nsfdc.nic.in/storage/channel-partners/attachments/20260401_164458_Ip6UJm.pdf
+    retrieved_on: 2026-08-30
+    sha256: 9b29cc528b05eb79f4c45f7b671e0b2056cdc8ec8849eab493255583c285c72f
+    bytes: 204864
+    pages: 3
+    rows: 38
+
+  - file: rrb.pdf
+    produces: rrb.yaml
+    printed_title: "LIST OF REGIONAL RURAL BANKS"
+    url: https://nsfdc.nic.in/storage/channel-partners/attachments/20260401_163145_9tiTZM.pdf
+    retrieved_on: 2026-08-30
+    sha256: 5c3754f4a95de25c29fa7c43f5d8edc33c0416e3efe9c7cb9a282d4da9b32587
+    bytes: 91565
+    pages: 2
+    rows: 26
+
+  - file: psb.pdf
+    produces: psb.yaml
+    printed_title: "LIST OF PUBLIC SECT OR BANKS"
+    url: https://nsfdc.nic.in/storage/channel-partners/attachments/20260408_100623_Bea3za.pdf
+    retrieved_on: 2026-08-30
+    sha256: 7196de24364362ff391c4a9887be1f692c55c05ba64023f3ca41e43b78f379af
+    bytes: 67853
+    pages: 1
+    rows: 11
+
+  - file: nbfc_mfi.pdf
+    produces: nbfc_mfi.yaml
+    printed_title: "LIST OF NBFC-MFIs"
+    url: https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_101231_7smjJC.pdf
+    retrieved_on: 2026-08-30
+    sha256: bb6e36ecf1aa631f207c574b763b9381624cdab51df854beb9222c7abeee2f8f
+    bytes: 300820
+    pages: 1
+    rows: 7
+
+  - file: coop.pdf
+    produces: coop.yaml
+    printed_title: "LIST OF COOPRATIVE SOCIETIES/BANKS"
+    url: https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_101341_Zcm8s6.pdf
+    retrieved_on: 2026-08-30
+    sha256: 09201e6710dfd9dfa264669f40755aff6e0b8188caa3f34c23f084329a0c739f
+    bytes: 3573
+    pages: 1
+    rows: 2
+
+  - file: coop_societies.pdf
+    produces: coop_societies.yaml
+    printed_title: "LIST OF COOPERATIVE SOCIETIES"
+    url: https://nsfdc.nic.in/storage/uploads/images/banners/20260408_101711_6Iyved.pdf
+    retrieved_on: 2026-08-30
+    sha256: a5fab4b3f61798ab773378eed5a56fb551f9a9f2c9738a7b26440aa9a74cfb68
+    bytes: 49269
+    pages: 1
+    rows: 2
+
+  - file: sfb.pdf
+    produces: sfb.yaml
+    printed_title: "Small Finance Bank"
+    url: https://nsfdc.nic.in/storage/uploads/images/banners/20260408_100851_UrGTfH.pdf
+    retrieved_on: 2026-08-30
+    sha256: b48ecab500478fb97cfed1790a37c84a7e4ae6821047c047009924482840f106
+    bytes: 38629
+    pages: 1
+    rows: 2
+
+  - file: other.pdf
+    produces: other.yaml
+    printed_title: "LIST OF OTHER AGENCIES"
+    url: https://nsfdc.nic.in/storage/channel-partners/attachments/20260408_101214_Yw5CGQ.pdf
+    retrieved_on: 2026-08-30
+    sha256: 2f05f5f9fe280c1e852f435183301f37084c9327ce6d714ea78c47670b2128c9
+    bytes: 52194
+    pages: 1
+    rows: 3

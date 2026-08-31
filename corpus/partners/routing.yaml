@@ -35,7 +35,12 @@ verification_status: VERIFIED
 # omission had no source behind it: NSFDC publishes "LIST OF NBFC-MFIs" from the same
 # /channel-partners/ directory as the Public Sector Bank and Regional Rural Bank lists
 # already here, which is the whole of the evidence that put those categories in.
-also_categories: [PSB, RRB, COOPERATIVE, SFB, OTHER, NBFC_MFI]
+#
+# COOPERATIVE_SOCIETY is NSFDC's second cooperative list, published separately from the
+# first and under its own title. It was downloaded with the others and then left out of
+# the extractor entirely, so its two rows were not in the corpus at all. One of them is
+# the only partner in Telangana, which had no State Channelising Agency either.
+also_categories: [PSB, RRB, COOPERATIVE, COOPERATIVE_SOCIETY, SFB, OTHER, NBFC_MFI]
 also_quote: >-
   NSFDC lends through its designated Channel Partners, including State Channelizing
   Agencies (SCAs), Banks, and other Channelizing Agencies (CAs).

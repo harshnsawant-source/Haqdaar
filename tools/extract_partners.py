@@ -40,12 +40,16 @@ so it is normalised to a hyphen and that normalisation is recorded in every file
 Nothing else is altered.
 
 Usage:
-    python tools/extract_partners.py --pdf-dir <dir> --out corpus/partners
+    python tools/extract_partners.py
+
+The documents it reads are in corpus/partners/sources, with their URLs and checksums
+in the MANIFEST.yaml beside them.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -90,6 +94,11 @@ CATEGORIES = {
     "psb": ("Public Sector Banks", "PSB"),
     "nbfc_mfi": ("NBFC-MFIs", "NBFC_MFI"),
     "coop": ("Co-operative Banks and Societies", "COOPERATIVE"),
+    # NSFDC publishes TWO cooperative lists with two different titles, and this is the
+    # second one. It is kept as its own category rather than merged into the first,
+    # because a correction is addressed to a list and a row number, and both lists have
+    # a row 1. Merging them would make "COOPERATIVE #1" mean two different banks.
+    "coop_societies": ("Co-operative Societies", "COOPERATIVE_SOCIETY"),
     "sfb": ("Small Finance Banks", "SFB"),
     "other": ("Other Agencies and SIDBI", "OTHER"),
 }
@@ -400,40 +409,78 @@ def write_yaml(out: Path, key: str, partners: list[Partner], source_url: str,
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def load_manifest(pdf_dir: Path) -> dict[str, dict]:
+    """The published documents, their URLs, and the checksums that pin them.
+
+    The manifest is the provenance record. Reading it here, rather than keeping the
+    URLs in this file, means the corpus and the documents it came from are described in
+    one place that a reader can check without running anything.
+    """
+    path = pdf_dir / "MANIFEST.yaml"
+    if not path.is_file():
+        raise SystemExit(f"{path}: no manifest, so nothing can be verified")
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return {entry["file"]: entry for entry in data.get("lists", []) or []}
+
+
+def verify(pdf: Path, entry: dict) -> None:
+    """Refuse to parse a document that is not the one the manifest describes.
+
+    This is what turns "extracted from the official lists" into a statement someone can
+    check. If NSFDC revises a list, this stops rather than quietly rebuilding the
+    corpus from a different document than the one every source_url in it cites.
+    """
+    digest = hashlib.sha256(pdf.read_bytes()).hexdigest()
+    if digest != entry["sha256"]:
+        raise SystemExit(
+            f"{pdf.name}: checksum does not match the manifest.\n"
+            f"  manifest {entry['sha256']}\n  file     {digest}\n"
+            "If NSFDC has published a revision, update MANIFEST.yaml (sha256, bytes, "
+            "retrieved_on) and re-run, then read the corpus diff carefully."
+        )
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pdf-dir", required=True)
-    ap.add_argument("--out", required=True)
+    ap.add_argument("--pdf-dir", default="corpus/partners/sources")
+    ap.add_argument("--out", default="corpus/partners")
     ap.add_argument("--retrieved-on", default="2026-08-30")
     args = ap.parse_args()
 
     pdf_dir, out_dir = Path(args.pdf_dir), Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    manifest = load_manifest(pdf_dir)
 
-    base = "https://nsfdc.nic.in/storage/channel-partners/attachments/"
-    banners = "https://nsfdc.nic.in/storage/uploads/images/banners/"
+    #: key -> whether the list has a leading state column.
     jobs = [
-        ("sca", "cp4.pdf", base + "20260401_164458_Ip6UJm.pdf", True),
-        ("rrb", "cp3.pdf", base + "20260401_163145_9tiTZM.pdf", False),
-        ("psb", "cp5.pdf", base + "20260408_100623_Bea3za.pdf", False),
-        ("nbfc_mfi", "cp1.pdf", base + "20251223_101231_7smjJC.pdf", False),
-        ("coop", "cp2.pdf", base + "20251223_101341_Zcm8s6.pdf", False),
-        ("sfb", "cp7.pdf", banners + "20260408_100851_UrGTfH.pdf", False),
+        ("sca", True),
+        ("rrb", False),
+        ("psb", False),
+        ("nbfc_mfi", False),
+        ("coop", False),
+        ("coop_societies", False),
+        ("sfb", False),
         # This one DOES have a state column. Read without it, the column was glued to
         # the front of every name: "Assam North Eastern Development Finance
         # Corporation Ltd.", "Jharkhand Jharkhand Silk Textile...".
-        ("other", "cp6.pdf", base + "20260408_101214_Yw5CGQ.pdf", True),
+        ("other", True),
     ]
 
     corrections = load_corrections(out_dir / "corrections.yaml")
     applied: set[tuple[str, int]] = set()
 
     total = 0
-    for key, filename, url, has_state in jobs:
+    for key, has_state in jobs:
+        filename = f"{key}.pdf"
         pdf = pdf_dir / filename
+        entry = manifest.get(filename)
+        if entry is None:
+            raise SystemExit(f"{filename}: not described in MANIFEST.yaml")
+        url = entry["url"]
         if not pdf.is_file():
             print(f"{key:9s} MISSING {pdf}")
             continue
+        verify(pdf, entry)
         partners, skipped = parse(pdf, has_state)
         category = CATEGORIES[key][1]
         corrected = apply_corrections(category, partners, corrections)

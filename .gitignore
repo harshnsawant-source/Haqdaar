@@ -41,3 +41,13 @@ dist/
 *.scan
 
 !web/public/icon-*.png
+
+# NSFDC's published Channel Partner lists. Government documents naming banks and state
+# corporations, downloaded from nsfdc.nic.in — the opposite of a citizen document, and
+# they carry nobody's personal data. They are here because corpus/partners/*.yaml is
+# extracted from them, and NSFDC re-uploads rather than replaces, so the URLs those
+# files cite can stop resolving. Checksums are in the MANIFEST.yaml beside them.
+#
+# This exception is deliberately one directory and one extension wide. Do not broaden
+# it, and never put a scan of anyone's certificate here.
+!corpus/partners/sources/*.pdf

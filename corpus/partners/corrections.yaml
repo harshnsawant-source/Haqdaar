@@ -100,6 +100,13 @@ corrections:
     reason: "The first column holds a state for every other row and 'SIDBI' for this one, so the cell was read as the opening of the name."
     source_record: "SIDBI Small Industries Development Bank of India, SIDBI Tower, 15, Ashok Marg, Lucknow - 226001, Uttar Pradesh"
 
+  - category: COOPERATIVE_SOCIETY
+    serial: 1
+    expect: "Streenidhi"
+    address: "401 & 402 , 4th Floor My Home Sarovar Plaza, Secretariat Road Ambedkar Colony, Saifabad, Hyderabad, Telangana 500004"
+    reason: "This list writes the state between the name and the address, so the address opened with a stray 'Telangana ,'. The state itself is unchanged; only the duplicate at the front of the address is removed."
+    source_record: "Streenidhi, Telangana , 401 & 402 , 4th Floor My Home Sarovar Plaza, Secretariat Road Ambedkar Colony, Saifabad, Hyderabad, Telangana 500004"
+
   - category: RRB
     serial: 23
     expect: "Meghalaya Rural Bank"

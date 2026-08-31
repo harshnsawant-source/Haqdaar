@@ -288,6 +288,36 @@ cannot answer is the product working, and that is the whole pitch.
 
 ---
 
+## Rebuilding the Channel Partner corpus
+
+`corpus/partners/*.yaml` is generated, not typed. To rebuild it:
+
+```
+./.venv/Scripts/python.exe tools/extract_partners.py
+```
+
+No arguments and no network. It reads the eight published NSFDC lists in
+`corpus/partners/sources/`, checks each against the SHA-256 in the `MANIFEST.yaml`
+beside them, and refuses to run if one does not match.
+
+**Re-running is byte-identical.** If the output changes and you did not change the
+source, something is wrong — read the diff before committing it.
+
+Two files are hand-maintained and survive a rebuild:
+
+- **`corrections.yaml`** — the twenty records the PDFs give no rule for: a name with no
+  comma before its address, a table cell printed against the wrong row, a state named
+  only by its city. Each quotes the source row it was read from and names the value it
+  expects to correct. If a parse shifts underneath one, the extractor stops rather than
+  writing it onto a different bank.
+- **`routing.yaml`** — which partner categories can process which scheme, with the
+  NSFDC sentence behind each rule.
+
+**If NSFDC republishes a list**, the checksum fails. Download the new PDF over the old
+one, update its `sha256`, `bytes` and `retrieved_on` in `MANIFEST.yaml`, re-run, and
+read the corpus diff carefully — every correction is addressed to a row number, and a
+revised list can renumber them. That is what the `expect` guard is there to catch.
+
 # Privacy and safety
 
 This app handles caste certificates, land records and income documents, on a machine
