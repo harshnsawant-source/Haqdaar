@@ -119,3 +119,78 @@ def test_every_scheme_with_credit_terms_also_has_a_route():
         if s.credit_terms is not None
     }
     assert routed == lending, {"routed only": routed - lending, "lends only": lending - routed}
+
+
+def test_no_partner_name_carries_a_piece_of_its_address():
+    """The defect this test exists for.
+
+    Several rows in the published PDFs write the name and the address with nothing
+    between them, so the first-comma cut landed inside the address and the corpus
+    shipped "Bank of Maharashtra Head office 'Lok mangal' 1501" and "UP Sahkari Gram
+    Vikas Bank Ltd. 10". Nothing failed; a judge reading the partner list would simply
+    have seen it.
+
+    A house number is what leaked every time, so a digit in a name is the signal. No
+    partner in any of the seven published lists legitimately has one. If a future list
+    adds a bank that does, this fails loudly and the name can be allowed here, which is
+    the right way round: the corpus is ninety rows and a person can look.
+    """
+    import re
+
+    offenders = [p.name for p in load_partners(PARTNERS) if re.search(r"\d", p.name)]
+    assert not offenders, offenders
+
+
+def test_a_partner_with_an_address_is_placed_in_a_state():
+    """A partner nobody can be shown is a partner we do not have.
+
+    Ten of eighty-nine were unreachable, not because the source withheld the state but
+    because the extractor would not read it off a printed postal address. The two that
+    remain are the Small Finance Banks, whose list is two bank names and nothing else.
+    """
+    unplaced = [p for p in load_partners(PARTNERS) if not p.state]
+    assert all(not p.address for p in unplaced), [p.name for p in unplaced if p.address]
+    assert len(unplaced) == 2, [p.name for p in unplaced]
+
+
+def test_the_hand_corrections_are_actually_in_the_corpus():
+    """corrections.yaml is only worth having if re-running the extractor honours it.
+
+    The corrected values live in two places by necessity: the correction file a person
+    edits, and the generated YAML the router reads. This is what keeps them the same
+    file's worth of truth, so a re-run without the corrections cannot quietly restore
+    the defects.
+    """
+    import yaml
+
+    data = yaml.safe_load(open(f"{PARTNERS}/corrections.yaml", encoding="utf-8"))
+    corrections = data["corrections"]
+    assert corrections, "corrections.yaml lists none"
+
+    partners = load_partners(PARTNERS)
+    for correction in corrections:
+        in_category = [p for p in partners if p.category == correction["category"]]
+        for field in ("name", "state"):
+            if field in correction:
+                assert any(
+                    getattr(p, field) == correction[field] for p in in_category
+                ), f"{correction['category']} #{correction['serial']}: {field} not applied"
+
+
+def test_every_published_list_can_be_reached():
+    """A category held in the corpus but absent from the routing rules is invisible.
+
+    NBFC-MFIs were exactly that: seven partners loaded, counted in every total, and
+    shown to nobody, because the category was left out of `also_categories` with no
+    source behind the omission. NSFDC publishes that list from the same directory as
+    the bank lists that were already routed.
+    """
+    from haqdaar.partners.router import load_routing
+
+    routing = load_routing(PARTNERS)
+    reachable = set(routing["also_categories"])
+    for rule in routing["rules"]:
+        reachable |= set(rule["primary_categories"])
+
+    held = {p.category for p in load_partners(PARTNERS)}
+    assert held <= reachable, {"held but unreachable": held - reachable}

@@ -13,8 +13,8 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
-# REVIEW, name contains digits, 1:
-#   Shri Mahila Sewa Sahakari Bank Ltd. 109. Sakar-II
+# CORRECTED BY HAND, 1 record(s):
+#   #1 Shri Mahila Sewa Sahakari Bank Ltd.: name, address, state (The address begins on the next line with a house number and no comma before it, so the cut fell inside the address.)
 #
 category: COOPERATIVE
 label: "Co-operative Banks and Societies"
@@ -22,9 +22,9 @@ source_url: "https://nsfdc.nic.in/storage/channel-partners/attachments/20251223_
 retrieved_on: 2026-08-30
 verification_status: VERIFIED
 partners:
-  - name: "Shri Mahila Sewa Sahakari Bank Ltd. 109. Sakar-II"
-    address: "Opp.Town Hall, Ellisbridge, Ahmedabad- 38006"
-    state: null
+  - name: "Shri Mahila Sewa Sahakari Bank Ltd."
+    address: "109. Sakar-II, Opp.Town Hall, Ellisbridge, Ahmedabad- 38006"
+    state: "Gujarat"
   - name: "Konoklata mahila Urban Cooperative Bank"
     address: "Assam."
     state: "Assam"

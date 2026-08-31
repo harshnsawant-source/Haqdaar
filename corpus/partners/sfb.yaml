@@ -13,8 +13,14 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
-# REVIEW, name contains digits, 1:
-#   Ujjiwan Small Finance Bank Small Finance Bank- 02
+# CORRECTED BY HAND, 1 record(s):
+#   #2 Ujjiwan Small Finance Bank: name ('Small Finance Bank- 02' is the list's own row count, printed under the last row. It is a footer, not part of the bank's name.)
+#
+# NO STATE IN THE SOURCE, 2 record(s). These are counted
+# in every result and shown to nobody, because filing a partner under a
+# state the source does not give would be a claim we cannot support:
+#   AU small finance bank
+#   Ujjiwan Small Finance Bank
 #
 category: SFB
 label: "Small Finance Banks"
@@ -25,6 +31,6 @@ partners:
   - name: "AU small finance bank"
     address: null
     state: null
-  - name: "Ujjiwan Small Finance Bank Small Finance Bank- 02"
+  - name: "Ujjiwan Small Finance Bank"
     address: null
     state: null

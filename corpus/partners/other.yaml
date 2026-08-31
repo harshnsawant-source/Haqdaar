@@ -13,18 +13,21 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
+# CORRECTED BY HAND, 1 record(s):
+#   #3 Small Industries Development Bank of India: name (The first column holds a state for every other row and 'SIDBI' for this one, so the cell was read as the opening of the name.)
+#
 category: OTHER
 label: "Other Agencies and SIDBI"
 source_url: "https://nsfdc.nic.in/storage/channel-partners/attachments/20260408_101214_Yw5CGQ.pdf"
 retrieved_on: 2026-08-30
 verification_status: VERIFIED
 partners:
-  - name: "Assam North Eastern Development Finance Corporation Ltd. (NEDFi)"
+  - name: "North Eastern Development Finance Corporation Ltd. (NEDFi)"
     address: "Tea Auction Center, GS Rd, Sanket Vihar, Dispur, Opposite, Guwahati, Assam 781006"
     state: "Assam"
-  - name: "Jharkhand Jharkhand Silk Textile & Handicraft Development Corporation Ltd. (JHARCRAFT)"
+  - name: "Jharkhand Silk Textile & Handicraft Development Corporation Ltd. (JHARCRAFT)"
     address: "Jharcraft, DIC Campus Ratu Road Ranchi Jharkhand 834001"
     state: "Jharkhand"
-  - name: "SIDBI Small Industries Development Bank of India"
-    address: "SIDBI Tower, 15, Ashok Marg, Lucknow - 226001, Uttar Pradesh Total=3"
+  - name: "Small Industries Development Bank of India"
+    address: "SIDBI Tower, 15, Ashok Marg, Lucknow - 226001, Uttar Pradesh"
     state: "Uttar Pradesh"

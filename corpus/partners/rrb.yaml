@@ -13,10 +13,11 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
-# REVIEW, name contains digits, 3:
-#   3 Jharkhand Gramin Bank
-#   Madhaya Pradesh Gramin Bank. C21
-#   J&K Grameen Bank M.T.C Building, 2nd Floor, Police Bazar, Shillong-793001 Jammu & Kashmir Near Fruit Complex, Narwal, Jammu (J&K)
+# CORRECTED BY HAND, 4 record(s):
+#   #17 Madhaya Pradesh Gramin Bank: name, address (This row ends the name with a full stop where every other row uses a comma, so the cut fell after the building name. The source's spelling of the bank is kept as printed; only the state is filed under its correct spelling.)
+#   #20 West Bengal Gramin Bank: name, address (This row has no comma after the bank, so the street was read as part of the name.)
+#   #23 Meghalaya Rural Bank: address (The table put this row's address cell after the next row's name. Police Bazar, Shillong 793001 is in Meghalaya, and the words 'Jammu & Kashmir' that follow it are the state cell opening row 24.)
+#   #24 J&K Grameen Bank: name, address (The other half of the same swap: this bank keeps only the Jammu address, which is the one its own row carries.)
 #
 category: RRB
 label: "Regional Rural Banks"
@@ -28,9 +29,9 @@ partners:
     address: "Shri Vishnu Commercial Complex, NH-30, New Bypass, Near Bp Highway Services Petrol Pump, Asochak, Patna - 800016"
     state: "Bihar"
   - name: "Maharashtra Gramin Bank"
-    address: "Plot No.35, Jeewan Shri Town Centre, CIDCO, Aurangabad, Maharashtra – 431"
+    address: "Plot No.35, Jeewan Shri Town Centre, CIDCO, Aurangabad, Maharashtra – 431 003."
     state: "Maharashtra"
-  - name: "3 Jharkhand Gramin Bank"
+  - name: "Jharkhand Gramin Bank"
     address: "Zila Parishad Market Complex, 3 rd Floor, Kutchery Road, Ranchi- 834001, Jharkhand."
     state: "Jharkhand"
   - name: "Haryana Gramin Bank"
@@ -72,17 +73,17 @@ partners:
   - name: "Tamil Nadu Grama Bank"
     address: "6, Yercaud Road, Hasthasmpatti, Salem – 636007 (Tamil Nadu)"
     state: "Tamil Nadu"
-  - name: "Madhaya Pradesh Gramin Bank. C21"
-    address: "Business Park, C21 Square opposite Hotel Radisson Blue, MR-10 Indore- 452010, Madhaya Pradesh"
-    state: null
+  - name: "Madhaya Pradesh Gramin Bank"
+    address: "C21, Business Park, C21 Square opposite Hotel Radisson Blue, MR-10 Indore- 452010, Madhaya Pradesh"
+    state: "Madhya Pradesh"
   - name: "Himachal Pradesh Gramin Bank"
     address: "Jail Road (Panjethi), PO – Talyahar Mandi 175001 (Himachal Pradesh)"
     state: "Himachal Pradesh"
   - name: "Puducherry Grama Bank"
     address: "No.441, Mahatma Gandhi Road, Muthialpet, Puducherry – 605 003"
     state: "Puducherry"
-  - name: "West Bengal Gramin Bank Natabar Paul Road"
-    address: "Chatterjee Para More, Tikiapara, Howrah – 711101 (WB)"
+  - name: "West Bengal Gramin Bank"
+    address: "Natabar Paul Road, Chatterjee Para More, Tikiapara, Howrah – 711101 (WB)"
     state: "West Bengal"
   - name: "Chhattisgarh Gramin Bank"
     address: "Corporate Office Raipur, Plot No.-47, Sector-24, Atal Nagar, Nava Raipur-492013"
@@ -91,14 +92,14 @@ partners:
     address: "Keishampat, Keisham Leikai, Imphal, Manipur 795001"
     state: "Manipur"
   - name: "Meghalaya Rural Bank"
-    address: null
+    address: "M.T.C Building, 2nd Floor, Police Bazar, Shillong-793001"
     state: "Meghalaya"
-  - name: "J&K Grameen Bank M.T.C Building, 2nd Floor, Police Bazar, Shillong-793001 Jammu & Kashmir Near Fruit Complex, Narwal, Jammu (J&K)"
-    address: "-180006"
+  - name: "J&K Grameen Bank"
+    address: "Near Fruit Complex, Narwal, Jammu (J&K) -180006"
     state: "Jammu & Kashmir"
   - name: "Odisha Grameen Bank"
     address: "Bhubaneswar. 7R25-H75, Jagamara, Sunderpada Road, Gandamuda, Pokhhariput, Bhubaneshwar -751030,Odisha"
     state: "Odisha"
   - name: "Mizoram Rural Bank"
-    address: "Mizoram MINECO, Khatla Aizawl - 796001. Total=26"
+    address: "Mizoram MINECO, Khatla Aizawl - 796001."
     state: "Mizoram"

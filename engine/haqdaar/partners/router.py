@@ -92,7 +92,7 @@ def load_partners(directory: str | Path) -> list[Partner]:
 
     partners: list[Partner] = []
     for path in sorted(directory.glob("*.yaml")):
-        if path.name == "routing.yaml":
+        if path.name in ("routing.yaml", "corrections.yaml"):
             continue
         data = _read(path)
         category = data.get("category")

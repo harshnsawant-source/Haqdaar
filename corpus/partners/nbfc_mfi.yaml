@@ -13,8 +13,9 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
-# REVIEW, name contains digits, 1:
-#   Vector Finance PVT LTD RO-K7/110
+# CORRECTED BY HAND, 2 record(s):
+#   #1 Anik Financial Services Private Limited: state (Read from the postal address and PIN code printed in this row.)
+#   #7 Vector Finance PVT LTD: name, address (This row has no comma after the company, so its office number was read as part of the name.)
 #
 category: NBFC_MFI
 label: "NBFC-MFIs"
@@ -24,7 +25,7 @@ verification_status: VERIFIED
 partners:
   - name: "Anik Financial Services Private Limited"
     address: "Regd.Office: ‘Sahyadri Building” Behind Amitesh Hotel, Ambajogai Roa, Sai Naka, Latur – 413 512"
-    state: null
+    state: "Maharashtra"
   - name: "Grameen Development & Finance Private Limited"
     address: "Dubjent, Kulshi Road, Chhaygaon, Kamrup, Assam Pin – 781 124."
     state: "Assam"
@@ -40,6 +41,6 @@ partners:
   - name: "Pahal Financial Services Pvt. Ltd."
     address: "Ahmedabad 7th Floor, Binori B Square-2, Opp. Hathising Ni Vadi, Ambli-Iscon Road, Ahmedabad – 380 054, Gujarat"
     state: "Gujarat"
-  - name: "Vector Finance PVT LTD RO-K7/110"
-    address: "Ground Floor, Klinga Vihar, P.S. Khandagiri, Bhubaneswar ODISHA-751029"
+  - name: "Vector Finance PVT LTD"
+    address: "RO-K7/110, Ground Floor, Klinga Vihar, P.S. Khandagiri, Bhubaneswar ODISHA-751029"
     state: "Odisha"

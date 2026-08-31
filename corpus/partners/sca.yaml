@@ -13,8 +13,9 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
-# REVIEW, name contains digits, 1:
-#   UP Sahkari Gram Vikas Bank Ltd. 10
+# CORRECTED BY HAND, 2 record(s):
+#   #26 Mizoram Urban Cooperative Development Bank Ltd. (MUCO Bank): name, address (The abbreviation is bracketed in mixed case, so the all-capitals rule did not see it and the cut fell at the first comma, which is inside the address.)
+#   #36 UP Sahkari Gram Vikas Bank Ltd.: name, address (The source puts no comma between the bank and its house number, so the cut fell after '10'.)
 #
 category: SCA
 label: "State Channelising Agencies"
@@ -49,8 +50,8 @@ partners:
   - name: "The Managing Director, Gujarat SCs Development Corporation (GSCDC)"
     address: "Dr Jivraj Mehta Bhawan, Block – 10, II Floor, Old Sachivalaya, Gandhinagar – 382 010."
     state: "Gujarat"
-  - name: "Dr. Ambedkar Antyodaya Vikas Nigam (S.C.)"
-    address: "(DAAVN) Karmayogi Bhavan, Block No. 2, D-2 Wing, 4th Floor, Sector -10/B, Gandhinagar, Gujarat."
+  - name: "Dr. Ambedkar Antyodaya Vikas Nigam (S.C.) (DAAVN)"
+    address: "Karmayogi Bhavan, Block No. 2, D-2 Wing, 4th Floor, Sector -10/B, Gandhinagar, Gujarat."
     state: "Gujarat"
   - name: "Goa State SCs & OBCs Finance and Development Corporation Ltd. (GSCOBCDC)"
     address: "4th Floor, Patto Centre, Near K.T.C. Bus Stand, Panaji, Goa – 403 001."
@@ -59,7 +60,7 @@ partners:
     address: "SCO-2427-28, Sector 22-C, Chandigarh – 160 022."
     state: "Haryana"
   - name: "Himachal Pradesh SCs & STs Development Corporation (HPSCSTDC)"
-    address: "Kalyan Bhawan, Near Ambusha Resort, Solan – 173212 2"
+    address: "Kalyan Bhawan, Near Ambusha Resort, Solan – 173212"
     state: "Himachal Pradesh"
   - name: "Jharkhand State Scheduled Castes Cooperative Development Corporation (JSCDC)"
     address: "Kalyan Complex, 3rd Floor, Balihar Road, Morabadi, Ranchi-834008."
@@ -97,14 +98,14 @@ partners:
   - name: "Meghalaya Cooperative Apex Bank Ltd. (MCAB)"
     address: "M.G. Road, Kutchery, Shillong – 793 001."
     state: "Meghalaya"
-  - name: "Mizoram Urban Cooperative Development Bank Ltd. (MUCO Bank) Lawlsawmiliani Building (Top Floor)"
-    address: "Zarkawt, Aizwal -796 001."
+  - name: "Mizoram Urban Cooperative Development Bank Ltd. (MUCO Bank)"
+    address: "Lawlsawmiliani Building (Top Floor), Zarkawt, Aizwal -796 001."
     state: "Mizoram"
   - name: "Mizoram Khadi & Village Industries & Board (MKVIB)"
     address: "“Zorun” Zarkawt, Aizwal -796 007."
     state: "Mizoram"
   - name: "Odisha SCs & STs Dev. Finance Co-op. Corpn. Ltd. (OSFDC)"
-    address: "Lewis Road, Bhubaneshwar – 751 014. 3"
+    address: "Lewis Road, Bhubaneshwar – 751 014."
     state: "Odisha"
   - name: "Puducherry Adi Dravidar Dev. Corpn. Ltd. (PADCO)"
     address: "III Floor, Directorate of Adi Dravidar Welfare Department, Thattanchavady, Puducherry - 605 009"
@@ -127,12 +128,12 @@ partners:
   - name: "Uttarakhand Bahu-udeshiya Vitta Evam Vikas Nigam (UBVEVN)"
     address: "Janjati Directorate, New Building, Bhagat Singh Clolony (Adhoiwala), Dehradun-248 001"
     state: "Uttarakhand"
-  - name: "UP Sahkari Gram Vikas Bank Ltd. 10"
-    address: "Mall Avenue, Lucknow, Uttar Pradesh-226001."
+  - name: "UP Sahkari Gram Vikas Bank Ltd."
+    address: "10, Mall Avenue, Lucknow, Uttar Pradesh-226001."
     state: "Uttar Pradesh"
   - name: "UP Scheduled Castes Finance & Dev. Corpn. Ltd., (UPSCFDC)"
     address: "B-912, Sector-C, Mahanagar, Lucknow – 226 006."
     state: "Uttar Pradesh"
   - name: "West Bengal SCs, STs & OBC Development & Finance Corporation (WBSCSTOBCDFC)"
-    address: "CF 217/A/1 Salt Lake Sector –I, (Mangolic Building) Kolkata – 700 064. Total=38"
+    address: "CF 217/A/1 Salt Lake Sector –I, (Mangolic Building) Kolkata – 700 064."
     state: "West Bengal"

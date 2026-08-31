@@ -13,8 +13,15 @@
 # on it. A locator that shows a citizen which branch has money, without the
 # data to know, is guessing about her time and her bus fare.
 #
-# REVIEW, name contains digits, 1:
-#   Bank of Maharashtra Head office ‘Lok mangal’ 1501
+# CORRECTED BY HAND, 8 record(s):
+#   #3 Canara Bank: state (Read from the postal address and PIN code printed in this row.)
+#   #4 Punjab National Bank: state (The state was read from the bank's own name, not from its address. This row's printed address is in New Delhi, and a citizen in Punjab was being shown it as a partner in her state.)
+#   #5 Punjab & Sind Bank: state (The state was read from the bank's own name, not from its address. This row's printed address is in New Delhi, and a citizen in Punjab was being shown it as a partner in her state.)
+#   #6 Union Bank of India: state (Read from the postal address and PIN code printed in this row.)
+#   #7 Indian Bank Corporate Office: state (Read from the postal address and PIN code printed in this row.)
+#   #8 Bank of Maharashtra: name, address (This row has no comma after the bank, so its head office was read as part of the name.)
+#   #9 Bank of India: state (Read from the postal address and PIN code printed in this row.)
+#   #10 Central bank Of India: state (Read from the postal address and PIN code printed in this row.)
 #
 category: PSB
 label: "Public Sector Banks"
@@ -30,28 +37,28 @@ partners:
     state: "Gujarat"
   - name: "Canara Bank"
     address: "Head Office, 112, J.C. Road, Bengaluru – 560 002."
-    state: null
+    state: "Karnataka"
   - name: "Punjab National Bank"
     address: "Plot No.-4, Sector 10, Dwarka, New Delhi – 110 075"
-    state: "Punjab"
+    state: "Delhi"
   - name: "Punjab & Sind Bank"
     address: "Priority Sector Advance Department, 5 th Floor, 21 Rajendra Place, New Delhi – 110 008"
-    state: "Punjab"
+    state: "Delhi"
   - name: "Union Bank of India"
     address: "Rural & Agri Business Department, Central Office Union Bank Bhavan Marg,Nariman Point, Mumbai – 400"
-    state: null
+    state: "Maharashtra"
   - name: "Indian Bank Corporate Office"
     address: "No.254-260, Avvai Shanmungam Salai, Gowdi Mutt Road, Royapetta, Chennai – 600 014"
-    state: null
-  - name: "Bank of Maharashtra Head office ‘Lok mangal’ 1501"
-    address: "Shivajinagar, Pune-411005 Maharashtra"
+    state: "Tamil Nadu"
+  - name: "Bank of Maharashtra"
+    address: "Head office ‘Lok mangal’ 1501, Shivajinagar, Pune-411005 Maharashtra"
     state: "Maharashtra"
   - name: "Bank of India"
     address: "Bandra Kurla Complex, Bandra (East), Mumbai- 400051"
-    state: null
+    state: "Maharashtra"
   - name: "Central bank Of India"
     address: "Mumbai Chandermukhi Bldg., Nariman Point, Mumbai – 400 021"
-    state: null
+    state: "Maharashtra"
   - name: "UCO Bank"
-    address: "Kolkata No 3&4, DD Block, Sector-1, Bidhannagar, Kolkata, West Bengal-700064 Total=11"
+    address: "Kolkata No 3&4, DD Block, Sector-1, Bidhannagar, Kolkata, West Bengal-700064"
     state: "West Bengal"

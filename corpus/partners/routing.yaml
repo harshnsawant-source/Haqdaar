@@ -29,7 +29,13 @@ verification_status: VERIFIED
 # The categories every scheme below can also be filed through. Sourced from
 # how-to-apply-2, which describes the Channel Partner network as a whole rather than
 # per scheme, which is why it is stated once here instead of repeated on each rule.
-also_categories: [PSB, RRB, COOPERATIVE, SFB, OTHER]
+#
+# NBFC_MFI was missing from this list until 2026-08-31, and seven partners were
+# therefore held in the corpus, counted in every total, and shown to nobody. The
+# omission had no source behind it: NSFDC publishes "LIST OF NBFC-MFIs" from the same
+# /channel-partners/ directory as the Public Sector Bank and Regional Rural Bank lists
+# already here, which is the whole of the evidence that put those categories in.
+also_categories: [PSB, RRB, COOPERATIVE, SFB, OTHER, NBFC_MFI]
 also_quote: >-
   NSFDC lends through its designated Channel Partners, including State Channelizing
   Agencies (SCAs), Banks, and other Channelizing Agencies (CAs).
