@@ -178,6 +178,12 @@ _CLASS = re.compile(
     re.IGNORECASE,
 )
 
+#: The words that mean a number belongs to a school class and not to a person. The age
+#: cue bridges up to twenty non-digit characters to reach a number, and " in class " is
+#: ten of them, so "I am in class 10" read as age 10. Found by reading real output, the
+#: same way the third-party guard below was.
+_CLASS_CUE = re.compile(r"class|standard|इयत्ता|कक्षा", re.IGNORECASE)
+
 #: Someone ELSE whose class she might mention. Found by reading real output: "I am a
 #: widow with a daughter in class 9" produced class_level=9, which is the daughter's
 #: class, not hers, and not even her vertical. A missing answer costs one question; a
@@ -268,8 +274,14 @@ def understand(
             continue
         number = cast(raw)
         # Bounds that are obviously not what she meant are dropped rather than clamped.
-        if question_id == "age" and not 0 < number <= 120:
-            continue
+        if question_id == "age":
+            if not 0 < number <= 120:
+                continue
+            # A class is not an age. Dropped rather than reassigned: _CLASS reads the
+            # same number correctly a few lines down, and guessing which of the two a
+            # citizen meant is exactly the helpfulness this module refuses.
+            if _CLASS_CUE.search(found.group(0)):
+                continue
         if question_id == "class_level":
             if not 1 <= number <= 12:
                 continue

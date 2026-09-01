@@ -219,3 +219,27 @@ def test_a_very_long_text_is_refused_rather_than_processed(client):
     assert client.post(
         "/api/understand", json={"text": "x" * 5000}
     ).status_code == 422
+
+
+def test_a_class_number_is_not_read_as_an_age(config):
+    """Found by reading real output, the same way the child's-class guard was.
+
+    "I am in class 10" produced age=10. The age cue will bridge up to twenty
+    non-digit characters to reach a number, and " in class " is ten of them. A student
+    recorded as ten years old fails age bounds across the corpus, and the front door
+    would have shown her "How old are you? 10" in her own words, which reads as the
+    engine being confidently wrong rather than merely quiet.
+    """
+    r = read("I am in class 10, my father earns very little, we are SC", config)
+    assert "age" not in r.answers
+    assert r.answers["class_level"] == 10
+
+    # Same sentence in Marathi: मी is an age cue and इयत्ता is the class it bridges to.
+    mr = read("मी इयत्ता 10 मध्ये आहे", config, "mr")
+    assert "age" not in mr.answers
+    assert mr.answers["class_level"] == 10
+
+    # The guard must not cost a real age in the same breath as a class.
+    both = read("I am 15 and I am in class 10", config)
+    assert both.answers["age"] == 15
+    assert both.answers["class_level"] == 10
