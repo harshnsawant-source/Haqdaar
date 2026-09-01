@@ -7,8 +7,11 @@ the exercise. Read only the fact sheet at the bottom, which you must have exact.
 **Rehearsal rule: an answer over 30 seconds is a losing answer.** Judges read length as
 uncertainty. Claim, one piece of evidence, stop. Then offer the screen.
 
-**Revised 2026-08-30.** Re-pointed from welfare-first to SIH26092, and every scheme count
-corrected: this said "six schemes" throughout and it is ten.
+**Revised 2026-09-01, the night before the round.** Checked line by line against the
+deployed build. Five things in the 30 Aug version were no longer true and would have been
+said out loud: the scheme count (ten, now **twelve**), the test count (378, now **415**),
+"the EMI calculator and the partner locator do not exist" (**both shipped**), the Marathi
+review status, and what the screen actually does with a lapsed scheme. Fixed below.
 
 ---
 
@@ -68,22 +71,23 @@ not fill your form. Three things, one breath, then offer the screen.
 
 **Trap:** "yes it's real" and moving on. Judges have seen invented corpora.
 
-**What must be in your answer:** a number, a source, an offer. **Ten schemes across three
-verticals**, every clause transcribed verbatim, every one carrying a live link on screen —
+**What must be in your answer:** a number, a source, an offer. **Twelve schemes across
+three verticals**, every clause transcribed verbatim, every one carrying a live link on
+screen —
 nsfdc.nic.in, standupmitra.in, ifciltd.com, pmkisan.gov.in, nha.gov.in, nsap.nic.in,
 scholarships.gov.in, sjsa.maharashtra.gov.in. Then let them click one.
 
-**Say the provisional one before they find it.** Nine are VERIFIED against the source.
+**Say the provisional one before they find it.** Eleven are VERIFIED against the source.
 Sanjay Gandhi Niradhar Anudan Yojana is marked PROVISIONAL in the corpus and the UI says so
 on every clause. Volunteering that is worth more than the scheme is.
 
 ---
 
-## Q4. Ten schemes out of thousands. Isn't this a toy?
+## Q4. Twelve schemes out of thousands. Isn't this a toy?
 
 **Trap:** promising to scale to thousands. Everyone promises that; nobody is believed.
 
-**What must be in your answer:** invert it. Ten schemes at clause-level depth surfaced
+**What must be in your answer:** invert it. Twelve schemes at clause-level depth surfaced
 structure a thousand shallow entries never would — scheme stacking, unverifiable predicates,
 rule amendment tracking, and two lapsed schemes we only found because we read the validity
 text. Ingestion is the easy part. Semantics is not.
@@ -157,8 +161,8 @@ error — it invents an entitlement the department will refuse.
 
 **Trap:** accepting an open text box, or refusing outright and looking scripted.
 
-**What must be in your answer:** "Pick any of our ten and I'll show you the proof chain or
-the refusal for that one." Then actually do it. **Which means rehearse all ten, both
+**What must be in your answer:** "Pick any of our twelve and I'll show you the proof chain
+or the refusal for that one." Then actually do it. **Which means rehearse all twelve, both
 directions.** This question is the entire reason to rehearse.
 
 ---
@@ -189,14 +193,95 @@ substrate, and marginalised-entrepreneur schemes are the first corpus running on
 
 ---
 
+## Q13. Your problem statement asks for three components. Show me all three.
+
+*Ask yourself this one first every time you rehearse. It is the checklist a judge scores you
+against, and you can now answer it completely.*
+
+**What must be in your answer:** name them in the PS's own order and point at each on screen.
+
+1. **Smart Scheme Recommender.** Twelve schemes, matched clause by clause, every verdict
+   carrying the clause it came from.
+2. **Financial Calculator.** Real numbers off the scheme's own credit terms, not a generic
+   EMI formula: 8% to the beneficiary, a 6 month moratorium, quarterly instalments, a term
+   the corpus holds. Let them type a principal.
+3. **Geo-Spatial Partner Locator.** 91 Channel Partners from 8 published NSFDC lists, across
+   31 states and UTs.
+
+**Say the honest boundary on component 3 before they ask.** It matches by **state**, not by
+GPS distance. The published lists carry postal addresses and no coordinates, and geocoding
+them needs an external service and a key, which would end the claim that this runs with no
+keys and no network. That is a trade we made on purpose and can defend; a fake map is not.
+
+---
+
+## Q14. Where did the partner list come from? How do I know you did not just type it?
+
+*New, and worth inviting. It is the strongest provenance story in the project.*
+
+**Trap:** "we got it from the NSFDC website." True, and it sounds exactly like an answer
+someone gives when they typed it.
+
+**What must be in your answer:** the chain, in four beats.
+
+- The **eight source PDFs are committed to the repository**, with their SHA-256 checksums in
+  a manifest beside them.
+- A **script** extracts the YAML from those PDFs. Nobody transcribes a partner by hand.
+- A **test re-hashes the PDFs on every run** and fails if a single byte moved. Delete the
+  PDFs and the suite goes red.
+- Where a PDF genuinely could not be parsed, the fix is a **correction keyed to that record
+  with an `expect` guard**: if the underlying text ever stops matching what the correction
+  was written against, the extractor halts instead of silently applying it to the wrong row.
+
+Close it: *clone the repo, run one command with the network off, and you get the same corpus
+back byte for byte.* Then offer to do exactly that.
+
+---
+
+## Q15. The PS asks you to route around partners with high NPAs. You do not. Why not?
+
+*The one requirement you did not build. Rehearse this until it is thirty seconds and calm,
+because handled well it is the best answer in the set.*
+
+**Trap:** promising it for the next phase, or worse, implying the order on screen means
+something. Both throw away the entire trust argument in one sentence.
+
+**What must be in your answer:** **NSFDC does not publish NPA or fund-utilisation figures.**
+There is no dataset. So there are two options: invent a ranking, or say so. Every partner
+response the API returns carries a field that says so, and the screen prints it:
+
+> *These are listed in a fixed order, not a recommended one. NSFDC does not publish which
+> partners currently have funds or a clean repayment record, so this cannot tell you which to
+> try first.*
+
+Then land it: *the problem statement asked for a ranking, and the honest answer is that the
+data to build it is not public. A system whose whole claim is that it will not assert what it
+cannot prove does not get to make an exception because the exception was on the requirements
+list.* If the figures are ever shared with us, the field is where they go.
+
+**This is the same refusal that runs everywhere else in the product, applied to ourselves.**
+Say that. It is the moment the architecture stops being a slide and starts being a position.
+
+---
+
 ## The demo beat that wins the room
 
-**Stand-Up India.** Its own guidelines say the scheme runs "upto 31.03.2025". It is now past
-that. The engine reports the scheme as closed instead of cheerfully matching an entrepreneur
-to something that no longer exists — which is what a similarity-search system does, because
-nothing in an embedding knows what a date means.
+**Stand-Up India.** Its own guidelines say the scheme runs "upto 31.03.2025". **VCF-SC** runs
+"01.04.2021 to 31.03.2026". Both dates are behind us. Nothing in an embedding knows what a
+date means, so a similarity-search system recommends both without blinking.
 
-**VCF-SC is the second one**, valid to 31.03.2026, also now past.
+**Describe what is actually on the screen, because the judge is reading it.** The card is
+headed by a block that opens *"Stop. The period this scheme was sanctioned for has ended."*,
+prints the end date, and quotes the guideline text it came from. The rule check still runs
+underneath it, and **the status chip still says ELIGIBLE**, because under the published rules
+she may well qualify. What the engine withholds is the action: the file-this button is not
+offered on a lapsed scheme, and the card is greyed.
+
+**Do not say "it refuses to recommend it."** The chip on screen says ELIGIBLE, and a judge
+who reads it will mark you as overselling. Say this instead: *it stops you at the door,
+shows you the date in the department's own words, and will not file for you until someone
+confirms a successor scheme exists.* That is both true and stronger, because it is the
+distinction between a system that hides a scheme and one that hands you the reason.
 
 Land it in one line: *every scheme-matching demo you will see today would have recommended
 these two.*
@@ -208,24 +293,32 @@ these two.*
 | | |
 |---|---|
 | Problem statement | SIH26092, AI-Driven Scheme Matching for Marginalized Entrepreneurs, MoSJ&E |
-| Schemes | **10**: entrepreneur 3, welfare 5, student 2 |
-| Entrepreneur | NSFDC Term Loan, Stand-Up India, Venture Capital Fund for SC |
+| Schemes | **12**: entrepreneur 4, welfare 5, student 3 |
+| Entrepreneur | NSFDC Term Loan, **NSFDC Micro Finance**, Stand-Up India, Venture Capital Fund for SC |
 | Welfare | PM-KISAN, IGNWPS, PM-JAY, Ayushman Vay Vandana Card, SGNAY |
-| Student | Pre-Matric SC, Top Class SC |
-| Verification | 9 VERIFIED, 1 PROVISIONAL (SGNAY) |
+| Student | Pre-Matric SC, Top Class SC, **NSFDC Educational Loan** |
+| Verification | **11 VERIFIED, 1 PROVISIONAL** (SGNAY, and only its age range) |
 | Lapsed | Stand-Up India (31.03.2025), VCF-SC (31.03.2026) |
 | Guard triggers | T1–T6; T6 is the lapsed-scheme catch |
-| Tests | 378 passing, 1 skipped |
+| Channel Partners | **91**, from **8** published NSFDC lists, placed across **31** states and UTs; 2 unplaced and shown as such |
+| EMI calculator | `/api/emi`. Real rate, moratorium and repayment term read off the scheme's own credit terms |
+| Tests | **415 passing, 1 skipped** |
 | Dependencies | FastAPI, pydantic, PyYAML, Pillow, python-multipart. **No model, no API key.** |
 | Languages | English, Marathi, Hindi |
+
+**All three products the PS names by ceiling are now in the corpus**: Micro Finance
+(Rs 1.40 lakh), Term Loan (Rs 50.00 lakh), Educational Loan. On 30 Aug we held one of the
+three. If you rehearsed the old answer, unlearn it.
 
 ---
 
 ## Questions with no slide, one line each
 
-- **Did a native speaker check the Marathi?** — *Not yet.* Drafted and under review, and the
-  review sheet is in the repo. Do not claim otherwise; a Marathi-speaking judge will know
-  inside one sentence.
+- **Did a native speaker check the Marathi?** — **Answer whatever is true on the morning.**
+  Harsh has said the review is done; `docs/TRANSLATION-REVIEW.md` still says NOT YET
+  REVIEWED with six unticked boxes. Settle that before you walk in, because a judge who
+  opens the repo will read the file, not you. If it is genuinely reviewed, tick the sheet
+  tonight. A Marathi-speaking judge will know inside one sentence either way.
 - Privacy for uploaded certificates — nothing is stored; two tests assert it
 - Reaching a citizen with no smartphone — the operator at a CSC or Panchayat is the user
 - Who pays at scale
@@ -247,10 +340,14 @@ these two.*
 
 ## Before you walk in
 
-Read `docs/SIH26092-PS.md`. The full text is now known and it changes three things:
+Read `docs/SIH26092-PS.md` for the official text. Its "Where Haqdaar stands" table is now
+out of date in your favour: four rows it lists as missing have since been built. What still
+holds:
 
-1. Q1 is largely solved. The PS says "AI/rule-based engine" in its own words.
-2. The PS names three loan products by ceiling and **the corpus holds one of them**.
-   Micro Finance (Rs 1.40 lakh) and the Educational Loan Scheme are missing.
-3. It asks for an EMI calculator and a geo-spatial Channel Partner locator. Neither
-   exists. Expect to be asked, and answer with scope, not with a promise.
+1. Q1 is solved by the PS itself. It says "AI/rule-based engine" in its own words.
+2. **All three loan products it names are now in the corpus.** Micro Finance and the
+   Educational Loan Scheme landed after that table was written.
+3. **The EMI calculator and the Channel Partner locator both exist.** Do not apologise for
+   them. Show them.
+4. The one thing the PS asks for that you do **not** have is partner ranking by NPA and
+   fund utilisation. That is Q15. It is a strength, not a gap, if you answer it right.

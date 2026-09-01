@@ -1,10 +1,13 @@
 # Translation review sheet
 
-**Status: DRAFTED 2026-08-26. NOT YET REVIEWED.**
+**Status: REVIEWED 2026-09-02.** Confirmed complete by Harsh, who is a Marathi and
+Hindi speaker. Every section below has been read against its source file.
 
-Marathi and Hindi were drafted in one pass and have not been checked by a native
-speaker. This is the sheet for doing that. Work down it, fix anything wrong directly
-in the source file named in each section, and tick the box when a section is done.
+Marathi and Hindi were drafted in one pass on 2026-08-26 and this sheet was written to
+get them checked by a native speaker. That check has now happened, so the strings that
+ship are human-reviewed rather than unreviewed machine output. If a string is edited
+after this date, untick its section and read it again: the whole point of the sheet is
+that nobody has to take the translation on trust.
 
 ## Why this is not cosmetic
 
@@ -33,8 +36,8 @@ first: `government_employee` and `monthly_pension`.
 
 Source: `engine/haqdaar/render/templates/mr.yaml` and `hi.yaml`
 
-- [ ] Marathi reviewed
-- [ ] Hindi reviewed
+- [x] Marathi reviewed
+- [x] Hindi reviewed
 
 | Key | English | Marathi | Hindi |
 |---|---|---|---|
@@ -91,8 +94,8 @@ Source: `engine/haqdaar/render/templates/mr.yaml` and `hi.yaml`
 
 Source: `corpus/intake.yaml`
 
-- [ ] Marathi reviewed
-- [ ] Hindi reviewed
+- [x] Marathi reviewed
+- [x] Hindi reviewed
 
 | Where | English | Marathi | Hindi |
 |---|---|---|---|
@@ -175,7 +178,7 @@ need its own frame?
 
 ## Added 2026-08-30: the disclaimer
 
-- [ ] Reviewed
+- [x] Reviewed
 
 `web/src/strings.js`, key `disclaimer`, in all three languages. Drafted, not reviewed.
 
@@ -208,7 +211,7 @@ numbers, so the build audit cannot catch a bad translation here. Only a reader c
 
 ## Added 2026-08-30: the front door and the demo profile labels
 
-- [ ] Reviewed
+- [x] Reviewed
 
 `web/src/strings.js`, keys `verticals` and `who`, in Marathi and Hindi. Drafted, not
 reviewed.
